@@ -1,0 +1,1820 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Developer Studio V4</title>
+
+<style>
+:root{
+    --bg:#0b1020;
+    --panel:#111827;
+    --panel2:#0f172a;
+    --editor:#080d17;
+    --border:#263247;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --accent:#4f8cff;
+    --green:#22c55e;
+    --red:#ef4444;
+    --yellow:#facc15;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+}
+
+button,input,select,textarea{font:inherit}
+
+button{
+    background:#1b2638;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:7px 12px;
+    cursor:pointer;
+}
+
+button:hover{background:#273650}
+button.run{background:#176b3a}
+button.run:hover{background:#218b4c}
+
+.topbar{
+    height:54px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 12px;
+    background:#0e1525;
+    border-bottom:1px solid var(--border);
+}
+
+.logoText{
+    font-size:17px;
+    font-weight:700;
+    margin-right:12px;
+}
+
+.logoText span{color:var(--accent)}
+.spacer{flex:1}
+
+.workspace{
+    height:calc(100vh - 54px);
+    display:grid;
+    grid-template-columns:220px 1fr;
+    grid-template-rows:1fr 240px;
+}
+
+.sidebar{
+    grid-row:1 / 3;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    padding:12px;
+    overflow:auto;
+}
+
+.sectionTitle{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    margin:12px 5px 7px;
+}
+
+.item{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:8px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.item:hover,.item.active{background:#1b2638}
+
+.item img{
+    width:20px;
+    height:20px;
+    object-fit:contain;
+}
+
+.languageIcon{
+    width:20px;
+    text-align:center;
+    font-size:11px;
+    font-weight:bold;
+}
+
+.editorSection{
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+}
+
+.tabs{
+    height:38px;
+    display:flex;
+    background:var(--panel2);
+    border-bottom:1px solid var(--border);
+    overflow:auto;
+}
+
+.tab{
+    padding:10px 14px;
+    border-right:1px solid var(--border);
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.tab.active{background:var(--editor)}
+.dirty{color:var(--yellow)}
+
+.editorArea{
+    flex:1;
+    min-height:0;
+    display:grid;
+    grid-template-columns:52px 1fr;
+    background:var(--editor);
+}
+
+.lineNumbers{
+    padding:12px 8px;
+    text-align:right;
+    color:#53627a;
+    font-family:monospace;
+    line-height:1.55;
+    user-select:none;
+    overflow:hidden;
+}
+
+#editor{
+    width:100%;
+    height:100%;
+    resize:none;
+    border:0;
+    outline:none;
+    background:var(--editor);
+    color:#e6edf7;
+    padding:12px 14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:14px;
+    line-height:1.55;
+    tab-size:4;
+    white-space:pre;
+}
+
+.bottomPanel{
+    grid-column:2;
+    background:#0d1422;
+    border-top:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+}
+
+.panelTabs{
+    height:38px;
+    display:flex;
+    border-bottom:1px solid var(--border);
+}
+
+.panelTabs button{
+    border:0;
+    border-radius:0;
+    background:transparent;
+}
+
+.panelTabs button.active{background:#182338}
+
+#output{
+    flex:1;
+    overflow:auto;
+    padding:12px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    white-space:pre-wrap;
+}
+
+#preview{
+    width:100%;
+    height:100%;
+    border:0;
+    background:white;
+}
+
+.statusbar{
+    height:27px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:0 10px;
+    border-top:1px solid var(--border);
+    color:var(--muted);
+    font-size:12px;
+}
+
+.pill{
+    background:#182338;
+    padding:3px 8px;
+    border-radius:999px;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+
+.modalBackground{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:#0009;
+    z-index:100;
+}
+
+.modal{
+    width:min(560px,92vw);
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 20px 60px #0009;
+}
+
+.modal h2{margin-top:0}
+
+.formRow{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    margin:12px 0;
+}
+
+.formRow label{
+    width:130px;
+    color:var(--muted);
+}
+
+.formRow input,.formRow select{
+    flex:1;
+    background:#0b1220;
+    color:var(--text);
+    border:1px solid var(--border);
+    padding:8px;
+    border-radius:7px;
+}
+
+.modalButtons{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:18px;
+}
+
+.warning{
+    background:#241e0a;
+    border:1px solid #66551c;
+    border-radius:8px;
+    padding:12px;
+    color:#fde68a;
+    line-height:1.5;
+}
+
+@media(max-width:800px){
+    .workspace{
+        grid-template-columns:170px 1fr;
+        grid-template-rows:1fr 210px;
+    }
+
+    .sidebar{padding:8px}
+    .topbar button{padding:6px 8px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="logoText">
+        Developer <span>Studio</span> V4
+    </div>
+
+    <button id="newButton">New</button>
+    <button id="openButton">Open</button>
+    <button id="saveButton">Save</button>
+
+    <button class="run" id="runButton">▶ Run</button>
+    <button id="previewButton">Preview</button>
+
+    <div class="spacer"></div>
+
+    <button id="settingsButton">⚙ Settings</button>
+</div>
+
+<div class="workspace">
+
+    <aside class="sidebar">
+
+        <div class="sectionTitle">Languages</div>
+        <div id="languages"></div>
+
+        <div class="sectionTitle">Files</div>
+        <div id="files"></div>
+
+    </aside>
+
+    <section class="editorSection">
+
+        <div class="tabs" id="tabs"></div>
+
+        <div class="editorArea">
+
+            <div class="lineNumbers" id="lineNumbers">1</div>
+
+            <textarea
+                id="editor"
+                spellcheck="false"
+                autocorrect="off"
+                autocapitalize="off"
+            ></textarea>
+
+        </div>
+
+    </section>
+
+    <section class="bottomPanel">
+
+        <div class="panelTabs">
+
+            <button data-panel="terminal">Terminal</button>
+            <button data-panel="output" class="active">Output</button>
+            <button data-panel="preview">Preview</button>
+            <button data-panel="problems">Problems</button>
+
+        </div>
+
+        <div id="output"></div>
+
+        <iframe
+            id="preview"
+            sandbox="allow-scripts allow-forms allow-modals"
+            style="display:none"
+        ></iframe>
+
+        <div class="statusbar">
+
+            <span id="status">Ready</span>
+
+            <span class="pill" id="languageStatus">
+                HTML5
+            </span>
+
+            <span class="pill" id="backendStatus">
+                Backend: checking...
+            </span>
+
+            <span class="spacer"></span>
+
+            <span>⌘/Ctrl + Enter = Run</span>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div class="modalBackground" id="settingsModal">
+
+    <div class="modal">
+
+        <h2>Developer Studio Settings</h2>
+
+        <div class="formRow">
+            <label>Backend URL</label>
+
+            <input
+                id="backendUrl"
+                placeholder="http://localhost:3000"
+            >
+        </div>
+
+        <div class="formRow">
+            <label>Theme</label>
+
+            <select id="themeSelect">
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+            </select>
+        </div>
+
+        <div class="formRow">
+            <label>Font size</label>
+
+            <input
+                id="fontSize"
+                type="number"
+                min="11"
+                max="24"
+            >
+        </div>
+
+        <div class="warning">
+            ⚠ The backend executes real programs.
+            It must stay sandboxed and should not be publicly
+            exposed without authentication, rate limiting,
+            and additional security.
+        </div>
+
+        <div class="modalButtons">
+            <button id="testBackend">Test Backend</button>
+            <button id="closeSettings">Close</button>
+            <button id="saveSettings">Save Settings</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- NEW FILE -->
+
+<div class="modalBackground" id="newModal">
+
+    <div class="modal">
+
+        <h2>New File</h2>
+
+        <div class="formRow">
+
+            <label>Filename</label>
+
+            <input
+                id="newFilename"
+                value="main.cpp"
+            >
+
+        </div>
+
+        <div class="formRow">
+
+            <label>Language</label>
+
+            <select id="newLanguage"></select>
+
+        </div>
+
+        <div class="modalButtons">
+
+            <button id="cancelNew">Cancel</button>
+            <button id="createNew">Create</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<input type="file" id="fileInput" hidden>
+
+
+<script>
+
+/* =========================================================
+   LOGOS
+========================================================= */
+
+const logos = {
+
+    python:
+        "https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg",
+
+    javascript:
+        "https://commons.wikimedia.org/wiki/Special:Redirect/file/JavaScript_logo.svg",
+
+    html:
+        "https://commons.wikimedia.org/wiki/Special:Redirect/file/HTML5_logo.svg",
+
+    css:
+        "https://commons.wikimedia.org/wiki/Special:Redirect/file/CSS3_logo.svg"
+
+};
+
+
+/* =========================================================
+   LANGUAGES
+========================================================= */
+
+const languages = {
+
+    python:{
+        label:"Python 3",
+        extension:"py",
+        filename:"main.py"
+    },
+
+    javascript:{
+        label:"JavaScript / Node.js",
+        extension:"js",
+        filename:"main.js"
+    },
+
+    html:{
+        label:"HTML5",
+        extension:"html",
+        filename:"index.html"
+    },
+
+    css:{
+        label:"CSS3",
+        extension:"css",
+        filename:"style.css"
+    },
+
+    c:{
+        label:"C / GCC",
+        extension:"c",
+        filename:"main.c"
+    },
+
+    cpp:{
+        label:"C++ / G++",
+        extension:"cpp",
+        filename:"main.cpp"
+    },
+
+    bash:{
+        label:"Bash",
+        extension:"sh",
+        filename:"main.sh"
+    },
+
+    r:{
+        label:"R",
+        extension:"R",
+        filename:"main.R"
+    },
+
+    php:{
+        label:"PHP",
+        extension:"php",
+        filename:"index.php"
+    }
+
+};
+
+
+/* =========================================================
+   STARTER CODE
+   No JavaScript template literals are used here.
+========================================================= */
+
+const starterCode = {
+
+    python:
+        'print("Hello from real Python!")\n\n' +
+        'x = 6 * 7\n\n' +
+        'print("6 × 7 =", x)\n',
+
+    javascript:
+        'console.log("Hello from real Node.js!");\n\n' +
+        'const x = 6 * 7;\n\n' +
+        'console.log("6 × 7 =", x);\n',
+
+    html:
+        '<!DOCTYPE html>\n' +
+        '<html>\n' +
+        '<head>\n' +
+        '    <title>Developer Studio</title>\n' +
+        '</head>\n' +
+        '<body>\n' +
+        '    <h1>Hello!</h1>\n' +
+        '    <p>Edit index.html and press Preview.</p>\n' +
+        '</body>\n' +
+        '</html>\n',
+
+    css:
+        'body {\n' +
+        '    font-family: system-ui;\n' +
+        '    padding: 40px;\n' +
+        '}\n\n' +
+        'h1 {\n' +
+        '    color: royalblue;\n' +
+        '}\n',
+
+    c:
+        '#include <stdio.h>\n\n' +
+        'int main(void) {\n' +
+        '    printf("Hello from real C!\\\\n");\n' +
+        '    return 0;\n' +
+        '}\n',
+
+    cpp:
+        '#include <iostream>\n\n' +
+        'using namespace std;\n\n' +
+        'int main() {\n' +
+        '    cout << "Hello from real C++!" << endl;\n' +
+        '    return 0;\n' +
+        '}\n',
+
+    bash:
+        '#!/usr/bin/env bash\n\n' +
+        'echo "Hello from real Bash!"\n',
+
+    r:
+        'cat("Hello from real R!\\\\n")\n\n' +
+        'x <- 6 * 7\n\n' +
+        'cat("6 * 7 =", x, "\\\\n")\n',
+
+    php:
+        '<?php\n\n' +
+        'echo "Hello from real PHP!\\\\n";\n\n' +
+        '$x = 6 * 7;\n\n' +
+        'echo "6 * 7 = $x\\\\n";\n\n' +
+        '?>\n'
+
+};
+
+
+/* =========================================================
+   FILE SYSTEM
+========================================================= */
+
+let files = {};
+let activeFile = "index.html";
+
+function createFile(filename, language, content){
+
+    files[filename] = {
+        filename:filename,
+        language:language,
+        content:content,
+        dirty:false
+    };
+
+}
+
+Object.entries(languages).forEach(function(entry){
+
+    const key = entry[0];
+    const value = entry[1];
+
+    createFile(
+        value.filename,
+        key,
+        starterCode[key]
+    );
+
+});
+
+
+/* =========================================================
+   LANGUAGE LIST
+========================================================= */
+
+function renderLanguages(){
+
+    const container =
+        document.getElementById("languages");
+
+    container.innerHTML = "";
+
+    Object.entries(languages).forEach(function(entry){
+
+        const key = entry[0];
+        const value = entry[1];
+
+        const item =
+            document.createElement("div");
+
+        item.className = "item";
+
+        if(logos[key]){
+
+            const image =
+                document.createElement("img");
+
+            image.src = logos[key];
+            image.alt = value.label;
+
+            const text =
+                document.createElement("span");
+
+            text.textContent = value.label;
+
+            item.appendChild(image);
+            item.appendChild(text);
+
+        }else{
+
+            const icon =
+                document.createElement("span");
+
+            icon.className = "languageIcon";
+            icon.textContent =
+                value.extension.toUpperCase();
+
+            const text =
+                document.createElement("span");
+
+            text.textContent = value.label;
+
+            item.appendChild(icon);
+            item.appendChild(text);
+
+        }
+
+        item.onclick = function(){
+            openFile(value.filename);
+        };
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   FILE LIST
+========================================================= */
+
+function renderFiles(){
+
+    const container =
+        document.getElementById("files");
+
+    container.innerHTML = "";
+
+    Object.values(files).forEach(function(file){
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "item" +
+            (file.filename === activeFile
+                ? " active"
+                : "");
+
+        const icon =
+            document.createElement("span");
+
+        icon.textContent = "📄";
+
+        const text =
+            document.createElement("span");
+
+        text.textContent = file.filename;
+
+        if(file.dirty){
+
+            const dirty =
+                document.createElement("span");
+
+            dirty.className = "dirty";
+            dirty.textContent = " •";
+
+            text.appendChild(dirty);
+
+        }
+
+        item.appendChild(icon);
+        item.appendChild(text);
+
+        item.onclick = function(){
+            openFile(file.filename);
+        };
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function renderTabs(){
+
+    const container =
+        document.getElementById("tabs");
+
+    container.innerHTML = "";
+
+    const file = files[activeFile];
+
+    if(!file){
+        return;
+    }
+
+    const tab =
+        document.createElement("div");
+
+    tab.className = "tab active";
+
+    tab.textContent = file.filename;
+
+    if(file.dirty){
+
+        const dirty =
+            document.createElement("span");
+
+        dirty.className = "dirty";
+        dirty.textContent = " •";
+
+        tab.appendChild(dirty);
+
+    }
+
+    container.appendChild(tab);
+
+}
+
+
+/* =========================================================
+   OPEN FILE
+========================================================= */
+
+function openFile(filename){
+
+    if(!files[filename]){
+        return;
+    }
+
+    activeFile = filename;
+
+    const file = files[filename];
+
+    document.getElementById("editor").value =
+        file.content;
+
+    document.getElementById("languageStatus").textContent =
+        languages[file.language]
+            ? languages[file.language].label
+            : file.language;
+
+    updateLineNumbers();
+    renderFiles();
+    renderTabs();
+
+    document.getElementById("status").textContent =
+        "Editing " + filename;
+
+}
+
+
+/* =========================================================
+   LINE NUMBERS
+========================================================= */
+
+function updateLineNumbers(){
+
+    const editor =
+        document.getElementById("editor");
+
+    const lines =
+        editor.value.split("\n").length;
+
+    document.getElementById("lineNumbers").textContent =
+        Array.from(
+            {length:lines},
+            function(_,i){
+                return i + 1;
+            }
+        ).join("\n");
+
+}
+
+
+/* =========================================================
+   EDITOR INPUT
+========================================================= */
+
+document
+.getElementById("editor")
+.addEventListener("input",function(){
+
+    if(!files[activeFile]){
+        return;
+    }
+
+    files[activeFile].content =
+        this.value;
+
+    files[activeFile].dirty = true;
+
+    updateLineNumbers();
+    renderFiles();
+    renderTabs();
+
+});
+
+
+/* =========================================================
+   EDITOR SCROLL
+========================================================= */
+
+document
+.getElementById("editor")
+.addEventListener("scroll",function(){
+
+    document.getElementById("lineNumbers").scrollTop =
+        this.scrollTop;
+
+});
+
+
+/* =========================================================
+   EDITOR KEYBOARD
+========================================================= */
+
+document
+.getElementById("editor")
+.addEventListener("keydown",function(event){
+
+    if(event.key === "Tab"){
+
+        event.preventDefault();
+
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+
+        this.value =
+            this.value.substring(0,start) +
+            "    " +
+            this.value.substring(end);
+
+        this.selectionStart =
+            this.selectionEnd =
+            start + 4;
+
+        files[activeFile].content =
+            this.value;
+
+        files[activeFile].dirty = true;
+
+        updateLineNumbers();
+        renderFiles();
+        renderTabs();
+
+    }
+
+    if(
+        (event.metaKey || event.ctrlKey) &&
+        event.key === "Enter"
+    ){
+
+        event.preventDefault();
+        runCurrentFile();
+
+    }
+
+    if(
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "s"
+    ){
+
+        event.preventDefault();
+        saveCurrentFile();
+
+    }
+
+});
+
+
+/* =========================================================
+   BACKEND
+========================================================= */
+
+function backendURL(){
+
+    return (
+        localStorage.getItem(
+            "developerStudioBackend"
+        ) ||
+        "http://localhost:3000"
+    ).replace(/\/+$/,"");
+
+}
+
+
+async function testBackend(){
+
+    try{
+
+        const response =
+            await fetch(
+                backendURL() +
+                "/api/health"
+            );
+
+        const data =
+            await response.json();
+
+        if(data.ok){
+
+            document.getElementById(
+                "backendStatus"
+            ).textContent =
+                "Backend: online";
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                "Backend connected";
+
+        }else{
+
+            throw new Error("Backend returned an error.");
+
+        }
+
+    }catch(error){
+
+        document.getElementById(
+            "backendStatus"
+        ).textContent =
+            "Backend: offline";
+
+    }
+
+}
+
+
+/* =========================================================
+   RUN
+========================================================= */
+
+async function runCurrentFile(){
+
+    const file = files[activeFile];
+
+    if(!file){
+        return;
+    }
+
+    if(
+        file.language === "html" ||
+        file.language === "css"
+    ){
+
+        previewProject();
+        showPanel("preview");
+
+        return;
+
+    }
+
+    showPanel("output");
+
+    document.getElementById("output").className = "";
+
+    document.getElementById("output").textContent =
+        "Running " +
+        file.filename +
+        "...\n";
+
+    document.getElementById("status").textContent =
+        "Running...";
+
+    try{
+
+        const projectFiles =
+            Object.values(files).map(function(f){
+
+                return {
+                    name:f.filename,
+                    content:f.content
+                };
+
+            });
+
+        const response =
+            await fetch(
+                backendURL() +
+                "/api/execute",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        language:file.language,
+                        code:file.content,
+                        stdin:"",
+                        files:projectFiles
+
+                    })
+
+                }
+            );
+
+        let data;
+
+        try{
+
+            data = await response.json();
+
+        }catch(error){
+
+            throw new Error(
+                "The backend returned invalid JSON."
+            );
+
+        }
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                "Backend request failed"
+            );
+
+        }
+
+        let result =
+            "$ " +
+            (data.command || "") +
+            "\n\n";
+
+        if(data.stdout){
+            result += data.stdout;
+        }
+
+        if(data.stderr){
+
+            result +=
+                "\n[stderr]\n" +
+                data.stderr;
+
+        }
+
+        result +=
+            "\n\nExit code: " +
+            data.exitCode;
+
+        if(data.durationMs !== undefined){
+
+            result +=
+                "\nDuration: " +
+                data.durationMs +
+                " ms";
+
+        }
+
+        if(data.timedOut){
+
+            result +=
+                "\n\nExecution timed out.";
+
+        }
+
+        const output =
+            document.getElementById("output");
+
+        output.textContent = result;
+
+        output.className =
+            data.success
+                ? "green"
+                : "red";
+
+        document.getElementById("status").textContent =
+            data.success
+                ? "Finished successfully"
+                : "Finished with errors";
+
+    }catch(error){
+
+        document.getElementById("output").textContent =
+            "Backend error:\n\n" +
+            error.message +
+            "\n\nMake sure the backend is running.";
+
+        document.getElementById("output").className =
+            "red";
+
+        document.getElementById("status").textContent =
+            "Backend unavailable";
+
+    }
+
+}
+
+
+/* =========================================================
+   PREVIEW
+   IMPORTANT:
+   This version does NOT use JavaScript template literals.
+========================================================= */
+
+function previewProject(){
+
+    const html =
+        files["index.html"]
+            ? files["index.html"].content
+            : "";
+
+    const css =
+        files["style.css"]
+            ? files["style.css"].content
+            : "";
+
+    const js =
+        files["main.js"]
+            ? files["main.js"].content
+            : "";
+
+    let documentText = html;
+
+    if(documentText.includes("</head>")){
+
+        documentText =
+            documentText.replace(
+                "</head>",
+                "<style>" +
+                css +
+                "</style></head>"
+            );
+
+    }else{
+
+        documentText =
+            "<style>" +
+            css +
+            "</style>" +
+            documentText;
+
+    }
+
+    if(
+        js &&
+        documentText.includes("</body>")
+    ){
+
+        documentText =
+            documentText.replace(
+                "</body>",
+                "<script>" +
+                js +
+                "</script></body>"
+            );
+
+    }
+
+    document.getElementById("preview").srcdoc =
+        documentText;
+
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+function showPanel(panel){
+
+    const output =
+        document.getElementById("output");
+
+    const preview =
+        document.getElementById("preview");
+
+    if(panel === "preview"){
+
+        output.style.display = "none";
+        preview.style.display = "block";
+
+        previewProject();
+
+    }else{
+
+        output.style.display = "block";
+        preview.style.display = "none";
+
+    }
+
+    document
+    .querySelectorAll(".panelTabs button")
+    .forEach(function(button){
+
+        button.classList.toggle(
+            "active",
+            button.dataset.panel === panel
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   PANEL BUTTONS
+========================================================= */
+
+document
+.querySelectorAll(".panelTabs button")
+.forEach(function(button){
+
+    button.onclick = function(){
+
+        showPanel(
+            button.dataset.panel
+        );
+
+    };
+
+});
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+function saveCurrentFile(){
+
+    const file = files[activeFile];
+
+    if(!file){
+        return;
+    }
+
+    const blob =
+        new Blob(
+            [file.content],
+            {type:"text/plain"}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+    link.download = file.filename;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(function(){
+
+        URL.revokeObjectURL(url);
+
+    },1000);
+
+    file.dirty = false;
+
+    renderFiles();
+    renderTabs();
+
+    document.getElementById("status").textContent =
+        "Saved " +
+        file.filename;
+
+}
+
+
+document.getElementById("saveButton").onclick =
+    saveCurrentFile;
+
+
+/* =========================================================
+   RUN BUTTON
+========================================================= */
+
+document.getElementById("runButton").onclick =
+    runCurrentFile;
+
+
+/* =========================================================
+   PREVIEW BUTTON
+========================================================= */
+
+document.getElementById("previewButton").onclick =
+    function(){
+
+        showPanel("preview");
+
+    };
+
+
+/* =========================================================
+   OPEN BUTTON
+========================================================= */
+
+document.getElementById("openButton").onclick =
+    function(){
+
+        document
+        .getElementById("fileInput")
+        .click();
+
+    };
+
+
+/* =========================================================
+   FILE OPEN
+========================================================= */
+
+document
+.getElementById("fileInput")
+.addEventListener("change",function(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file){
+        return;
+    }
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(){
+
+        const extension =
+            file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+        let language =
+            Object.keys(languages).find(
+                function(key){
+
+                    return languages[key]
+                        .extension
+                        .toLowerCase() ===
+                        extension;
+
+                }
+            );
+
+        if(!language){
+            language = "python";
+        }
+
+        createFile(
+            file.name,
+            language,
+            String(reader.result)
+        );
+
+        openFile(file.name);
+
+    };
+
+    reader.readAsText(file);
+
+    event.target.value = "";
+
+});
+
+
+/* =========================================================
+   SETTINGS OPEN
+========================================================= */
+
+document.getElementById("settingsButton").onclick =
+    function(){
+
+        document.getElementById("backendUrl").value =
+            backendURL();
+
+        document.getElementById("themeSelect").value =
+            localStorage.getItem(
+                "developerStudioTheme"
+            ) || "dark";
+
+        document.getElementById("fontSize").value =
+            localStorage.getItem(
+                "developerStudioFontSize"
+            ) || "14";
+
+        document.getElementById("settingsModal")
+            .style.display = "flex";
+
+    };
+
+
+/* =========================================================
+   SETTINGS CLOSE
+========================================================= */
+
+document.getElementById("closeSettings").onclick =
+    function(){
+
+        document.getElementById("settingsModal")
+            .style.display = "none";
+
+    };
+
+
+/* =========================================================
+   SETTINGS SAVE
+========================================================= */
+
+document.getElementById("saveSettings").onclick =
+    function(){
+
+        localStorage.setItem(
+            "developerStudioBackend",
+            document.getElementById(
+                "backendUrl"
+            ).value.trim()
+        );
+
+        localStorage.setItem(
+            "developerStudioTheme",
+            document.getElementById(
+                "themeSelect"
+            ).value
+        );
+
+        localStorage.setItem(
+            "developerStudioFontSize",
+            document.getElementById(
+                "fontSize"
+            ).value
+        );
+
+        applySettings();
+
+        document.getElementById("settingsModal")
+            .style.display = "none";
+
+        testBackend();
+
+    };
+
+
+/* =========================================================
+   TEST BACKEND BUTTON
+========================================================= */
+
+document.getElementById("testBackend").onclick =
+    testBackend;
+
+
+/* =========================================================
+   SETTINGS APPLICATION
+========================================================= */
+
+function applySettings(){
+
+    const size =
+        localStorage.getItem(
+            "developerStudioFontSize"
+        ) || "14";
+
+    document.getElementById("editor")
+        .style.fontSize =
+        size + "px";
+
+    const theme =
+        localStorage.getItem(
+            "developerStudioTheme"
+        ) || "dark";
+
+    const root =
+        document.documentElement;
+
+    if(theme === "light"){
+
+        root.style.setProperty(
+            "--bg",
+            "#f4f6f8"
+        );
+
+        root.style.setProperty(
+            "--panel",
+            "#ffffff"
+        );
+
+        root.style.setProperty(
+            "--panel2",
+            "#eef1f5"
+        );
+
+        root.style.setProperty(
+            "--editor",
+            "#f8fafc"
+        );
+
+        root.style.setProperty(
+            "--border",
+            "#cbd5e1"
+        );
+
+        root.style.setProperty(
+            "--text",
+            "#111827"
+        );
+
+    }else{
+
+        root.style.setProperty(
+            "--bg",
+            "#0b1020"
+        );
+
+        root.style.setProperty(
+            "--panel",
+            "#111827"
+        );
+
+        root.style.setProperty(
+            "--panel2",
+            "#0f172a"
+        );
+
+        root.style.setProperty(
+            "--editor",
+            "#080d17"
+        );
+
+        root.style.setProperty(
+            "--border",
+            "#263247"
+        );
+
+        root.style.setProperty(
+            "--text",
+            "#e5e7eb"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   NEW FILE
+========================================================= */
+
+document.getElementById("newButton").onclick =
+    function(){
+
+        document.getElementById("newModal")
+            .style.display = "flex";
+
+    };
+
+
+document.getElementById("cancelNew").onclick =
+    function(){
+
+        document.getElementById("newModal")
+            .style.display = "none";
+
+    };
+
+
+/* Populate language selector */
+
+Object.entries(languages).forEach(function(entry){
+
+    const key = entry[0];
+    const value = entry[1];
+
+    const option =
+        document.createElement("option");
+
+    option.value = key;
+    option.textContent = value.label;
+
+    document.getElementById("newLanguage")
+        .appendChild(option);
+
+});
+
+
+/* =========================================================
+   CREATE NEW FILE
+========================================================= */
+
+document.getElementById("createNew").onclick =
+    function(){
+
+        const filename =
+            document.getElementById(
+                "newFilename"
+            ).value.trim();
+
+        const language =
+            document.getElementById(
+                "newLanguage"
+            ).value;
+
+        if(!filename){
+
+            alert("Please enter a filename.");
+            return;
+
+        }
+
+        createFile(
+            filename,
+            language,
+            starterCode[language] || ""
+        );
+
+        document.getElementById("newModal")
+            .style.display = "none";
+
+        openFile(filename);
+
+    };
+
+
+/* =========================================================
+   CLOSE MODALS WHEN CLICKING OUTSIDE
+========================================================= */
+
+document
+.querySelectorAll(".modalBackground")
+.forEach(function(modal){
+
+    modal.addEventListener("click",function(event){
+
+        if(event.target === modal){
+
+            modal.style.display = "none";
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+========================================================= */
+
+document.addEventListener("keydown",function(event){
+
+    if(
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "o"
+    ){
+
+        event.preventDefault();
+
+        document
+        .getElementById("fileInput")
+        .click();
+
+    }
+
+    if(
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "n"
+    ){
+
+        event.preventDefault();
+
+        document.getElementById("newModal")
+            .style.display = "flex";
+
+    }
+
+});
+
+
+/* =========================================================
+   START
+========================================================= */
+
+renderLanguages();
+renderFiles();
+renderTabs();
+applySettings();
+openFile(activeFile);
+testBackend();
+
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>DavidCraft PC</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:
+        linear-gradient(
+            135deg,
+            #06152e,
+            #073f78,
+            #0a8bd8
+        );
+    color:white;
+}
+
+#pc{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+/* TOP BAR */
+
+#topbar{
+
+    height:54px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:7px 12px;
+
+    background:
+        linear-gradient(
+            #176fc0,
+            #073b78
+        );
+
+    border-bottom:1px solid #62c7ff;
+
+}
+
+.logo{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    white-space:nowrap;
+
+}
+
+.url{
+
+    flex:1;
+
+    height:36px;
+
+    border-radius:6px;
+
+    border:1px solid #174b7d;
+
+    padding:0 12px;
+
+    font-size:14px;
+
+}
+
+.topbutton{
+
+    height:36px;
+
+    padding:0 12px;
+
+    border:1px solid #063d75;
+
+    border-radius:6px;
+
+    background:#2386d0;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.topbutton:hover{
+
+    background:#35a2ef;
+
+}
+
+/* MAIN */
+
+#main{
+
+    flex:1;
+
+    display:flex;
+
+    min-height:0;
+
+}
+
+/* SIDEBAR */
+
+#sidebar{
+
+    width:220px;
+
+    background:
+        linear-gradient(
+            #0b4f8e,
+            #062b53
+        );
+
+    padding:14px;
+
+    overflow:auto;
+
+}
+
+.sideTitle{
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    margin-bottom:12px;
+
+}
+
+.appButton{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-bottom:7px;
+
+    border:1px solid #1261a2;
+
+    border-radius:7px;
+
+    background:#0c68ad;
+
+    color:white;
+
+    text-align:left;
+
+}
+
+.appButton:hover{
+
+    background:#1788d7;
+
+}
+
+/* CONTENT */
+
+#content{
+
+    flex:1;
+
+    min-width:0;
+
+    background:#eef5fb;
+
+}
+
+iframe{
+
+    width:100%;
+
+    height:100%;
+
+    border:0;
+
+    background:white;
+
+}
+
+/* WELCOME */
+
+#welcome{
+
+    height:100%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    color:#123;
+
+    text-align:center;
+
+    padding:30px;
+
+}
+
+#welcome h1{
+
+    font-size:44px;
+
+    margin:5px;
+
+    color:#0a63aa;
+
+}
+
+#welcome p{
+
+    max-width:600px;
+
+    font-size:17px;
+
+    line-height:1.5;
+
+}
+
+.launchGrid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(170px,1fr)
+        );
+
+    gap:12px;
+
+    width:min(800px,100%);
+
+    margin-top:20px;
+
+}
+
+.launch{
+
+    padding:20px;
+
+    border:1px solid #aac1d4;
+
+    border-radius:10px;
+
+    background:white;
+
+    color:#123;
+
+    cursor:pointer;
+
+    box-shadow:0 3px 12px #0002;
+
+}
+
+.launch:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 5px 18px #0003;
+
+}
+
+.launchIcon{
+
+    font-size:35px;
+
+}
+
+/* FOOTER */
+
+#status{
+
+    height:30px;
+
+    display:flex;
+
+    align-items:center;
+
+    padding:0 12px;
+
+    background:#073b78;
+
+    color:white;
+
+    font-size:12px;
+
+}
+
+/* MOBILE */
+
+@media(max-width:700px){
+
+    #sidebar{
+
+        width:160px;
+
+    }
+
+    .url{
+
+        display:none;
+
+    }
+
+    .logo{
+
+        font-size:17px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="pc">
+
+<!-- TOP -->
+
+<div id="topbar">
+
+<div class="logo">
+🟦 DavidCraft PC
+</div>
+
+<input
+class="url"
+id="address"
+value="https://davidfei2026.github.io/davidcraft.github.io/">
+
+<button
+class="topbutton"
+onclick="goAddress()">
+Go
+</button>
+
+<button
+class="topbutton"
+onclick="external()">
+↗
+</button>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div id="main">
+
+
+<!-- SIDEBAR -->
+
+<div id="sidebar">
+
+<div class="sideTitle">
+DavidCraft Apps
+</div>
+
+<button
+class="appButton"
+onclick="home()">
+🏠 DavidCraft Home
+</button>
+
+<button
+class="appButton"
+onclick="ai()">
+🤖 DavidCraft AI
+</button>
+
+<button
+class="appButton"
+onclick="play()">
+🎮 Play DavidCraft
+</button>
+
+<button
+class="appButton"
+onclick="pcV1()">
+💻 DavidCraft PC
+</button>
+
+<button
+class="appButton"
+onclick="browser()">
+🌐 DavidCraft Browser
+</button>
+
+<button
+class="appButton"
+onclick="coding()">
+💻 Coding
+</button>
+
+<button
+class="appButton"
+onclick="math()">
+🔢 Math
+</button>
+
+<button
+class="appButton"
+onclick="science()">
+🔬 Science
+</button>
+
+<button
+class="appButton"
+onclick="chinese()">
+中 Chinese
+</button>
+
+<button
+class="appButton"
+onclick="files()">
+📁 Files
+</button>
+
+<button
+class="appButton"
+onclick="settings()">
+⚙️ Settings
+</button>
+
+</div>
+
+
+<!-- CONTENT -->
+
+<div id="content">
+
+<div id="welcome">
+
+<h1>
+🟦 DavidCraft PC
+</h1>
+
+<p>
+Welcome to the DavidCraft PC environment.
+Choose a DavidCraft application from the menu.
+</p>
+
+<div class="launchGrid">
+
+<div class="launch"
+onclick="home()">
+
+<div class="launchIcon">
+🏠
+</div>
+
+<b>DavidCraft Home</b>
+
+</div>
+
+
+<div class="launch"
+onclick="ai()">
+
+<div class="launchIcon">
+🤖
+</div>
+
+<b>DavidCraft AI</b>
+
+</div>
+
+
+<div class="launch"
+onclick="play()">
+
+<div class="launchIcon">
+🎮
+</div>
+
+<b>Play DavidCraft</b>
+
+</div>
+
+
+<div class="launch"
+onclick="coding()">
+
+<div class="launchIcon">
+💻
+</div>
+
+<b>Coding</b>
+
+</div>
+
+
+<div class="launch"
+onclick="math()">
+
+<div class="launchIcon">
+🔢
+</div>
+
+<b>Math</b>
+
+</div>
+
+
+<div class="launch"
+onclick="science()">
+
+<div class="launchIcon">
+🔬
+</div>
+
+<b>Science</b>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="status">
+
+<span id="statusText">
+DavidCraft PC ready
+</span>
+
+</div>
+
+</div>
+
+
+<script>
+
+/*
+=====================================================
+DAVIDCRAFT URLS
+=====================================================
+*/
+
+const BASE =
+"https://davidfei2026.github.io/davidcraft.github.io/";
+
+const URLS={
+
+home:
+BASE+"home.html",
+
+ai:
+BASE+"ai.html",
+
+play:
+BASE+"play.html",
+
+pc:
+BASE+"pc.html",
+
+browser:
+BASE+"browser.html",
+
+coding:
+BASE+"coding.html",
+
+math:
+BASE+"math.html",
+
+science:
+BASE+"science.html",
+
+chinese:
+BASE+"chinese.html",
+
+files:
+BASE+"files.html",
+
+settings:
+BASE+"settings.js"
+
+};
+
+
+/*
+=====================================================
+LOAD APP
+=====================================================
+*/
+
+function loadApp(url,name){
+
+    document.getElementById(
+        "content"
+    ).innerHTML=
+
+    `<iframe
+        src="${url}"
+        title="${name}">
+    </iframe>`;
+
+    document.getElementById(
+        "address"
+    ).value=url;
+
+    document.getElementById(
+        "statusText"
+    ).textContent=
+        "Running "+name;
+
+}
+
+
+/*
+=====================================================
+APPS
+=====================================================
+*/
+
+function home(){
+
+    loadApp(
+        URLS.home,
+        "DavidCraft Home"
+    );
+
+}
+
+
+function ai(){
+
+    loadApp(
+        URLS.ai,
+        "DavidCraft AI"
+    );
+
+}
+
+
+function play(){
+
+    loadApp(
+        URLS.play,
+        "Play DavidCraft"
+    );
+
+}
+
+
+function pcV1(){
+
+    loadApp(
+        URLS.pc,
+        "DavidCraft PC"
+    );
+
+}
+
+
+function browser(){
+
+    loadApp(
+        URLS.browser,
+        "DavidCraft Browser"
+    );
+
+}
+
+
+function coding(){
+
+    loadApp(
+        URLS.coding,
+        "Coding"
+    );
+
+}
+
+
+function math(){
+
+    loadApp(
+        URLS.math,
+        "Math"
+    );
+
+}
+
+
+function science(){
+
+    loadApp(
+        URLS.science,
+        "Science"
+    );
+
+}
+
+
+function chinese(){
+
+    loadApp(
+        URLS.chinese,
+        "Chinese"
+    );
+
+}
+
+
+function files(){
+
+    loadApp(
+        URLS.files,
+        "Files"
+    );
+
+}
+
+
+function settings(){
+
+    loadApp(
+        URLS.settings,
+        "Settings"
+    );
+
+}
+
+
+/*
+=====================================================
+ADDRESS BAR
+=====================================================
+*/
+
+function goAddress(){
+
+    let url=
+        document.getElementById(
+            "address"
+        ).value.trim();
+
+    if(!url) return;
+
+    if(!/^https?:\/\//i.test(url)){
+
+        url="https://"+url;
+
+    }
+
+    loadApp(
+        url,
+        "Custom DavidCraft App"
+    );
+
+}
+
+
+/*
+=====================================================
+EXTERNAL
+=====================================================
+*/
+
+function external(){
+
+    window.open(
+        document.getElementById(
+            "address"
+        ).value,
+        "_blank"
+    );
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3803 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#111111">
+<title>Developer Studio V3</title>
+
+<style>
+:root{
+    --bg:#090909;
+    --panel:#111111;
+    --panel2:#151515;
+    --editor:#090909;
+    --border:#2b2b2b;
+    --text:#eeeeee;
+    --muted:#888;
+    --hover:#222;
+    --active:#292929;
+    --input:#181818;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    margin:0;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body.light{
+    --bg:#f3f3f3;
+    --panel:#ffffff;
+    --panel2:#eeeeee;
+    --editor:#fafafa;
+    --border:#d2d2d2;
+    --text:#222;
+    --muted:#666;
+    --hover:#e7e7e7;
+    --active:#dddddd;
+    --input:#ffffff;
+}
+
+button,
+input,
+textarea{
+    font-family:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    width:100%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+/* TOP BAR */
+
+.topbar{
+    height:55px;
+    min-height:55px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 9px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    min-width:210px;
+}
+
+.brand img{
+    width:29px;
+    height:29px;
+    object-fit:contain;
+}
+
+.brand-title{
+    font-weight:bold;
+    font-size:15px;
+}
+
+.brand-version{
+    color:var(--muted);
+    font-size:10px;
+}
+
+.spacer{
+    flex:1;
+}
+
+.top-btn{
+    background:var(--input);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:7px;
+    padding:7px 10px;
+    font-size:11px;
+}
+
+.top-btn:hover{
+    background:var(--hover);
+}
+
+.run-btn{
+    background:#174d26;
+    border-color:#2f713c;
+    color:#c6ffd0;
+}
+
+body.light .run-btn{
+    color:#124d1d;
+    background:#d9f5df;
+}
+
+/* MAIN */
+
+.main{
+    flex:1;
+    min-height:0;
+    display:flex;
+}
+
+/* EXPLORER */
+
+.explorer{
+    width:225px;
+    min-width:225px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+}
+
+.explorer-title{
+    padding:13px;
+    font-size:10px;
+    font-weight:bold;
+    letter-spacing:1px;
+    color:var(--muted);
+}
+
+.explorer-actions{
+    display:flex;
+    gap:5px;
+    padding:0 8px 8px;
+}
+
+.small-btn{
+    flex:1;
+    background:var(--input);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:6px;
+    font-size:10px;
+}
+
+.file-list{
+    flex:1;
+    overflow:auto;
+    padding:4px 7px;
+}
+
+.file-item{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--muted);
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:8px;
+    border-radius:6px;
+    text-align:left;
+    margin-bottom:2px;
+}
+
+.file-item:hover{
+    background:var(--hover);
+    color:var(--text);
+}
+
+.file-item.active{
+    background:var(--active);
+    color:var(--text);
+    border-color:var(--border);
+}
+
+.file-icon{
+    width:21px;
+    height:21px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.file-name{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    font-family:Consolas,"Courier New",monospace;
+    font-size:12px;
+}
+
+/* CENTER */
+
+.center{
+    flex:1;
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+}
+
+/* TABS */
+
+.tabs{
+    height:40px;
+    min-height:40px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    display:flex;
+    overflow-x:auto;
+}
+
+.tab{
+    min-width:125px;
+    max-width:220px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:0 10px;
+    background:var(--panel);
+    border-right:1px solid var(--border);
+    color:var(--muted);
+    font-family:Consolas,"Courier New",monospace;
+    font-size:12px;
+}
+
+.tab.active{
+    background:var(--active);
+    color:var(--text);
+}
+
+.tab-icon{
+    font-size:14px;
+}
+
+.tab-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.tab-unsaved{
+    color:#aaa;
+}
+
+.tab-close{
+    margin-left:auto;
+    cursor:pointer;
+    padding:2px 4px;
+}
+
+.tab-close:hover{
+    color:white;
+}
+
+/* EDITOR */
+
+.editor-wrap{
+    flex:1;
+    min-height:0;
+    display:flex;
+    background:var(--editor);
+}
+
+.gutter{
+    width:55px;
+    min-width:55px;
+    overflow:hidden;
+    padding-top:14px;
+    padding-right:12px;
+    border-right:1px solid var(--border);
+    background:var(--panel);
+    color:#555;
+    text-align:right;
+    font:14px/1.55 Consolas,"Courier New",monospace;
+    user-select:none;
+}
+
+.editor{
+    flex:1;
+    min-width:0;
+    min-height:0;
+    border:0;
+    outline:0;
+    resize:none;
+    padding:14px 17px;
+    background:var(--editor);
+    color:var(--text);
+    font:14px/1.55 Consolas,"Courier New",monospace;
+    tab-size:4;
+    white-space:pre;
+    overflow:auto;
+    caret-color:var(--text);
+}
+
+.editor.wrap{
+    white-space:pre-wrap;
+    overflow-x:hidden;
+}
+
+/* BOTTOM */
+
+.bottom{
+    height:220px;
+    min-height:120px;
+    background:var(--bg);
+    border-top:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+}
+
+.bottom-header{
+    height:37px;
+    min-height:37px;
+    display:flex;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+}
+
+.panel-tab{
+    border:0;
+    background:transparent;
+    color:var(--muted);
+    padding:0 13px;
+    font-size:11px;
+}
+
+.panel-tab.active{
+    color:var(--text);
+    border-bottom:2px solid var(--text);
+}
+
+.panel-body{
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    padding:10px;
+    font:13px Consolas,"Courier New",monospace;
+}
+
+.terminal-line{
+    margin-bottom:4px;
+    white-space:pre-wrap;
+}
+
+.term-info{
+    color:#70b8ff;
+}
+
+.term-success{
+    color:#76dc88;
+}
+
+.term-error{
+    color:#ff7777;
+}
+
+.term-warning{
+    color:#dfc36c;
+}
+
+.term-normal{
+    color:var(--text);
+}
+
+.term-input-row{
+    display:flex;
+    align-items:center;
+}
+
+.term-prompt{
+    color:#75d77e;
+    margin-right:8px;
+}
+
+.term-input{
+    flex:1;
+    min-width:0;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--text);
+    font:13px Consolas,"Courier New",monospace;
+}
+
+/* PREVIEW */
+
+.preview{
+    width:430px;
+    min-width:300px;
+    background:white;
+    border-left:1px solid var(--border);
+    display:none;
+    flex-direction:column;
+}
+
+.preview.show{
+    display:flex;
+}
+
+.preview-header{
+    height:39px;
+    min-height:39px;
+    background:#151515;
+    color:#ddd;
+    display:flex;
+    align-items:center;
+    padding:0 9px;
+    font-size:11px;
+}
+
+.preview-actions{
+    margin-left:auto;
+    display:flex;
+    gap:5px;
+}
+
+.preview-btn{
+    border:1px solid #444;
+    background:#252525;
+    color:#ddd;
+    border-radius:5px;
+    padding:5px 8px;
+    font-size:10px;
+}
+
+#previewFrame{
+    width:100%;
+    flex:1;
+    border:0;
+}
+
+/* STATUS */
+
+.statusbar{
+    height:23px;
+    min-height:23px;
+    background:var(--panel);
+    border-top:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    padding:0 9px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+.status-right{
+    margin-left:auto;
+}
+
+/* MODAL */
+
+.modal-bg{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.68);
+}
+
+.modal-bg.show{
+    display:flex;
+}
+
+.modal{
+    width:min(650px,94vw);
+    max-height:90vh;
+    overflow:auto;
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:13px;
+    padding:20px;
+    box-shadow:0 30px 100px rgba(0,0,0,.7);
+}
+
+.modal h2{
+    margin:0 0 7px;
+    font-size:20px;
+}
+
+.modal p{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+}
+
+.language-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-top:17px;
+}
+
+.language-btn{
+    min-height:75px;
+    border:1px solid var(--border);
+    background:var(--input);
+    color:var(--text);
+    border-radius:9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+}
+
+.language-btn:hover{
+    background:var(--hover);
+}
+
+.language-btn img{
+    width:30px;
+    height:30px;
+    object-fit:contain;
+}
+
+.modal-footer{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:17px;
+}
+
+.modal-close{
+    background:var(--input);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:7px;
+    padding:8px 13px;
+}
+
+/* SETTINGS */
+
+.setting-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    padding:13px 0;
+    border-bottom:1px solid var(--border);
+}
+
+.setting-label{
+    font-size:13px;
+}
+
+.setting-description{
+    color:var(--muted);
+    font-size:11px;
+    margin-top:3px;
+}
+
+.setting-control{
+    background:var(--input);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:7px;
+}
+
+/* ABOUT */
+
+.about-logo{
+    width:65px;
+    height:65px;
+    object-fit:contain;
+    display:block;
+    margin:5px auto 15px;
+}
+
+.about-center{
+    text-align:center;
+}
+
+.about-version{
+    color:var(--muted);
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+    .explorer{
+        width:64px;
+        min-width:64px;
+    }
+
+    .explorer-title{
+        text-align:center;
+        font-size:0;
+    }
+
+    .explorer-title::after{
+        content:"☰";
+        font-size:18px;
+    }
+
+    .explorer-actions{
+        flex-direction:column;
+    }
+
+    .small-btn{
+        font-size:0;
+    }
+
+    .small-btn:first-child::after{
+        content:"+";
+        font-size:18px;
+    }
+
+    .small-btn:nth-child(2)::after{
+        content:"↻";
+        font-size:15px;
+    }
+
+    .file-item{
+        justify-content:center;
+    }
+
+    .file-name{
+        display:none;
+    }
+
+    .preview{
+        position:absolute;
+        left:64px;
+        right:0;
+        top:95px;
+        bottom:23px;
+        width:auto;
+        z-index:30;
+    }
+
+    .brand{
+        min-width:0;
+    }
+
+    .brand-title,
+    .brand-version{
+        display:none;
+    }
+}
+
+@media(max-width:650px){
+
+    .topbar{
+        gap:3px;
+        padding:0 4px;
+    }
+
+    .top-btn{
+        padding:6px 7px;
+        font-size:9px;
+    }
+
+    .language-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .gutter{
+        width:43px;
+        min-width:43px;
+    }
+
+    .editor{
+        padding-left:10px;
+        font-size:13px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- TOP BAR -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <img
+            id="brandLogo"
+            src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg"
+            alt="Python">
+
+        <span class="brand-title">
+            Developer Studio
+        </span>
+
+        <span class="brand-version">
+            V3
+        </span>
+
+    </div>
+
+    <div class="spacer"></div>
+
+    <button class="top-btn" id="newBtn">
+        + New
+    </button>
+
+    <button class="top-btn" id="openBtn">
+        Open
+    </button>
+
+    <button class="top-btn" id="saveBtn">
+        Save
+    </button>
+
+    <button class="top-btn" id="aboutBtn">
+        About
+    </button>
+
+    <button class="top-btn" id="settingsBtn">
+        ⚙ Settings
+    </button>
+
+    <button class="top-btn" id="previewBtn">
+        Preview
+    </button>
+
+    <button class="top-btn run-btn" id="runBtn">
+        ▶ Run
+    </button>
+
+    <input
+        type="file"
+        id="fileInput"
+        hidden
+        accept=".py,.js,.html,.htm,.css,.c,.h,.cpp,.cc,.cxx,.hpp,.sh,.bash,.r,.R,.php,.txt">
+
+</header>
+
+
+<div class="main">
+
+<!-- EXPLORER -->
+
+<aside class="explorer">
+
+    <div class="explorer-title">
+        Explorer
+    </div>
+
+    <div class="explorer-actions">
+
+        <button
+            class="small-btn"
+            id="newExplorerBtn">
+            New
+        </button>
+
+        <button
+            class="small-btn"
+            id="refreshBtn">
+            Refresh
+        </button>
+
+    </div>
+
+    <div
+        class="file-list"
+        id="fileList">
+    </div>
+
+</aside>
+
+
+<!-- CENTER -->
+
+<section class="center">
+
+    <div
+        class="tabs"
+        id="tabs">
+    </div>
+
+    <div class="editor-wrap">
+
+        <div
+            class="gutter"
+            id="gutter">
+        </div>
+
+        <textarea
+            id="editor"
+            class="editor"
+            spellcheck="false"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            wrap="off"></textarea>
+
+    </div>
+
+
+    <div class="bottom">
+
+        <div class="bottom-header">
+
+            <button
+                class="panel-tab active"
+                data-panel="terminal">
+                Terminal
+            </button>
+
+            <button
+                class="panel-tab"
+                data-panel="output">
+                Output
+            </button>
+
+            <button
+                class="panel-tab"
+                data-panel="problems">
+                Problems
+            </button>
+
+        </div>
+
+        <div class="panel-body">
+
+            <div id="terminalPanel">
+
+                <div class="terminal-line term-info">
+                    Developer Studio Terminal V3
+                </div>
+
+                <div class="terminal-line">
+                    Type "help" for available commands.
+                </div>
+
+                <div class="term-input-row">
+
+                    <span
+                        class="term-prompt"
+                        id="termPrompt">
+                        >>>
+                    </span>
+
+                    <input
+                        id="termInput"
+                        class="term-input"
+                        autocomplete="off"
+                        autocorrect="off"
+                        autocapitalize="off"
+                        spellcheck="false">
+
+                </div>
+
+            </div>
+
+            <div
+                id="outputPanel"
+                style="display:none">
+            </div>
+
+            <div
+                id="problemsPanel"
+                style="display:none">
+
+                <div class="terminal-line term-success">
+                    ✓ No problems detected.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- PREVIEW -->
+
+<section
+    class="preview"
+    id="preview">
+
+    <div class="preview-header">
+
+        <span>
+            Live Preview
+        </span>
+
+        <div class="preview-actions">
+
+            <button
+                class="preview-btn"
+                id="refreshPreview">
+                Refresh
+            </button>
+
+            <button
+                class="preview-btn"
+                id="closePreview">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+    <iframe
+        id="previewFrame"
+        sandbox="allow-scripts">
+    </iframe>
+
+</section>
+
+</div>
+
+
+<footer class="statusbar">
+
+    <span id="statusText">
+        Ready
+    </span>
+
+    <span
+        class="status-right"
+        id="statusRight">
+        Python 3
+    </span>
+
+</footer>
+
+</div>
+
+
+<!-- NEW FILE MODAL -->
+
+<div
+    class="modal-bg"
+    id="newModal">
+
+    <div class="modal">
+
+        <h2>
+            Create New File
+        </h2>
+
+        <p>
+            Choose a programming language.
+        </p>
+
+        <div class="language-grid">
+
+            <button class="language-btn" data-lang="python">
+                <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg">
+                <span>Python</span>
+            </button>
+
+            <button class="language-btn" data-lang="javascript">
+                <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/JavaScript_logo.svg">
+                <span>JavaScript</span>
+            </button>
+
+            <button class="language-btn" data-lang="html">
+                <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/HTML5_logo.svg">
+                <span>HTML5</span>
+            </button>
+
+            <button class="language-btn" data-lang="css">
+                <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/CSS3_logo.svg">
+                <span>CSS3</span>
+            </button>
+
+            <button class="language-btn" data-lang="c">
+                <span style="font-size:30px">C</span>
+                <span>C</span>
+            </button>
+
+            <button class="language-btn" data-lang="cpp">
+                <span style="font-size:25px">C++</span>
+                <span>C++</span>
+            </button>
+
+            <button class="language-btn" data-lang="bash">
+                <span style="font-size:28px">$_</span>
+                <span>Bash</span>
+            </button>
+
+            <button class="language-btn" data-lang="r">
+                <span style="font-size:28px">R</span>
+                <span>R</span>
+            </button>
+
+            <button class="language-btn" data-lang="php">
+                <span style="font-size:25px">PHP</span>
+                <span>PHP</span>
+            </button>
+
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                class="modal-close"
+                id="closeNewModal">
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SETTINGS MODAL -->
+
+<div
+    class="modal-bg"
+    id="settingsModal">
+
+    <div class="modal">
+
+        <h2>
+            Settings
+        </h2>
+
+        <p>
+            Customize Developer Studio.
+        </p>
+
+
+        <div class="setting-row">
+
+            <div>
+                <div class="setting-label">
+                    Theme
+                </div>
+
+                <div class="setting-description">
+                    Change the appearance of the editor.
+                </div>
+            </div>
+
+            <select
+                id="themeSetting"
+                class="setting-control">
+
+                <option value="dark">
+                    Dark
+                </option>
+
+                <option value="light">
+                    Light
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div>
+                <div class="setting-label">
+                    Editor Font Size
+                </div>
+
+                <div class="setting-description">
+                    Change the code editor text size.
+                </div>
+            </div>
+
+            <select
+                id="fontSetting"
+                class="setting-control">
+
+                <option value="12">12 px</option>
+                <option value="13">13 px</option>
+                <option value="14">14 px</option>
+                <option value="15">15 px</option>
+                <option value="16">16 px</option>
+                <option value="18">18 px</option>
+                <option value="20">20 px</option>
+
+            </select>
+
+        </div>
+
+
+        <div class="setting-row">
+
+            <div>
+                <div class="setting-label">
+                    Word Wrap
+                </div>
+
+                <div class="setting-description">
+                    Wrap long lines inside the editor.
+                </div>
+            </div>
+
+            <select
+                id="wrapSetting"
+                class="setting-control">
+
+                <option value="off">
+                    Off
+                </option>
+
+                <option value="on">
+                    On
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="modal-footer">
+
+            <button
+                class="modal-close"
+                id="closeSettingsModal">
+                Done
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ABOUT MODAL -->
+
+<div
+    class="modal-bg"
+    id="aboutModal">
+
+    <div class="modal about-center">
+
+        <img
+            class="about-logo"
+            src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg"
+            alt="Developer Studio">
+
+        <h2>
+            Developer Studio
+        </h2>
+
+        <p class="about-version">
+            Version 3
+        </p>
+
+        <p>
+            Developer Studio is a browser-based coding environment
+            designed for learning, experimenting, editing files,
+            and building web projects.
+        </p>
+
+        <p>
+            Supported languages:
+            Python, JavaScript, HTML5, CSS3,
+            C, C++, Bash, R, and PHP.
+        </p>
+
+        <p>
+            Built as a single HTML application.
+        </p>
+
+        <div class="modal-footer">
+
+            <button
+                class="modal-close"
+                id="closeAboutModal">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   LANGUAGE DATABASE
+===================================================== */
+
+const LANGUAGES = {
+
+    python:{
+        name:"Python 3",
+        extension:"py",
+        file:"main.py",
+        icon:"🐍",
+        prompt:">>>",
+        image:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg"
+    },
+
+    javascript:{
+        name:"JavaScript",
+        extension:"js",
+        file:"script.js",
+        icon:"🟨",
+        prompt:">",
+        image:"https://commons.wikimedia.org/wiki/Special:Redirect/file/JavaScript_logo.svg"
+    },
+
+    html:{
+        name:"HTML5",
+        extension:"html",
+        file:"index.html",
+        icon:"🌐",
+        prompt:"html>",
+        image:"https://commons.wikimedia.org/wiki/Special:Redirect/file/HTML5_logo.svg"
+    },
+
+    css:{
+        name:"CSS3",
+        extension:"css",
+        file:"style.css",
+        icon:"🎨",
+        prompt:"css>",
+        image:"https://commons.wikimedia.org/wiki/Special:Redirect/file/CSS3_logo.svg"
+    },
+
+    c:{
+        name:"C",
+        extension:"c",
+        file:"main.c",
+        icon:"C",
+        prompt:"c>",
+        image:null
+    },
+
+    cpp:{
+        name:"C++",
+        extension:"cpp",
+        file:"main.cpp",
+        icon:"C++",
+        prompt:"cpp>",
+        image:null
+    },
+
+    bash:{
+        name:"Bash",
+        extension:"sh",
+        file:"script.sh",
+        icon:"$_",
+        prompt:"$",
+        image:null
+    },
+
+    r:{
+        name:"R",
+        extension:"r",
+        file:"main.R",
+        icon:"R",
+        prompt:">",
+        image:null
+    },
+
+    php:{
+        name:"PHP",
+        extension:"php",
+        file:"index.php",
+        icon:"PHP",
+        prompt:"php>",
+        image:null
+    }
+
+};
+
+
+/* =====================================================
+   STARTERS
+===================================================== */
+
+const STARTERS = {
+
+python:
+`# Python 3
+
+name = "David"
+
+print("Hello, " + name)
+
+x = 10
+y = 5
+
+print(x + y)
+`,
+
+javascript:
+`// JavaScript
+
+let name = "David";
+
+console.log("Hello, " + name);
+
+let x = 10;
+let y = 5;
+
+console.log(x + y);
+`,
+
+html:
+`<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>My Website</title>
+</head>
+
+<body>
+
+    <h1>Hello World!</h1>
+
+    <p>Welcome to Developer Studio.</p>
+
+    <button onclick="hello()">
+        Click Me
+    </button>
+
+    <script>
+        function hello(){
+            alert("Hello from Developer Studio!");
+        }
+    <\/script>
+
+</body>
+</html>
+`,
+
+css:
+`body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: white;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 42px;
+}
+
+p {
+    font-size: 20px;
+}
+`,
+
+c:
+`#include <stdio.h>
+
+int main() {
+
+    printf("Hello, Developer Studio!\\n");
+
+    int x = 10;
+    int y = 5;
+
+    printf("%d\\n", x + y);
+
+    return 0;
+}
+`,
+
+cpp:
+`#include <iostream>
+
+using namespace std;
+
+int main() {
+
+    cout << "Hello, Developer Studio!" << endl;
+
+    int x = 10;
+    int y = 5;
+
+    cout << x + y << endl;
+
+    return 0;
+}
+`,
+
+bash:
+`#!/bin/bash
+
+echo "Hello, Developer Studio!"
+
+name="David"
+
+echo "Hello $name"
+`,
+
+r:
+`# R
+
+name <- "David"
+
+print("Hello, Developer Studio!")
+
+x <- 10
+y <- 5
+
+print(x + y)
+`,
+
+php:
+`<?php
+
+$name = "David";
+
+echo "Hello, Developer Studio!\\n";
+
+$x = 10;
+$y = 5;
+
+echo $x + $y;
+
+?>
+`
+
+};
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let files = [];
+
+let activeFileId = null;
+
+let language = "python";
+
+let terminalHistory = [];
+
+let terminalHistoryIndex = -1;
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const editor =
+    document.getElementById("editor");
+
+const gutter =
+    document.getElementById("gutter");
+
+const fileList =
+    document.getElementById("fileList");
+
+const tabs =
+    document.getElementById("tabs");
+
+const preview =
+    document.getElementById("preview");
+
+const previewFrame =
+    document.getElementById("previewFrame");
+
+const outputPanel =
+    document.getElementById("outputPanel");
+
+const terminalPanel =
+    document.getElementById("terminalPanel");
+
+const problemsPanel =
+    document.getElementById("problemsPanel");
+
+const termInput =
+    document.getElementById("termInput");
+
+const termPrompt =
+    document.getElementById("termPrompt");
+
+const statusText =
+    document.getElementById("statusText");
+
+const statusRight =
+    document.getElementById("statusRight");
+
+const newModal =
+    document.getElementById("newModal");
+
+const settingsModal =
+    document.getElementById("settingsModal");
+
+const aboutModal =
+    document.getElementById("aboutModal");
+
+const fileInput =
+    document.getElementById("fileInput");
+
+
+/* =====================================================
+   CREATE FILE
+===================================================== */
+
+function createFile(
+    lang,
+    customName=null,
+    customContent=null
+){
+
+    const info =
+        LANGUAGES[lang];
+
+    const file = {
+
+        id:
+            Date.now() +
+            Math.random(),
+
+        name:
+            customName ||
+            info.file,
+
+        language:lang,
+
+        content:
+            customContent !== null
+            ? customContent
+            : STARTERS[lang],
+
+        saved:true
+    };
+
+    files.push(file);
+
+    renderFiles();
+
+    openFile(file.id);
+}
+
+
+/* =====================================================
+   OPEN FILE
+===================================================== */
+
+function openFile(id){
+
+    const file =
+        files.find(
+            f=>f.id === id
+        );
+
+    if(!file)
+        return;
+
+    activeFileId =
+        id;
+
+    language =
+        file.language;
+
+    editor.value =
+        file.content;
+
+    updatePrompt();
+
+    renderFiles();
+
+    renderTabs();
+
+    updateLines();
+
+    updateBrand();
+
+    statusText.textContent =
+        "Opened " + file.name;
+
+    editor.focus();
+}
+
+
+/* =====================================================
+   UPDATE CURRENT FILE
+===================================================== */
+
+function updateCurrentFile(){
+
+    const file =
+        files.find(
+            f=>f.id === activeFileId
+        );
+
+    if(!file)
+        return;
+
+    file.content =
+        editor.value;
+
+    file.saved =
+        false;
+
+    renderFiles();
+    renderTabs();
+}
+
+
+/* =====================================================
+   FILE ICON
+===================================================== */
+
+function createFileIcon(file){
+
+    if(
+        LANGUAGES[
+            file.language
+        ].image
+    ){
+
+        const img =
+            document.createElement("img");
+
+        img.className =
+            "file-icon";
+
+        img.src =
+            LANGUAGES[
+                file.language
+            ].image;
+
+        img.alt =
+            LANGUAGES[
+                file.language
+            ].name;
+
+        return img;
+
+    }
+
+    const span =
+        document.createElement("span");
+
+    span.className =
+        "file-icon";
+
+    span.style.display =
+        "flex";
+
+    span.style.alignItems =
+        "center";
+
+    span.style.justifyContent =
+        "center";
+
+    span.style.fontWeight =
+        "bold";
+
+    span.style.fontSize =
+        file.language === "cpp"
+        ? "11px"
+        : "14px";
+
+    span.textContent =
+        LANGUAGES[
+            file.language
+        ].icon;
+
+    return span;
+}
+
+
+/* =====================================================
+   RENDER FILES
+===================================================== */
+
+function renderFiles(){
+
+    fileList.innerHTML = "";
+
+    files.forEach(file=>{
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "file-item" +
+            (
+                file.id === activeFileId
+                ? " active"
+                : ""
+            );
+
+        button.appendChild(
+            createFileIcon(file)
+        );
+
+        const name =
+            document.createElement("span");
+
+        name.className =
+            "file-name";
+
+        name.textContent =
+            file.name +
+            (
+                file.saved
+                ? ""
+                : " •"
+            );
+
+        button.appendChild(name);
+
+        button.addEventListener(
+            "click",
+            ()=>{
+                openFile(file.id);
+            }
+        );
+
+        fileList.appendChild(button);
+
+    });
+}
+
+
+/* =====================================================
+   RENDER TABS
+===================================================== */
+
+function renderTabs(){
+
+    tabs.innerHTML = "";
+
+    files.forEach(file=>{
+
+        const tab =
+            document.createElement("div");
+
+        tab.className =
+            "tab" +
+            (
+                file.id === activeFileId
+                ? " active"
+                : ""
+            );
+
+        const icon =
+            document.createElement("span");
+
+        icon.className =
+            "tab-icon";
+
+        icon.textContent =
+            LANGUAGES[
+                file.language
+            ].icon;
+
+        const name =
+            document.createElement("span");
+
+        name.className =
+            "tab-name";
+
+        name.textContent =
+            file.name;
+
+        const unsaved =
+            document.createElement("span");
+
+        unsaved.className =
+            "tab-unsaved";
+
+        unsaved.textContent =
+            file.saved
+            ? ""
+            : "●";
+
+        const close =
+            document.createElement("span");
+
+        close.className =
+            "tab-close";
+
+        close.textContent =
+            "×";
+
+        tab.appendChild(icon);
+        tab.appendChild(name);
+        tab.appendChild(unsaved);
+        tab.appendChild(close);
+
+        tab.addEventListener(
+            "click",
+            event=>{
+
+                if(
+                    event.target === close
+                ){
+
+                    closeFile(file.id);
+
+                }else{
+
+                    openFile(file.id);
+
+                }
+
+            }
+        );
+
+        tabs.appendChild(tab);
+
+    });
+}
+
+
+/* =====================================================
+   CLOSE FILE
+===================================================== */
+
+function closeFile(id){
+
+    const index =
+        files.findIndex(
+            f=>f.id === id
+        );
+
+    if(index === -1)
+        return;
+
+    const file =
+        files[index];
+
+    if(
+        !file.saved &&
+        !confirm(
+            file.name +
+            " has unsaved changes. Close it?"
+        )
+    )
+        return;
+
+    files.splice(index,1);
+
+    if(files.length === 0){
+
+        createFile("python");
+
+        return;
+    }
+
+    if(activeFileId === id){
+
+        const next =
+            files[
+                Math.max(
+                    0,
+                    index - 1
+                )
+            ];
+
+        openFile(next.id);
+
+    }else{
+
+        renderFiles();
+        renderTabs();
+
+    }
+}
+
+
+/* =====================================================
+   LINE NUMBERS
+===================================================== */
+
+function updateLines(){
+
+    const count =
+        editor.value.split("\n").length;
+
+    let html = "";
+
+    for(
+        let i=1;
+        i<=count;
+        i++
+    ){
+
+        html +=
+            i +
+            "<br>";
+
+    }
+
+    gutter.innerHTML =
+        html;
+
+    gutter.scrollTop =
+        editor.scrollTop;
+}
+
+
+editor.addEventListener(
+    "input",
+    ()=>{
+        updateCurrentFile();
+        updateLines();
+    }
+);
+
+
+editor.addEventListener(
+    "scroll",
+    ()=>{
+        gutter.scrollTop =
+            editor.scrollTop;
+    }
+);
+
+
+/* =====================================================
+   TAB / INDENT
+===================================================== */
+
+editor.addEventListener(
+    "keydown",
+    event=>{
+
+        if(event.key === "Tab"){
+
+            event.preventDefault();
+
+            const start =
+                editor.selectionStart;
+
+            const end =
+                editor.selectionEnd;
+
+            editor.value =
+                editor.value.slice(0,start) +
+                "    " +
+                editor.value.slice(end);
+
+            editor.selectionStart =
+                editor.selectionEnd =
+                    start + 4;
+
+            updateCurrentFile();
+            updateLines();
+
+            return;
+        }
+
+
+        if(
+            event.key === "Enter"
+        ){
+
+            const start =
+                editor.selectionStart;
+
+            const before =
+                editor.value.slice(
+                    0,
+                    start
+                );
+
+            const currentLine =
+                before.split("\n").pop();
+
+            const indent =
+                currentLine.match(
+                    /^\s*/
+                )[0];
+
+            let extra = "";
+
+            if(
+                /[{:]$/.test(
+                    currentLine.trim()
+                )
+            ){
+
+                extra =
+                    "    ";
+
+            }
+
+            event.preventDefault();
+
+            const insertion =
+                "\n" +
+                indent +
+                extra;
+
+            editor.value =
+                editor.value.slice(0,start) +
+                insertion +
+                editor.value.slice(
+                    editor.selectionEnd
+                );
+
+            const newPos =
+                start +
+                insertion.length;
+
+            editor.selectionStart =
+                editor.selectionEnd =
+                    newPos;
+
+            updateCurrentFile();
+            updateLines();
+
+            return;
+        }
+
+
+        if(
+            (event.metaKey || event.ctrlKey) &&
+            event.key === "Enter"
+        ){
+
+            event.preventDefault();
+
+            runCode();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   PROMPT
+===================================================== */
+
+function updatePrompt(){
+
+    termPrompt.textContent =
+        LANGUAGES[
+            language
+        ].prompt;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+function updateBrand(){
+
+    const info =
+        LANGUAGES[
+            language
+        ];
+
+    statusRight.textContent =
+        info.name;
+
+    const logo =
+        document.getElementById(
+            "brandLogo"
+        );
+
+    if(info.image){
+
+        logo.src =
+            info.image;
+
+        logo.style.display =
+            "block";
+
+    }else{
+
+        logo.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   OUTPUT
+===================================================== */
+
+function clearOutput(){
+
+    outputPanel.innerHTML = "";
+
+}
+
+
+function addOutput(
+    text,
+    type="normal"
+){
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        "terminal-line term-" +
+        type;
+
+    div.textContent =
+        text;
+
+    outputPanel.appendChild(div);
+}
+
+
+/* =====================================================
+   PYTHON
+===================================================== */
+
+function pythonMath(expression){
+
+    if(
+        !/^[0-9+\-*/%().\s]+$/.test(
+            expression
+        )
+    )
+        return undefined;
+
+    try{
+
+        const result =
+            Function(
+                '"use strict";return (' +
+                expression +
+                ')'
+            )();
+
+        if(
+            typeof result !== "number" ||
+            !Number.isFinite(result)
+        )
+            return undefined;
+
+        return result;
+
+    }catch{
+
+        return undefined;
+    }
+}
+
+
+function runPython(code){
+
+    clearOutput();
+
+    const variables = {};
+
+    for(
+        const raw of code.split("\n")
+    ){
+
+        const line =
+            raw.trim();
+
+        if(
+            !line ||
+            line.startsWith("#")
+        )
+            continue;
+
+        const assignment =
+            line.match(
+                /^([A-Za-z_]\w*)\s*=\s*(.+)$/
+            );
+
+        if(assignment){
+
+            const name =
+                assignment[1];
+
+            const value =
+                assignment[2].trim();
+
+            if(
+                /^["'].*["']$/.test(value)
+            ){
+
+                variables[name] =
+                    value.slice(1,-1);
+
+            }else if(
+                /^-?\d+(\.\d+)?$/.test(value)
+            ){
+
+                variables[name] =
+                    Number(value);
+
+            }else{
+
+                const math =
+                    pythonMath(value);
+
+                if(math !== undefined)
+                    variables[name] = math;
+            }
+
+            continue;
+        }
+
+
+        const printMatch =
+            line.match(
+                /^print\s*\((.*)\)$/
+            );
+
+        if(printMatch){
+
+            let expression =
+                printMatch[1].trim();
+
+            if(
+                expression in variables
+            ){
+
+                addOutput(
+                    String(
+                        variables[
+                            expression
+                        ]
+                    ),
+                    "normal"
+                );
+
+            }else if(
+                /^["'].*["']$/.test(
+                    expression
+                )){
+
+                addOutput(
+                    expression.slice(1,-1)
+                );
+
+            }else{
+
+                const result =
+                    pythonMath(
+                        expression
+                    );
+
+                if(result !== undefined){
+
+                    addOutput(
+                        String(result)
+                    );
+
+                }else{
+
+                    addOutput(
+                        "Python demo: expression not supported.",
+                        "warning"
+                    );
+
+                }
+
+            }
+
+            continue;
+        }
+
+
+        const result =
+            pythonMath(line);
+
+        if(result !== undefined){
+
+            addOutput(
+                String(result)
+            );
+
+        }else{
+
+            addOutput(
+                "Python demo executed: " +
+                line,
+                "info"
+            );
+        }
+    }
+
+    if(!outputPanel.children.length){
+
+        addOutput(
+            "Program finished with no output.",
+            "info"
+        );
+
+    }
+}
+
+
+/* =====================================================
+   JAVASCRIPT
+===================================================== */
+
+function runJavaScript(code){
+
+    clearOutput();
+
+    for(
+        const raw of code.split("\n")
+    ){
+
+        const line =
+            raw.trim();
+
+        if(
+            !line ||
+            line.startsWith("//")
+        )
+            continue;
+
+        const log =
+            line.match(
+                /^console\.log\s*\((.*)\);?$/
+            );
+
+        if(log){
+
+            let value =
+                log[1].trim();
+
+            if(
+                /^["'].*["']$/.test(value)
+            ){
+
+                addOutput(
+                    value.slice(1,-1)
+                );
+
+            }else{
+
+                const result =
+                    pythonMath(value);
+
+                if(result !== undefined){
+
+                    addOutput(
+                        String(result)
+                    );
+
+                }else{
+
+                    addOutput(
+                        "JavaScript demo output: " +
+                        value,
+                        "info"
+                    );
+
+                }
+
+            }
+
+            continue;
+        }
+
+        addOutput(
+            "JavaScript demo executed: " +
+            line,
+            "info"
+        );
+    }
+
+}
+
+
+/* =====================================================
+   C / C++ / BASH / R / PHP
+===================================================== */
+
+function runCompiledLanguage(
+    lang,
+    code
+){
+
+    clearOutput();
+
+    const info =
+        LANGUAGES[lang];
+
+    addOutput(
+        info.name +
+        " browser environment",
+        "info"
+    );
+
+    addOutput(
+        "This single-file Developer Studio does not include a native " +
+        info.name +
+        " compiler/interpreter.",
+        "warning"
+    );
+
+    const lines =
+        code.split("\n");
+
+    let foundOutput =
+        false;
+
+    for(
+        const raw of lines
+    ){
+
+        const line =
+            raw.trim();
+
+        if(!line)
+            continue;
+
+
+        /* C / C++ */
+
+        if(
+            lang === "c" ||
+            lang === "cpp"
+        ){
+
+            const match =
+                line.match(
+                    /(?:printf|cout)\s*(?:<<\s*)?\(?["']([^"']*)["']/
+                );
+
+            if(match){
+
+                addOutput(
+                    match[1]
+                    .replace(
+                        /\\n/g,
+                        "\n"
+                    )
+                );
+
+                foundOutput =
+                    true;
+            }
+
+        }
+
+
+        /* BASH */
+
+        if(
+            lang === "bash"
+        ){
+
+            const match =
+                line.match(
+                    /^echo\s+["']?(.*?)["']?$/
+                );
+
+            if(match){
+
+                addOutput(
+                    match[1]
+                );
+
+                foundOutput =
+                    true;
+            }
+
+        }
+
+
+        /* R */
+
+        if(
+            lang === "r"
+        ){
+
+            const match =
+                line.match(
+                    /^print\s*\(\s*["'](.*?)["']\s*\)$/
+                );
+
+            if(match){
+
+                addOutput(
+                    match[1]
+                );
+
+                foundOutput =
+                    true;
+            }
+
+        }
+
+
+        /* PHP */
+
+        if(
+            lang === "php"
+        ){
+
+            const match =
+                line.match(
+                    /^echo\s+["'](.*?)["']/
+                );
+
+            if(match){
+
+                addOutput(
+                    match[1]
+                    .replace(
+                        /\\n/g,
+                        "\n"
+                    )
+                );
+
+                foundOutput =
+                    true;
+            }
+
+        }
+
+    }
+
+    if(!foundOutput){
+
+        addOutput(
+            "No simulated output detected.",
+            "warning"
+        );
+
+    }
+
+    addOutput(
+        "Tip: a future Developer Studio version can connect this editor to a real compiler server.",
+        "info"
+    );
+}
+
+
+/* =====================================================
+   HTML
+===================================================== */
+
+function runHTML(code){
+
+    clearOutput();
+
+    preview.classList.add("show");
+
+    const css =
+        files.find(
+            f=>f.language === "css"
+        );
+
+    const cssText =
+        css
+        ? css.content
+        : "";
+
+    previewFrame.srcdoc =
+`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+${cssText}
+</style>
+</head>
+<body>
+${code}
+</body>
+</html>`;
+
+    addOutput(
+        "HTML preview started.",
+        "success"
+    );
+}
+
+
+/* =====================================================
+   CSS
+===================================================== */
+
+function runCSS(code){
+
+    clearOutput();
+
+    preview.classList.add("show");
+
+    previewFrame.srcdoc =
+`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+${code}
+</style>
+</head>
+<body>
+<h1>Developer Studio</h1>
+<p>CSS live preview</p>
+<div class="box">
+    Your CSS is running.
+</div>
+</body>
+</html>`;
+
+    addOutput(
+        "CSS preview started.",
+        "success"
+    );
+}
+
+
+/* =====================================================
+   RUN
+===================================================== */
+
+function runCode(){
+
+    const file =
+        files.find(
+            f=>f.id === activeFileId
+        );
+
+    if(!file)
+        return;
+
+    file.content =
+        editor.value;
+
+    showPanel("output");
+
+    statusText.textContent =
+        "Running " +
+        file.name +
+        "...";
+
+    if(language === "python")
+        runPython(editor.value);
+
+    else if(language === "javascript")
+        runJavaScript(editor.value);
+
+    else if(language === "html")
+        runHTML(editor.value);
+
+    else if(language === "css")
+        runCSS(editor.value);
+
+    else
+        runCompiledLanguage(
+            language,
+            editor.value
+        );
+
+    setTimeout(
+        ()=>{
+            statusText.textContent =
+                "Ready";
+        },
+        700
+    );
+}
+
+
+/* =====================================================
+   PANELS
+===================================================== */
+
+function showPanel(panel){
+
+    document
+    .querySelectorAll(".panel-tab")
+    .forEach(btn=>{
+
+        btn.classList.toggle(
+            "active",
+            btn.dataset.panel === panel
+        );
+
+    });
+
+    terminalPanel.style.display =
+        panel === "terminal"
+        ? "block"
+        : "none";
+
+    outputPanel.style.display =
+        panel === "output"
+        ? "block"
+        : "none";
+
+    problemsPanel.style.display =
+        panel === "problems"
+        ? "block"
+        : "none";
+}
+
+
+document
+.querySelectorAll(".panel-tab")
+.forEach(btn=>{
+
+    btn.addEventListener(
+        "click",
+        ()=>{
+            showPanel(
+                btn.dataset.panel
+            );
+        }
+    );
+
+});
+
+
+/* =====================================================
+   TERMINAL
+===================================================== */
+
+function terminalPrint(
+    text,
+    type="normal"
+){
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "terminal-line term-" +
+        type;
+
+    row.textContent =
+        text;
+
+    const inputRow =
+        document.querySelector(
+            ".term-input-row"
+        );
+
+    terminalPanel.insertBefore(
+        row,
+        inputRow
+    );
+}
+
+
+function terminalCommand(command){
+
+    const text =
+        command.trim();
+
+    if(!text)
+        return;
+
+    terminalPrint(
+        termPrompt.textContent +
+        " " +
+        text
+    );
+
+    const lower =
+        text.toLowerCase();
+
+
+    if(
+        lower === "help"
+    ){
+
+        terminalPrint(
+`Developer Studio Terminal V3
+
+Commands:
+
+help
+clear
+history
+version
+about
+run
+preview
+new
+open
+save
+files
+python
+javascript
+html
+css
+c
+cpp
+bash
+r
+php
+echo hello`,
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(
+        lower === "clear" ||
+        lower === "cls"
+    ){
+
+        terminalPanel.innerHTML = "";
+
+        addTerminalInput();
+
+        return;
+    }
+
+
+    if(lower === "history"){
+
+        if(
+            terminalHistory.length === 0
+        ){
+
+            terminalPrint(
+                "No history.",
+                "warning"
+            );
+
+        }else{
+
+            terminalHistory.forEach(
+                (item,index)=>{
+                    terminalPrint(
+                        `${index+1}  ${item}`
+                    );
+                }
+            );
+
+        }
+
+        return;
+    }
+
+
+    if(lower === "version"){
+
+        terminalPrint(
+            "Developer Studio V3",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(lower === "about"){
+
+        openModal(
+            aboutModal
+        );
+
+        return;
+    }
+
+
+    if(lower === "run"){
+
+        runCode();
+
+        return;
+    }
+
+
+    if(lower === "preview"){
+
+        preview.classList.add(
+            "show"
+        );
+
+        return;
+    }
+
+
+    if(lower === "new"){
+
+        openModal(
+            newModal
+        );
+
+        return;
+    }
+
+
+    if(lower === "open"){
+
+        fileInput.click();
+
+        return;
+    }
+
+
+    if(lower === "save"){
+
+        saveFile();
+
+        return;
+    }
+
+
+    if(lower === "files"){
+
+        files.forEach(
+            file=>{
+                terminalPrint(
+                    file.name +
+                    (
+                        file.id === activeFileId
+                        ? "  ← active"
+                        : ""
+                    )
+                );
+            }
+        );
+
+        return;
+    }
+
+
+    const aliases = {
+
+        "python":"python",
+        "python3":"python",
+        "javascript":"javascript",
+        "js":"javascript",
+        "html":"html",
+        "html5":"html",
+        "css":"css",
+        "css3":"css",
+        "c":"c",
+        "cpp":"cpp",
+        "c++":"cpp",
+        "bash":"bash",
+        "sh":"bash",
+        "r":"r",
+        "php":"php"
+
+    };
+
+
+    if(
+        aliases[lower]
+    ){
+
+        const target =
+            aliases[lower];
+
+        switchLanguage(
+            target
+        );
+
+        terminalPrint(
+            "Switched to " +
+            LANGUAGES[target].name +
+            ".",
+            "success"
+        );
+
+        return;
+    }
+
+
+    if(
+        lower.startsWith("echo ")
+    ){
+
+        terminalPrint(
+            text.slice(5)
+        );
+
+        return;
+    }
+
+
+    terminalPrint(
+        "Command not found: " +
+        text,
+        "error"
+    );
+}
+
+
+function addTerminalInput(){
+
+    const row =
+        document.createElement(
+            "div"
+        );
+
+    row.className =
+        "term-input-row";
+
+    const prompt =
+        document.createElement(
+            "span"
+        );
+
+    prompt.className =
+        "term-prompt";
+
+    prompt.textContent =
+        LANGUAGES[
+            language
+        ].prompt;
+
+    const input =
+        document.createElement(
+            "input"
+        );
+
+    input.className =
+        "term-input";
+
+    input.autocomplete =
+        "off";
+
+    input.spellcheck =
+        false;
+
+    row.appendChild(prompt);
+    row.appendChild(input);
+
+    terminalPanel.appendChild(row);
+
+    input.addEventListener(
+        "keydown",
+        terminalKeydown
+    );
+
+    input.focus();
+}
+
+
+function terminalKeydown(event){
+
+    const input =
+        event.target;
+
+    if(
+        event.key === "Enter"
+    ){
+
+        const command =
+            input.value;
+
+        if(command.trim()){
+
+            terminalHistory.push(
+                command
+            );
+
+            terminalHistoryIndex =
+                terminalHistory.length;
+
+            terminalCommand(
+                command
+            );
+
+            input.value =
+                "";
+
+        }
+
+        input.focus();
+
+    }
+
+
+    if(
+        event.key === "ArrowUp"
+    ){
+
+        event.preventDefault();
+
+        if(
+            terminalHistory.length
+        ){
+
+            terminalHistoryIndex =
+                Math.max(
+                    0,
+                    terminalHistoryIndex - 1
+                );
+
+            input.value =
+                terminalHistory[
+                    terminalHistoryIndex
+                ];
+
+        }
+
+    }
+
+
+    if(
+        event.key === "ArrowDown"
+    ){
+
+        event.preventDefault();
+
+        terminalHistoryIndex =
+            Math.min(
+                terminalHistory.length,
+                terminalHistoryIndex + 1
+            );
+
+        input.value =
+            terminalHistoryIndex >=
+            terminalHistory.length
+            ? ""
+            : terminalHistory[
+                terminalHistoryIndex
+            ];
+    }
+
+}
+
+
+/* =====================================================
+   SWITCH LANGUAGE
+===================================================== */
+
+function switchLanguage(newLanguage){
+
+    const file =
+        files.find(
+            f=>f.id === activeFileId
+        );
+
+    if(
+        file &&
+        file.language !== newLanguage
+    ){
+
+        const existing =
+            files.find(
+                f=>
+                    f.language === newLanguage
+            );
+
+        if(existing){
+
+            openFile(
+                existing.id
+            );
+
+            return;
+        }
+
+    }
+
+    language =
+        newLanguage;
+
+    updatePrompt();
+    updateBrand();
+}
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+function saveFile(){
+
+    const file =
+        files.find(
+            f=>f.id === activeFileId
+        );
+
+    if(!file)
+        return;
+
+    file.content =
+        editor.value;
+
+    file.saved =
+        true;
+
+    const blob =
+        new Blob(
+            [file.content],
+            {
+                type:"text/plain"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        file.name;
+
+    document.body.appendChild(
+        link
+    );
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(
+        url
+    );
+
+    renderFiles();
+    renderTabs();
+
+    statusText.textContent =
+        "Saved " +
+        file.name;
+}
+
+
+/* =====================================================
+   FILE OPEN
+===================================================== */
+
+document
+.getElementById("openBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        fileInput.click();
+    }
+);
+
+
+fileInput.addEventListener(
+    "change",
+    async event=>{
+
+        const file =
+            event.target.files[0];
+
+        if(!file)
+            return;
+
+        const content =
+            await file.text();
+
+        const name =
+            file.name.toLowerCase();
+
+        let detected =
+            "python";
+
+        if(
+            name.endsWith(".js")
+        )
+            detected =
+                "javascript";
+
+        else if(
+            name.endsWith(".html") ||
+            name.endsWith(".htm")
+        )
+            detected =
+                "html";
+
+        else if(
+            name.endsWith(".css")
+        )
+            detected =
+                "css";
+
+        else if(
+            name.endsWith(".c") ||
+            name.endsWith(".h")
+        )
+            detected =
+                "c";
+
+        else if(
+            name.endsWith(".cpp") ||
+            name.endsWith(".cc") ||
+            name.endsWith(".cxx") ||
+            name.endsWith(".hpp")
+        )
+            detected =
+                "cpp";
+
+        else if(
+            name.endsWith(".sh") ||
+            name.endsWith(".bash")
+        )
+            detected =
+                "bash";
+
+        else if(
+            name.endsWith(".r")
+        )
+            detected =
+                "r";
+
+        else if(
+            name.endsWith(".php")
+        )
+            detected =
+                "php";
+
+        createFile(
+            detected,
+            file.name,
+            content
+        );
+
+        fileInput.value =
+            "";
+
+    }
+);
+
+
+/* =====================================================
+   NEW FILE
+===================================================== */
+
+document
+.getElementById("newBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        openModal(newModal);
+    }
+);
+
+
+document
+.getElementById("newExplorerBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        openModal(newModal);
+    }
+);
+
+
+document
+.querySelectorAll("[data-lang]")
+.forEach(btn=>{
+
+    btn.addEventListener(
+        "click",
+        ()=>{
+
+            const lang =
+                btn.dataset.lang;
+
+            createFile(
+                lang
+            );
+
+            closeModal(
+                newModal
+            );
+
+        }
+    );
+
+});
+
+
+document
+.getElementById("closeNewModal")
+.addEventListener(
+    "click",
+    ()=>{
+        closeModal(newModal);
+    }
+);
+
+
+/* =====================================================
+   ABOUT
+===================================================== */
+
+document
+.getElementById("aboutBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        openModal(
+            aboutModal
+        );
+    }
+);
+
+
+document
+.getElementById("closeAboutModal")
+.addEventListener(
+    "click",
+    ()=>{
+        closeModal(
+            aboutModal
+        );
+    }
+);
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+document
+.getElementById("settingsBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        openModal(
+            settingsModal
+        );
+    }
+);
+
+
+document
+.getElementById("closeSettingsModal")
+.addEventListener(
+    "click",
+    ()=>{
+        closeModal(
+            settingsModal
+        );
+    }
+);
+
+
+document
+.getElementById("themeSetting")
+.addEventListener(
+    "change",
+    event=>{
+
+        applyTheme(
+            event.target.value
+        );
+
+    }
+);
+
+
+document
+.getElementById("fontSetting")
+.addEventListener(
+    "change",
+    event=>{
+
+        editor.style.fontSize =
+            event.target.value +
+            "px";
+
+    }
+);
+
+
+document
+.getElementById("wrapSetting")
+.addEventListener(
+    "change",
+    event=>{
+
+        editor.classList.toggle(
+            "wrap",
+            event.target.value === "on"
+        );
+
+    }
+);
+
+
+/* =====================================================
+   MODALS
+===================================================== */
+
+function openModal(modal){
+
+    modal.classList.add(
+        "show"
+    );
+}
+
+
+function closeModal(modal){
+
+    modal.classList.remove(
+        "show"
+    );
+}
+
+
+document
+.querySelectorAll(".modal-bg")
+.forEach(modal=>{
+
+    modal.addEventListener(
+        "click",
+        event=>{
+
+            if(
+                event.target === modal
+            ){
+
+                closeModal(modal);
+
+            }
+
+        }
+    );
+
+});
+
+
+/* =====================================================
+   PREVIEW
+===================================================== */
+
+document
+.getElementById("previewBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        preview.classList.add(
+            "show"
+        );
+    }
+);
+
+
+document
+.getElementById("closePreview")
+.addEventListener(
+    "click",
+    ()=>{
+        preview.classList.remove(
+            "show"
+        );
+
+        editor.focus();
+    }
+);
+
+
+document
+.getElementById("refreshPreview")
+.addEventListener(
+    "click",
+    runCode
+);
+
+
+/* =====================================================
+   RUN BUTTON
+===================================================== */
+
+document
+.getElementById("runBtn")
+.addEventListener(
+    "click",
+    runCode
+);
+
+
+/* =====================================================
+   REFRESH
+===================================================== */
+
+document
+.getElementById("refreshBtn")
+.addEventListener(
+    "click",
+    ()=>{
+        renderFiles();
+        renderTabs();
+
+        statusText.textContent =
+            "Explorer refreshed";
+    }
+);
+
+
+/* =====================================================
+   THEME
+===================================================== */
+
+function applyTheme(theme){
+
+    document.body.classList.toggle(
+        "light",
+        theme === "light"
+    );
+
+    localStorage.setItem(
+        "developerStudioTheme",
+        theme
+    );
+
+    document
+    .getElementById(
+        "themeSetting"
+    )
+    .value =
+        theme;
+}
+
+
+const savedTheme =
+    localStorage.getItem(
+        "developerStudioTheme"
+    ) ||
+    "dark";
+
+applyTheme(
+    savedTheme
+);
+
+
+/* =====================================================
+   KEYBOARD SHORTCUTS
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    event=>{
+
+        const modifier =
+            event.metaKey ||
+            event.ctrlKey;
+
+
+        if(
+            modifier &&
+            event.key.toLowerCase() === "s"
+        ){
+
+            event.preventDefault();
+
+            saveFile();
+
+        }
+
+
+        if(
+            modifier &&
+            event.key.toLowerCase() === "o"
+        ){
+
+            event.preventDefault();
+
+            fileInput.click();
+
+        }
+
+
+        if(
+            modifier &&
+            event.key.toLowerCase() === "n"
+        ){
+
+            event.preventDefault();
+
+            openModal(
+                newModal
+            );
+
+        }
+
+
+        if(
+            modifier &&
+            event.key === "Enter"
+        ){
+
+            event.preventDefault();
+
+            runCode();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   INITIAL PROJECT
+===================================================== */
+
+createFile(
+    "python",
+    "main.py",
+    STARTERS.python
+);
+
+createFile(
+    "javascript",
+    "script.js",
+    STARTERS.javascript
+);
+
+createFile(
+    "html",
+    "index.html",
+    STARTERS.html
+);
+
+createFile(
+    "css",
+    "style.css",
+    STARTERS.css
+);
+
+createFile(
+    "c",
+    "main.c",
+    STARTERS.c
+);
+
+createFile(
+    "cpp",
+    "main.cpp",
+    STARTERS.cpp
+);
+
+createFile(
+    "bash",
+    "script.sh",
+    STARTERS.bash
+);
+
+createFile(
+    "r",
+    "main.R",
+    STARTERS.r
+);
+
+createFile(
+    "php",
+    "index.php",
+    STARTERS.php
+);
+
+
+/* Open Python */
+
+openFile(
+    files[0].id
+);
+
+updateLines();
+
+editor.focus();
+
+</script>
+
+</body>
+</html>
+```

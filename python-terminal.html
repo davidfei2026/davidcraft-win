@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+<title>Python Terminal V2</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+    color:#e8e8e8;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+}
+
+/* TOP BAR */
+
+.topbar{
+    height:58px;
+    min-height:58px;
+    background:#111;
+    border-bottom:1px solid #2b2b2b;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    gap:12px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size:17px;
+    white-space:nowrap;
+}
+
+.brand-icon{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+}
+
+.top-actions{
+    margin-left:auto;
+    display:flex;
+    gap:8px;
+}
+
+.top-button{
+    border:1px solid #333;
+    background:#1b1b1b;
+    color:#ddd;
+    border-radius:8px;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.top-button:hover{
+    background:#292929;
+}
+
+/* MAIN */
+
+.main{
+    flex:1;
+    min-height:0;
+    display:flex;
+}
+
+/* LANGUAGE SIDEBAR */
+
+.sidebar{
+    width:225px;
+    min-width:225px;
+    background:#101010;
+    border-right:1px solid #292929;
+    padding:14px;
+    overflow-y:auto;
+}
+
+.sidebar-title{
+    color:#888;
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin:4px 8px 10px;
+}
+
+.language{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    color:#ddd;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:11px 10px;
+    border-radius:9px;
+    cursor:pointer;
+    text-align:left;
+    margin-bottom:5px;
+}
+
+.language:hover{
+    background:#1d1d1d;
+}
+
+.language.active{
+    background:#242424;
+    border-color:#3b3b3b;
+}
+
+.language-icon{
+    width:31px;
+    height:31px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.language-info{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+}
+
+.language-name{
+    font-size:14px;
+    font-weight:600;
+}
+
+.language-desc{
+    color:#777;
+    font-size:11px;
+}
+
+.sidebar-divider{
+    height:1px;
+    background:#292929;
+    margin:15px 4px;
+}
+
+.side-command{
+    color:#888;
+    font-family:Consolas,"Courier New",monospace;
+    font-size:12px;
+    padding:5px 8px;
+}
+
+/* TERMINAL */
+
+.terminal-area{
+    flex:1;
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    background:#050505;
+}
+
+.terminal-header{
+    height:43px;
+    min-height:43px;
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid #222;
+    padding:0 14px;
+    background:#0b0b0b;
+}
+
+.window-dots{
+    display:flex;
+    gap:6px;
+    margin-right:14px;
+}
+
+.dot{
+    width:11px;
+    height:11px;
+    border-radius:50%;
+    background:#555;
+}
+
+.terminal-title{
+    font-size:12px;
+    color:#aaa;
+    font-family:Consolas,"Courier New",monospace;
+}
+
+.status{
+    margin-left:auto;
+    color:#666;
+    font-size:11px;
+}
+
+.terminal{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:18px;
+    font-family:Consolas,"Courier New",monospace;
+    font-size:15px;
+    line-height:1.55;
+    cursor:text;
+}
+
+.line{
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.command-line{
+    color:#eee;
+}
+
+.output{
+    color:#ddd;
+}
+
+.success{
+    color:#8be28b;
+}
+
+.error{
+    color:#ff7777;
+}
+
+.info{
+    color:#73bfff;
+}
+
+.warning{
+    color:#e6c76a;
+}
+
+.prompt-row{
+    display:flex;
+    align-items:flex-start;
+    width:100%;
+    margin-top:3px;
+}
+
+.prompt{
+    color:#72d572;
+    flex-shrink:0;
+    margin-right:9px;
+    user-select:none;
+}
+
+.terminal-input{
+    flex:1;
+    min-width:0;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:#fff;
+    font-family:Consolas,"Courier New",monospace;
+    font-size:15px;
+    line-height:1.55;
+    padding:0;
+    margin:0;
+    caret-color:#fff;
+    cursor:text;
+    user-select:text;
+}
+
+.terminal-input::selection{
+    background:#444;
+}
+
+/* PREVIEW */
+
+.preview-panel{
+    display:none;
+    width:43%;
+    min-width:300px;
+    border-left:1px solid #292929;
+    background:#fff;
+    flex-direction:column;
+}
+
+.preview-panel.show{
+    display:flex;
+}
+
+.preview-header{
+    height:43px;
+    background:#151515;
+    color:#ddd;
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:12px;
+}
+
+.preview-header button{
+    margin-left:auto;
+    border:1px solid #444;
+    background:#222;
+    color:#ddd;
+    border-radius:6px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+#previewFrame{
+    width:100%;
+    flex:1;
+    border:0;
+    background:white;
+}
+
+/* HELP */
+
+.help-box{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:min(650px,92vw);
+    max-height:80vh;
+    overflow:auto;
+    background:#171717;
+    border:1px solid #3b3b3b;
+    border-radius:12px;
+    box-shadow:0 20px 70px rgba(0,0,0,.7);
+    padding:20px;
+    display:none;
+    z-index:20;
+}
+
+.help-box.show{
+    display:block;
+}
+
+.help-box h2{
+    margin:0 0 15px;
+    font-size:20px;
+}
+
+.help-section{
+    margin-bottom:18px;
+}
+
+.help-section h3{
+    margin:0 0 7px;
+    color:#79c8ff;
+    font-size:14px;
+}
+
+.help-section code{
+    color:#9de69d;
+    font-family:Consolas,"Courier New",monospace;
+}
+
+.close-help{
+    float:right;
+    border:0;
+    background:#2b2b2b;
+    color:#ddd;
+    border-radius:7px;
+    padding:6px 10px;
+    cursor:pointer;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:750px){
+    .sidebar{
+        width:175px;
+        min-width:175px;
+    }
+
+    .language-desc{
+        display:none;
+    }
+
+    .preview-panel{
+        position:absolute;
+        inset:101px 0 0 175px;
+        width:auto;
+        min-width:0;
+        z-index:5;
+    }
+
+    .status{
+        display:none;
+    }
+}
+
+@media(max-width:550px){
+    .sidebar{
+        width:64px;
+        min-width:64px;
+        padding:8px;
+    }
+
+    .sidebar-title,
+    .language-info,
+    .sidebar-divider,
+    .side-command{
+        display:none;
+    }
+
+    .language{
+        justify-content:center;
+        padding:9px;
+    }
+
+    .language-icon{
+        width:34px;
+        height:34px;
+    }
+
+    .brand span{
+        display:none;
+    }
+
+    .topbar{
+        padding:0 8px;
+    }
+
+    .terminal{
+        padding:12px;
+    }
+
+    .preview-panel{
+        inset:101px 0 0 64px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+    <div class="brand">
+        <img
+            class="brand-icon"
+            src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg"
+            alt="Python">
+        <span>Developer Terminal</span>
+    </div>
+
+    <div class="top-actions">
+        <button class="top-button" id="helpButton">Help</button>
+        <button class="top-button" id="clearButton">Clear</button>
+    </div>
+
+</div>
+
+<div class="main">
+
+    <aside class="sidebar">
+
+        <div class="sidebar-title">Languages</div>
+
+        <button class="language active" data-language="python">
+            <img
+                class="language-icon"
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg"
+                alt="Python 3">
+            <span class="language-info">
+                <span class="language-name">Python 3</span>
+                <span class="language-desc">Python interpreter</span>
+            </span>
+        </button>
+
+        <button class="language" data-language="javascript">
+            <img
+                class="language-icon"
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/JavaScript_logo.svg"
+                alt="JavaScript">
+            <span class="language-info">
+                <span class="language-name">JavaScript</span>
+                <span class="language-desc">JavaScript console</span>
+            </span>
+        </button>
+
+        <button class="language" data-language="html">
+            <img
+                class="language-icon"
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/HTML5_logo.svg"
+                alt="HTML5">
+            <span class="language-info">
+                <span class="language-name">HTML5</span>
+                <span class="language-desc">Web markup</span>
+            </span>
+        </button>
+
+        <button class="language" data-language="css">
+            <img
+                class="language-icon"
+                src="https://commons.wikimedia.org/wiki/Special:Redirect/file/CSS3_logo.svg"
+                alt="CSS3">
+            <span class="language-info">
+                <span class="language-name">CSS3</span>
+                <span class="language-desc">Web styling</span>
+            </span>
+        </button>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-title">Terminal</div>
+
+        <div class="side-command">help</div>
+        <div class="side-command">clear</div>
+        <div class="side-command">history</div>
+        <div class="side-command">version</div>
+        <div class="side-command">about</div>
+
+    </aside>
+
+    <section class="terminal-area">
+
+        <div class="terminal-header">
+
+            <div class="window-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+
+            <div class="terminal-title" id="terminalTitle">
+                Python 3 Terminal
+            </div>
+
+            <div class="status" id="status">
+                Demo Interpreter
+            </div>
+
+        </div>
+
+        <div class="terminal" id="terminal">
+
+            <div class="line info">Developer Terminal V2</div>
+            <div class="line output">Python / JavaScript / HTML / CSS</div>
+            <div class="line output">Type <span class="success">help()</span> or <span class="success">help</span> for commands.</div>
+            <div class="line output">This is a browser-based programming terminal.</div>
+
+            <div class="prompt-row" id="promptRow">
+                <span class="prompt" id="prompt">&gt;&gt;&gt;</span>
+                <input
+                    id="terminalInput"
+                    class="terminal-input"
+                    type="text"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    aria-label="Terminal input">
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="preview-panel" id="previewPanel">
+
+        <div class="preview-header">
+            <span>Live Preview</span>
+            <button id="closePreview">Close</button>
+        </div>
+
+        <iframe id="previewFrame"></iframe>
+
+    </section>
+
+</div>
+
+<div class="help-box" id="helpBox">
+
+    <button class="close-help" id="closeHelp">Close</button>
+
+    <h2>Developer Terminal Help</h2>
+
+    <div class="help-section">
+        <h3>Terminal commands</h3>
+        <code>help</code><br>
+        <code>clear</code><br>
+        <code>history</code><br>
+        <code>version</code><br>
+        <code>about</code><br>
+        <code>python</code><br>
+        <code>javascript</code><br>
+        <code>html</code><br>
+        <code>css</code>
+    </div>
+
+    <div class="help-section">
+        <h3>Python 3</h3>
+        <code>print("Hello")</code><br>
+        <code>x = 10</code><br>
+        <code>x + 5</code><br>
+        <code>len("Hello")</code><br>
+        <code>"hello".upper()</code><br>
+        <code>"HELLO".lower()</code><br>
+        <code>type(123)</code><br>
+        <code>str(123)</code><br>
+        <code>int("25")</code><br>
+        <code>float("3.14")</code><br>
+        <code>abs(-10)</code><br>
+        <code>round(3.14159, 2)</code><br>
+        <code>min(4, 2, 9)</code><br>
+        <code>max(4, 2, 9)</code>
+    </div>
+
+    <div class="help-section">
+        <h3>JavaScript</h3>
+        <code>console.log("Hello")</code><br>
+        <code>let x = 10</code><br>
+        <code>x + 5</code><br>
+        <code>Math.max(2, 8)</code><br>
+        <code>Math.min(2, 8)</code><br>
+        <code>"hello".toUpperCase()</code><br>
+        <code>"HELLO".toLowerCase()</code><br>
+        <code>typeof 123</code>
+    </div>
+
+    <div class="help-section">
+        <h3>HTML5</h3>
+        <code>&lt;h1&gt;Hello&lt;/h1&gt;</code><br>
+        <code>&lt;p&gt;My website&lt;/p&gt;</code><br>
+        <code>run</code>
+    </div>
+
+    <div class="help-section">
+        <h3>CSS3</h3>
+        <code>body { background: black; }</code><br>
+        <code>h1 { color: white; }</code><br>
+        <code>run</code>
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let language = "python";
+
+const history = [];
+let historyIndex = -1;
+
+const variables = {
+    python: {},
+    javascript: {}
+};
+
+let htmlBuffer = "";
+let cssBuffer = "";
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const terminal = document.getElementById("terminal");
+const input = document.getElementById("terminalInput");
+const prompt = document.getElementById("prompt");
+const terminalTitle = document.getElementById("terminalTitle");
+const status = document.getElementById("status");
+
+const previewPanel = document.getElementById("previewPanel");
+const previewFrame = document.getElementById("previewFrame");
+
+const helpBox = document.getElementById("helpBox");
+
+
+/* =========================================================
+   LANGUAGE INFORMATION
+========================================================= */
+
+const languageInfo = {
+
+    python:{
+        title:"Python 3 Terminal",
+        prompt:">>>",
+        status:"Python 3 Demo",
+        welcome:"Python 3 selected."
+    },
+
+    javascript:{
+        title:"JavaScript Console",
+        prompt:">",
+        status:"JavaScript Demo",
+        welcome:"JavaScript selected."
+    },
+
+    html:{
+        title:"HTML5 Terminal",
+        prompt:"html>",
+        status:"HTML5 Editor",
+        welcome:"HTML5 selected. Type HTML and use run."
+    },
+
+    css:{
+        title:"CSS3 Terminal",
+        prompt:"css>",
+        status:"CSS3 Editor",
+        welcome:"CSS3 selected. Type CSS and use run."
+    }
+
+};
+
+
+/* =========================================================
+   BASIC TERMINAL FUNCTIONS
+========================================================= */
+
+function scrollBottom(){
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+function focusInput(){
+    setTimeout(() => {
+        input.focus();
+    }, 20);
+}
+
+function addLine(text="", className="output"){
+
+    const line = document.createElement("div");
+
+    line.className = "line " + className;
+
+    line.textContent = text;
+
+    terminal.insertBefore(line, document.getElementById("promptRow"));
+
+    scrollBottom();
+}
+
+function addHTMLLine(html, className="output"){
+
+    const line = document.createElement("div");
+
+    line.className = "line " + className;
+
+    line.innerHTML = html;
+
+    terminal.insertBefore(line, document.getElementById("promptRow"));
+
+    scrollBottom();
+}
+
+function updatePrompt(){
+
+    prompt.textContent = languageInfo[language].prompt;
+
+    terminalTitle.textContent = languageInfo[language].title;
+
+    status.textContent = languageInfo[language].status;
+
+    input.placeholder = "";
+
+    document.querySelectorAll(".language").forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            button.dataset.language === language
+        );
+
+    });
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearTerminal(){
+
+    terminal.querySelectorAll(".line").forEach(line => {
+        line.remove();
+    });
+
+    historyIndex = -1;
+
+    addLine(
+        languageInfo[language].welcome,
+        "info"
+    );
+
+    addLine(
+        "Type help for available commands.",
+        "output"
+    );
+
+    focusInput();
+}
+
+
+/* =========================================================
+   HELP
+========================================================= */
+
+function terminalHelp(){
+
+    addLine("Available commands:", "info");
+
+    if(language === "python"){
+
+        addLine("Python 3 commands:", "success");
+
+        addLine(
+`print("text")
+x = 10
+x + 5
+len("Hello")
+"hello".upper()
+"HELLO".lower()
+type(123)
+str(123)
+int("25")
+float("3.14")
+abs(-10)
+round(3.14159, 2)
+min(1, 2, 3)
+max(1, 2, 3)
+sum([1, 2, 3])
+range(5)
+True
+False`
+        );
+
+    }
+
+    else if(language === "javascript"){
+
+        addLine("JavaScript commands:", "success");
+
+        addLine(
+`console.log("Hello")
+let x = 10
+const y = 5
+x + y
+Math.max(1, 8)
+Math.min(1, 8)
+Math.round(3.14)
+Math.floor(3.9)
+Math.ceil(3.1)
+"hello".toUpperCase()
+"HELLO".toLowerCase()
+typeof 123`
+        );
+
+    }
+
+    else if(language === "html"){
+
+        addLine("HTML commands:", "success");
+
+        addLine(
+`<h1>Hello</h1>
+<p>This is HTML.</p>
+<div>Content</div>
+run
+clear
+preview`
+        );
+
+    }
+
+    else if(language === "css"){
+
+        addLine("CSS commands:", "success");
+
+        addLine(
+`body { background: black; }
+h1 { color: white; }
+p { font-size: 20px; }
+run
+clear
+preview`
+        );
+
+    }
+
+    addLine("", "output");
+    addLine("Use ↑ and ↓ to navigate command history.", "info");
+}
+
+
+/* =========================================================
+   PYTHON
+========================================================= */
+
+function pythonValue(text){
+
+    text = text.trim();
+
+    if(text in variables.python){
+        return variables.python[text];
+    }
+
+    if(text === "True") return true;
+    if(text === "False") return false;
+    if(text === "None") return null;
+
+    if(/^["'].*["']$/.test(text)){
+        return text.slice(1,-1);
+    }
+
+    if(/^\d+$/.test(text)){
+        return Number(text);
+    }
+
+    if(/^\d+\.\d+$/.test(text)){
+        return Number(text);
+    }
+
+    return undefined;
+}
+
+
+function safeMath(expression){
+
+    expression = expression.trim();
+
+    if(
+        !/^[0-9+\-*/%().\s]+$/.test(expression)
+    ){
+        return {
+            ok:false,
+            error:"Unsupported expression."
+        };
+    }
+
+    try{
+
+        const value = Function(
+            '"use strict"; return (' + expression + ')'
+        )();
+
+        if(
+            typeof value !== "number" ||
+            !Number.isFinite(value)
+        ){
+            return {
+                ok:false,
+                error:"Invalid mathematical result."
+            };
+        }
+
+        return {
+            ok:true,
+            value:value
+        };
+
+    }catch(error){
+
+        return {
+            ok:false,
+            error:"Invalid syntax."
+        };
+    }
+}
+
+
+function pythonExecute(command){
+
+    const text = command.trim();
+
+    if(!text) return;
+
+
+    /* CLEAR */
+
+    if(text === "clear()" || text === "clear" || text === "cls"){
+
+        clearTerminal();
+        return;
+    }
+
+
+    /* HELP */
+
+    if(text === "help()" || text === "help"){
+
+        terminalHelp();
+        return;
+    }
+
+
+    /* HISTORY */
+
+    if(text === "history"){
+
+        if(history.length === 0){
+
+            addLine("No command history.", "warning");
+
+        }else{
+
+            history.forEach((item,index)=>{
+                addLine(`${index + 1}  ${item}`);
+            });
+
+        }
+
+        return;
+    }
+
+
+    /* VERSION */
+
+    if(text === "version" || text === "python --version"){
+
+        addLine("Python 3.12.0 (Browser Demo)", "info");
+        return;
+    }
+
+
+    /* ABOUT */
+
+    if(text === "about"){
+
+        addLine(
+            "Python Terminal V2 — browser-based Python learning terminal.",
+            "info"
+        );
+
+        return;
+    }
+
+
+    /* EXIT */
+
+    if(text === "exit()" || text === "quit()"){
+
+        addLine(
+            "Exit is simulated. Close the browser tab to leave.",
+            "warning"
+        );
+
+        return;
+    }
+
+
+    /* PRINT */
+
+    const printMatch = text.match(/^print\s*\((.*)\)$/s);
+
+    if(printMatch){
+
+        const inside = printMatch[1].trim();
+
+        if(inside === ""){
+
+            addLine("");
+            return;
+        }
+
+        const value = pythonValue(inside);
+
+        if(value !== undefined){
+
+            addLine(String(value));
+            return;
+        }
+
+        const lenMatch = inside.match(/^len\s*\((.*)\)$/s);
+
+        if(lenMatch){
+
+            const value = pythonValue(lenMatch[1]);
+
+            if(value !== undefined){
+
+                addLine(String(String(value).length));
+                return;
+            }
+        }
+
+        addLine(
+            inside.replace(/^["']|["']$/g,"")
+        );
+
+        return;
+    }
+
+
+    /* LEN */
+
+    const lenMatch = text.match(/^len\s*\((.*)\)$/s);
+
+    if(lenMatch){
+
+        const value = pythonValue(lenMatch[1]);
+
+        if(value !== undefined){
+
+            if(
+                typeof value === "string" ||
+                Array.isArray(value)
+            ){
+
+                addLine(String(value.length));
+                return;
+            }
+        }
+
+        addLine(
+            "TypeError: object has no len()",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* TYPE */
+
+    const typeMatch = text.match(/^type\s*\((.*)\)$/s);
+
+    if(typeMatch){
+
+        const value = pythonValue(typeMatch[1]);
+
+        if(value === undefined){
+
+            addLine(
+                `<class 'str'>`,
+                "output"
+            );
+
+        }else if(typeof value === "string"){
+
+            addLine("<class 'str'>");
+
+        }else if(typeof value === "number"){
+
+            addLine("<class 'int'>");
+
+        }else if(typeof value === "boolean"){
+
+            addLine("<class 'bool'>");
+
+        }else{
+
+            addLine("<class 'NoneType'>");
+        }
+
+        return;
+    }
+
+
+    /* UPPER */
+
+    const upperMatch = text.match(
+        /^["'](.*)["']\.upper\(\)$/
+    );
+
+    if(upperMatch){
+
+        addLine(
+            "'" + upperMatch[1].toUpperCase() + "'"
+        );
+
+        return;
+    }
+
+
+    /* LOWER */
+
+    const lowerMatch = text.match(
+        /^["'](.*)["']\.lower\(\)$/
+    );
+
+    if(lowerMatch){
+
+        addLine(
+            "'" + lowerMatch[1].toLowerCase() + "'"
+        );
+
+        return;
+    }
+
+
+    /* STR */
+
+    const strMatch = text.match(/^str\s*\((.*)\)$/);
+
+    if(strMatch){
+
+        const value = pythonValue(strMatch[1]);
+
+        if(value !== undefined){
+
+            addLine("'" + String(value) + "'");
+
+        }else{
+
+            addLine(
+                "NameError: name is not defined",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* INT */
+
+    const intMatch = text.match(/^int\s*\((.*)\)$/);
+
+    if(intMatch){
+
+        const raw = intMatch[1].trim();
+
+        const value = Number(
+            raw.replace(/^["']|["']$/g,"")
+        );
+
+        if(Number.isFinite(value)){
+
+            addLine(
+                String(Math.trunc(value))
+            );
+
+        }else{
+
+            addLine(
+                "ValueError: invalid literal for int()",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* FLOAT */
+
+    const floatMatch = text.match(/^float\s*\((.*)\)$/);
+
+    if(floatMatch){
+
+        const raw = floatMatch[1].trim();
+
+        const value = Number(
+            raw.replace(/^["']|["']$/g,"")
+        );
+
+        if(Number.isFinite(value)){
+
+            addLine(String(value));
+
+        }else{
+
+            addLine(
+                "ValueError: could not convert to float",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* ABS */
+
+    const absMatch = text.match(/^abs\s*\((.*)\)$/);
+
+    if(absMatch){
+
+        const result = safeMath(absMatch[1]);
+
+        if(result.ok){
+
+            addLine(String(Math.abs(result.value)));
+
+        }else{
+
+            addLine(
+                "TypeError: abs() needs a number",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* ROUND */
+
+    const roundMatch = text.match(
+        /^round\s*\(([^,]+)(?:,\s*(\d+))?\)$/
+    );
+
+    if(roundMatch){
+
+        const value = Number(roundMatch[1]);
+
+        const digits = Number(
+            roundMatch[2] || 0
+        );
+
+        if(Number.isFinite(value)){
+
+            addLine(
+                String(
+                    Number(value.toFixed(digits))
+                )
+            );
+
+        }else{
+
+            addLine(
+                "TypeError: round() needs a number",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* MIN */
+
+    const minMatch = text.match(/^min\s*\((.*)\)$/);
+
+    if(minMatch){
+
+        const values = minMatch[1]
+            .split(",")
+            .map(x=>Number(x.trim()));
+
+        if(values.every(Number.isFinite)){
+
+            addLine(String(Math.min(...values)));
+
+        }else{
+
+            addLine(
+                "TypeError: min() needs numbers",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* MAX */
+
+    const maxMatch = text.match(/^max\s*\((.*)\)$/);
+
+    if(maxMatch){
+
+        const values = maxMatch[1]
+            .split(",")
+            .map(x=>Number(x.trim()));
+
+        if(values.every(Number.isFinite)){
+
+            addLine(String(Math.max(...values)));
+
+        }else{
+
+            addLine(
+                "TypeError: max() needs numbers",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* SUM */
+
+    const sumMatch = text.match(
+        /^sum\s*\(\s*\[(.*)\]\s*\)$/
+    );
+
+    if(sumMatch){
+
+        const values = sumMatch[1]
+            .split(",")
+            .map(x=>Number(x.trim()));
+
+        if(values.every(Number.isFinite)){
+
+            addLine(
+                String(
+                    values.reduce(
+                        (a,b)=>a+b,
+                        0
+                    )
+                )
+            );
+
+        }else{
+
+            addLine(
+                "TypeError: sum() needs numbers",
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* RANGE */
+
+    const rangeMatch = text.match(
+        /^range\s*\(\s*(\d+)\s*\)$/
+    );
+
+    if(rangeMatch){
+
+        const n = Number(rangeMatch[1]);
+
+        const values = [];
+
+        for(let i=0;i<n;i++){
+            values.push(i);
+        }
+
+        addLine(
+            "[" + values.join(", ") + "]"
+        );
+
+        return;
+    }
+
+
+    /* ASSIGNMENT */
+
+    const assignment = text.match(
+        /^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.+)$/
+    );
+
+    if(assignment){
+
+        const name = assignment[1];
+        const valueText = assignment[2];
+
+        let value = pythonValue(valueText);
+
+        if(value === undefined){
+
+            const math = safeMath(valueText);
+
+            if(math.ok){
+
+                value = math.value;
+
+            }else{
+
+                addLine(
+                    "SyntaxError: unsupported assignment value",
+                    "error"
+                );
+
+                return;
+            }
+        }
+
+        variables.python[name] = value;
+
+        return;
+    }
+
+
+    /* VARIABLE */
+
+    if(
+        /^[A-Za-z_][A-Za-z0-9_]*$/.test(text)
+    ){
+
+        if(text in variables.python){
+
+            addLine(
+                String(variables.python[text])
+            );
+
+        }else{
+
+            addLine(
+                `NameError: name '${text}' is not defined`,
+                "error"
+            );
+        }
+
+        return;
+    }
+
+
+    /* STRING */
+
+    if(/^["'].*["']$/.test(text)){
+
+        addLine(
+            "'" + text.slice(1,-1) + "'"
+        );
+
+        return;
+    }
+
+
+    /* MATH */
+
+    const math = safeMath(text);
+
+    if(math.ok){
+
+        addLine(String(math.value));
+        return;
+    }
+
+
+    addLine(
+        `SyntaxError: unsupported Python command: ${text}`,
+        "error"
+    );
+}
+
+
+/* =========================================================
+   JAVASCRIPT
+========================================================= */
+
+function javascriptExecute(command){
+
+    const text = command.trim();
+
+    if(!text) return;
+
+
+    if(
+        text === "clear" ||
+        text === "clear()"
+    ){
+
+        clearTerminal();
+        return;
+    }
+
+
+    if(
+        text === "help" ||
+        text === "help()"
+    ){
+
+        terminalHelp();
+        return;
+    }
+
+
+    if(text === "history"){
+
+        history.forEach((item,index)=>{
+            addLine(`${index + 1}  ${item}`);
+        });
+
+        return;
+    }
+
+
+    if(text === "version"){
+
+        addLine(
+            "JavaScript ES2025-style browser demo",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(text === "about"){
+
+        addLine(
+            "JavaScript console running inside the Developer Terminal.",
+            "info"
+        );
+
+        return;
+    }
+
+
+    const consoleMatch = text.match(
+        /^console\.log\s*\((.*)\)$/s
+    );
+
+    if(consoleMatch){
+
+        let value = consoleMatch[1].trim();
+
+        if(
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+        ){
+
+            value = value.slice(1,-1);
+
+        }else if(
+            value in variables.javascript
+        ){
+
+            value = variables.javascript[value];
+
+        }else{
+
+            const math = jsMath(value);
+
+            if(math !== undefined){
+                value = math;
+            }
+        }
+
+        addLine(String(value));
+        return;
+    }
+
+
+    const declaration = text.match(
+        /^(let|const|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(.+)$/
+    );
+
+    if(declaration){
+
+        const name = declaration[2];
+        const valueText = declaration[3];
+
+        let value;
+
+        if(
+            /^["'].*["']$/.test(valueText)
+        ){
+
+            value = valueText.slice(1,-1);
+
+        }else if(
+            valueText === "true"
+        ){
+
+            value = true;
+
+        }else if(
+            valueText === "false"
+        ){
+
+            value = false;
+
+        }else if(
+            valueText in variables.javascript
+        ){
+
+            value = variables.javascript[valueText];
+
+        }else{
+
+            const math = jsMath(valueText);
+
+            if(math === undefined){
+
+                addLine(
+                    "ReferenceError: unsupported value",
+                    "error"
+                );
+
+                return;
+            }
+
+            value = math;
+        }
+
+        variables.javascript[name] = value;
+
+        return;
+    }
+
+
+    if(text.startsWith("Math.")){
+
+        const result = javascriptMathCommand(text);
+
+        if(result !== undefined){
+
+            addLine(String(result));
+            return;
+        }
+    }
+
+
+    const typeofMatch = text.match(
+        /^typeof\s+(.+)$/
+    );
+
+    if(typeofMatch){
+
+        let value = typeofMatch[1].trim();
+
+        if(value in variables.javascript){
+
+            value = variables.javascript[value];
+
+        }else if(
+            /^["'].*["']$/.test(value)
+        ){
+
+            value = value.slice(1,-1);
+
+        }else if(
+            /^-?\d+(\.\d+)?$/.test(value)
+        ){
+
+            value = Number(value);
+
+        }else if(
+            value === "true" ||
+            value === "false"
+        ){
+
+            value = Boolean(value);
+
+        }else{
+
+            addLine("undefined");
+            return;
+        }
+
+        addLine(typeof value);
+        return;
+    }
+
+
+    const upper = text.match(
+        /^["'](.*)["']\.toUpperCase\(\)$/
+    );
+
+    if(upper){
+
+        addLine(
+            upper[1].toUpperCase()
+        );
+
+        return;
+    }
+
+
+    const lower = text.match(
+        /^["'](.*)["']\.toLowerCase\(\)$/
+    );
+
+    if(lower){
+
+        addLine(
+            lower[1].toLowerCase()
+        );
+
+        return;
+    }
+
+
+    if(text in variables.javascript){
+
+        addLine(
+            String(variables.javascript[text])
+        );
+
+        return;
+    }
+
+
+    const math = jsMath(text);
+
+    if(math !== undefined){
+
+        addLine(String(math));
+        return;
+    }
+
+
+    addLine(
+        `SyntaxError: unsupported JavaScript command: ${text}`,
+        "error"
+    );
+}
+
+
+function jsMath(expression){
+
+    if(
+        !/^[0-9+\-*/%().\s]+$/.test(expression)
+    ){
+        return undefined;
+    }
+
+    try{
+
+        const value = Function(
+            '"use strict"; return (' + expression + ')'
+        )();
+
+        if(
+            typeof value !== "number" ||
+            !Number.isFinite(value)
+        ){
+            return undefined;
+        }
+
+        return value;
+
+    }catch{
+
+        return undefined;
+    }
+}
+
+
+function javascriptMathCommand(text){
+
+    const match = text.match(
+        /^Math\.(max|min|round|floor|ceil|abs)\s*\((.*)\)$/
+    );
+
+    if(!match) return undefined;
+
+    const operation = match[1];
+
+    const values = match[2]
+        .split(",")
+        .map(x=>Number(x.trim()));
+
+    if(
+        !values.length ||
+        values.some(x=>!Number.isFinite(x))
+    ){
+        return undefined;
+    }
+
+    if(operation === "max"){
+        return Math.max(...values);
+    }
+
+    if(operation === "min"){
+        return Math.min(...values);
+    }
+
+    if(operation === "round"){
+        return Math.round(values[0]);
+    }
+
+    if(operation === "floor"){
+        return Math.floor(values[0]);
+    }
+
+    if(operation === "ceil"){
+        return Math.ceil(values[0]);
+    }
+
+    if(operation === "abs"){
+        return Math.abs(values[0]);
+    }
+
+    return undefined;
+}
+
+
+/* =========================================================
+   HTML
+========================================================= */
+
+function htmlExecute(command){
+
+    const text = command.trim();
+
+    if(!text) return;
+
+
+    if(
+        text === "clear" ||
+        text === "clear()"
+    ){
+
+        htmlBuffer = "";
+        clearTerminal();
+        return;
+    }
+
+
+    if(
+        text === "help" ||
+        text === "help()"
+    ){
+
+        terminalHelp();
+        return;
+    }
+
+
+    if(text === "history"){
+
+        history.forEach((item,index)=>{
+            addLine(`${index + 1}  ${item}`);
+        });
+
+        return;
+    }
+
+
+    if(text === "version"){
+
+        addLine(
+            "HTML5 Browser Editor",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(text === "about"){
+
+        addLine(
+            "HTML5 live preview mode.",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(text === "run" || text === "preview"){
+
+        runHTML();
+        return;
+    }
+
+
+    if(text.startsWith("<")){
+
+        htmlBuffer +=
+            (htmlBuffer ? "\n" : "") +
+            text;
+
+        addLine(
+            "HTML added.",
+            "success"
+        );
+
+        return;
+    }
+
+
+    addLine(
+        "HTML mode expects an HTML tag or the command 'run'.",
+        "warning"
+    );
+}
+
+
+function runHTML(){
+
+    previewPanel.classList.add("show");
+
+    const completeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Preview</title>
+<style>
+body{
+    font-family:Arial,sans-serif;
+    padding:30px;
+}
+</style>
+</head>
+<body>
+${htmlBuffer}
+</body>
+</html>
+`;
+
+    previewFrame.srcdoc = completeHTML;
+
+    addLine(
+        "HTML preview updated.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   CSS
+========================================================= */
+
+function cssExecute(command){
+
+    const text = command.trim();
+
+    if(!text) return;
+
+
+    if(
+        text === "clear" ||
+        text === "clear()"
+    ){
+
+        cssBuffer = "";
+        clearTerminal();
+        return;
+    }
+
+
+    if(
+        text === "help" ||
+        text === "help()"
+    ){
+
+        terminalHelp();
+        return;
+    }
+
+
+    if(text === "history"){
+
+        history.forEach((item,index)=>{
+            addLine(`${index + 1}  ${item}`);
+        });
+
+        return;
+    }
+
+
+    if(text === "version"){
+
+        addLine(
+            "CSS3 Browser Editor",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(text === "about"){
+
+        addLine(
+            "CSS3 live styling preview mode.",
+            "info"
+        );
+
+        return;
+    }
+
+
+    if(text === "run" || text === "preview"){
+
+        runCSS();
+        return;
+    }
+
+
+    if(
+        text.includes("{") ||
+        text.includes("}")
+    ){
+
+        cssBuffer +=
+            (cssBuffer ? "\n" : "") +
+            text;
+
+        addLine(
+            "CSS added.",
+            "success"
+        );
+
+        return;
+    }
+
+
+    addLine(
+        "CSS mode expects CSS rules or the command 'run'.",
+        "warning"
+    );
+}
+
+
+function runCSS(){
+
+    previewPanel.classList.add("show");
+
+    const completeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+${cssBuffer}
+</style>
+</head>
+<body>
+
+<h1>Hello from CSS3!</h1>
+<p>This is your live CSS preview.</p>
+<div class="box">CSS Preview</div>
+
+</body>
+</html>
+`;
+
+    previewFrame.srcdoc = completeHTML;
+
+    addLine(
+        "CSS preview updated.",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   EXECUTE COMMAND
+========================================================= */
+
+function execute(command){
+
+    const text = command.trim();
+
+    if(!text) return;
+
+
+    /* LANGUAGE SWITCH COMMANDS */
+
+    if(
+        text === "python" ||
+        text === "python3" ||
+        text === "language python"
+    ){
+
+        switchLanguage("python");
+        return;
+    }
+
+    if(
+        text === "javascript" ||
+        text === "js" ||
+        text === "language javascript"
+    ){
+
+        switchLanguage("javascript");
+        return;
+    }
+
+    if(
+        text === "html" ||
+        text === "html5" ||
+        text === "language html"
+    ){
+
+        switchLanguage("html");
+        return;
+    }
+
+    if(
+        text === "css" ||
+        text === "css3" ||
+        text === "language css"
+    ){
+
+        switchLanguage("css");
+        return;
+    }
+
+
+    /* GLOBAL COMMANDS */
+
+    if(text === "clear" || text === "cls"){
+
+        clearTerminal();
+        return;
+    }
+
+    if(text === "help"){
+
+        terminalHelp();
+        return;
+    }
+
+    if(text === "version"){
+
+        addLine(
+            "Developer Terminal V2",
+            "info"
+        );
+
+        return;
+    }
+
+    if(text === "about"){
+
+        addLine(
+            "A browser-based multi-language programming terminal.",
+            "info"
+        );
+
+        return;
+    }
+
+
+    /* LANGUAGE */
+
+    if(language === "python"){
+
+        pythonExecute(text);
+
+    }else if(language === "javascript"){
+
+        javascriptExecute(text);
+
+    }else if(language === "html"){
+
+        htmlExecute(text);
+
+    }else if(language === "css"){
+
+        cssExecute(text);
+    }
+}
+
+
+/* =========================================================
+   SWITCH LANGUAGE
+========================================================= */
+
+function switchLanguage(newLanguage){
+
+    language = newLanguage;
+
+    updatePrompt();
+
+    addLine(
+        languageInfo[newLanguage].welcome,
+        "info"
+    );
+
+    if(newLanguage === "html"){
+
+        addLine(
+            "Type HTML tags, then type run.",
+            "output"
+        );
+
+    }
+
+    if(newLanguage === "css"){
+
+        addLine(
+            "Type CSS rules, then type run.",
+            "output"
+        );
+
+    }
+
+    focusInput();
+}
+
+
+/* =========================================================
+   ENTER
+========================================================= */
+
+input.addEventListener("keydown", function(event){
+
+    if(event.key === "Enter"){
+
+        event.preventDefault();
+
+        const command = input.value;
+
+        if(command.trim()){
+
+            history.push(command);
+
+            historyIndex = history.length;
+
+            addLine(
+                languageInfo[language].prompt +
+                " " +
+                command,
+                "command-line"
+            );
+
+            input.value = "";
+
+            execute(command);
+        }
+
+        focusInput();
+        scrollBottom();
+
+        return;
+    }
+
+
+    /* HISTORY UP */
+
+    if(event.key === "ArrowUp"){
+
+        event.preventDefault();
+
+        if(history.length === 0) return;
+
+        historyIndex = Math.max(
+            0,
+            historyIndex - 1
+        );
+
+        input.value =
+            history[historyIndex];
+
+        setTimeout(()=>{
+            input.setSelectionRange(
+                input.value.length,
+                input.value.length
+            );
+        },0);
+
+        return;
+    }
+
+
+    /* HISTORY DOWN */
+
+    if(event.key === "ArrowDown"){
+
+        event.preventDefault();
+
+        if(history.length === 0) return;
+
+        historyIndex = Math.min(
+            history.length,
+            historyIndex + 1
+        );
+
+        if(
+            historyIndex === history.length
+        ){
+
+            input.value = "";
+
+        }else{
+
+            input.value =
+                history[historyIndex];
+        }
+
+        return;
+    }
+
+});
+
+
+/* =========================================================
+   CLICK TERMINAL TO FOCUS
+========================================================= */
+
+terminal.addEventListener("click", function(event){
+
+    if(
+        !event.target.closest("button") &&
+        !event.target.closest("input")
+    ){
+
+        focusInput();
+    }
+
+});
+
+
+input.addEventListener(
+    "pointerdown",
+    function(event){
+        event.stopPropagation();
+    }
+);
+
+
+/* =========================================================
+   LANGUAGE BUTTONS
+========================================================= */
+
+document.querySelectorAll(".language").forEach(button=>{
+
+    button.addEventListener("click", ()=>{
+
+        switchLanguage(
+            button.dataset.language
+        );
+
+    });
+
+});
+
+
+/* =========================================================
+   TOP BUTTONS
+========================================================= */
+
+document.getElementById("clearButton")
+    .addEventListener("click", clearTerminal);
+
+document.getElementById("helpButton")
+    .addEventListener("click", ()=>{
+
+        helpBox.classList.add("show");
+
+    });
+
+document.getElementById("closeHelp")
+    .addEventListener("click", ()=>{
+
+        helpBox.classList.remove("show");
+
+        focusInput();
+
+    });
+
+document.getElementById("closePreview")
+    .addEventListener("click", ()=>{
+
+        previewPanel.classList.remove("show");
+
+        focusInput();
+
+    });
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updatePrompt();
+
+focusInput();
+
+</script>
+
+</body>
+</html>

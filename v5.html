@@ -1,0 +1,3854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Win Sim V5</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  user-select:none;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:#0878d1;
+}
+
+body.dark{
+  --panel:#202124;
+  --panel2:#292b2f;
+  --text:#fff;
+  --window:#202124;
+  --border:#444;
+}
+
+:root{
+  --panel:rgba(255,255,255,.96);
+  --panel2:#eef2f6;
+  --text:#17202a;
+  --window:#f4f6f8;
+  --border:#c8d0d9;
+}
+
+button,
+input,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.desktop{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 75% 25%,rgba(255,255,255,.18),transparent 25%),
+    linear-gradient(135deg,#0759a8,#101b43 70%,#020815);
+}
+
+.wallpaper{
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg,transparent 35%,rgba(0,190,255,.18) 36%,transparent 47%),
+    linear-gradient(25deg,transparent 40%,rgba(0,100,255,.18) 41%,transparent 55%);
+  pointer-events:none;
+}
+
+.logo-mark{
+  position:absolute;
+  right:30px;
+  top:25px;
+  width:150px;
+  height:150px;
+  object-fit:contain;
+  opacity:.95;
+}
+
+.welcome{
+  position:absolute;
+  right:35px;
+  top:185px;
+  padding:12px 17px;
+  border-radius:9px;
+  color:white;
+  background:rgba(0,0,0,.18);
+  backdrop-filter:blur(8px);
+  font-size:14px;
+}
+
+.icons{
+  position:absolute;
+  top:20px;
+  left:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.icon{
+  width:90px;
+  min-height:88px;
+  color:#fff;
+  text-align:center;
+  padding:7px 4px;
+  border-radius:7px;
+  cursor:pointer;
+}
+
+.icon:hover{
+  background:rgba(255,255,255,.14);
+}
+
+.icon .pic{
+  display:block;
+  font-size:38px;
+  line-height:45px;
+}
+
+.icon span:last-child{
+  font-size:12px;
+  text-shadow:0 1px 3px #000;
+}
+
+/* WINDOWS */
+
+.window{
+  position:absolute;
+  left:220px;
+  top:100px;
+  width:760px;
+  height:500px;
+  min-width:360px;
+  min-height:240px;
+  background:var(--window);
+  color:var(--text);
+  border:1px solid rgba(0,0,0,.35);
+  border-radius:9px;
+  overflow:hidden;
+  box-shadow:0 20px 55px rgba(0,0,0,.45);
+  display:none;
+  z-index:1000;
+}
+
+.window.active{
+  display:flex;
+  flex-direction:column;
+}
+
+.titlebar{
+  height:42px;
+  flex:0 0 42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-left:14px;
+  background:linear-gradient(#ffffff,#e9edf1);
+  color:#17202a;
+  border-bottom:1px solid var(--border);
+  cursor:default;
+}
+
+.dark .titlebar{
+  background:#292b2f;
+  color:#fff;
+}
+
+.title{
+  font-weight:600;
+  pointer-events:none;
+}
+
+.controls{
+  display:flex;
+  height:100%;
+}
+
+.window-control{
+  width:46px;
+  height:100%;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font-size:17px;
+}
+
+.window-control:hover{
+  background:#dfe5eb;
+}
+
+.window-control.close:hover{
+  background:#e81123;
+  color:white;
+}
+
+.content{
+  flex:1;
+  overflow:auto;
+}
+
+/* EXPLORER */
+
+.explorer{
+  display:flex;
+  height:100%;
+}
+
+.explorer-nav{
+  width:190px;
+  padding:18px;
+  background:var(--panel2);
+  border-right:1px solid var(--border);
+}
+
+.explorer-nav button{
+  width:100%;
+  padding:9px;
+  margin-bottom:5px;
+  border:0;
+  border-radius:5px;
+  text-align:left;
+  background:transparent;
+  color:var(--text);
+}
+
+.explorer-nav button:hover{
+  background:rgba(0,100,220,.12);
+}
+
+.explorer-main{
+  flex:1;
+  padding:18px;
+}
+
+.explorer-toolbar{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+
+.toolbtn{
+  border:1px solid #aeb7c1;
+  background:#fff;
+  border-radius:5px;
+  padding:7px 11px;
+}
+
+.dark .toolbtn{
+  background:#303238;
+  color:white;
+  border-color:#555;
+}
+
+.toolbtn:hover{
+  background:#e7edf3;
+}
+
+.files-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
+}
+
+.file-item{
+  padding:14px 8px;
+  text-align:center;
+  border-radius:7px;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+
+.file-item:hover{
+  background:rgba(0,100,220,.10);
+  border-color:#b7c8dc;
+}
+
+.file-item .big{
+  display:block;
+  font-size:40px;
+  margin-bottom:5px;
+}
+
+/* NOTEPAD */
+
+.note{
+  width:100%;
+  height:100%;
+  border:0;
+  outline:0;
+  resize:none;
+  padding:18px;
+  background:var(--window);
+  color:var(--text);
+  font-family:Consolas,monospace;
+  font-size:15px;
+}
+
+/* BROWSER */
+
+.browser-toolbar{
+  display:flex;
+  gap:6px;
+  padding:8px;
+  background:var(--panel2);
+  border-bottom:1px solid var(--border);
+}
+
+.browser-toolbar button{
+  width:38px;
+  border:1px solid #aab3bd;
+  background:white;
+  border-radius:5px;
+}
+
+.browser-address{
+  flex:1;
+  min-width:0;
+  border:1px solid #aab3bd;
+  border-radius:5px;
+  padding:7px 10px;
+  outline:0;
+}
+
+.browser-frame{
+  width:100%;
+  height:calc(100% - 55px);
+  border:0;
+  background:white;
+}
+
+/* PAINT */
+
+.paint-content{
+  padding:10px;
+  background:#e9edf2;
+  height:100%;
+}
+
+.paint-toolbar{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.paintbtn{
+  border:1px solid #aeb6c1;
+  background:white;
+  border-radius:5px;
+  padding:7px 10px;
+}
+
+.paintbtn.active{
+  background:#cfe5ff;
+  border-color:#3986d7;
+}
+
+.paint-canvas-wrap{
+  height:calc(100% - 55px);
+  overflow:auto;
+}
+
+#paintCanvas{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:315px;
+  background:#fff;
+  border:1px solid #aeb6c1;
+  cursor:crosshair;
+}
+
+/* CALCULATOR */
+
+.calculator{
+  padding:15px;
+  max-width:360px;
+  margin:auto;
+}
+
+.calc-display{
+  width:100%;
+  height:65px;
+  margin-bottom:10px;
+  border:1px solid #aab3bd;
+  border-radius:7px;
+  padding:10px;
+  text-align:right;
+  font-size:28px;
+  background:white;
+}
+
+.dark .calc-display{
+  background:#111;
+  color:white;
+}
+
+.calc-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:7px;
+}
+
+.calc-grid button{
+  height:55px;
+  border:1px solid #adb7c1;
+  border-radius:7px;
+  background:#fff;
+  font-size:18px;
+}
+
+.calc-grid button:hover{
+  background:#e9eef3;
+}
+
+.dark .calc-grid button{
+  background:#303238;
+  color:white;
+}
+
+/* SETTINGS */
+
+.settings{
+  padding:20px;
+}
+
+.settings-section{
+  margin-bottom:22px;
+}
+
+.settings-section h2{
+  margin:0 0 10px;
+  font-size:19px;
+}
+
+.setting-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px;
+  margin-bottom:7px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel);
+}
+
+.setting-info b{
+  display:block;
+  margin-bottom:3px;
+}
+
+.setting-info span{
+  font-size:12px;
+  opacity:.7;
+}
+
+.switch{
+  position:relative;
+  width:48px;
+  height:26px;
+  display:inline-block;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#888;
+  border-radius:20px;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:#1479d1;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(22px);
+}
+
+.network-status{
+  padding:12px;
+  border-radius:7px;
+  background:var(--panel2);
+}
+
+/* START MENU */
+
+.startmenu{
+  position:absolute;
+  left:10px;
+  bottom:65px;
+  width:510px;
+  max-height:650px;
+  padding:20px;
+  border-radius:12px;
+  background:var(--panel);
+  color:var(--text);
+  box-shadow:0 15px 50px rgba(0,0,0,.4);
+  display:none;
+  z-index:20000;
+  backdrop-filter:blur(20px);
+}
+
+.startmenu.show{
+  display:block;
+}
+
+.startmenu h2{
+  margin-top:0;
+}
+
+.start-search{
+  width:100%;
+  border:1px solid #adb7c1;
+  border-radius:7px;
+  padding:10px;
+  margin-bottom:15px;
+  outline:0;
+}
+
+.tiles{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:9px;
+}
+
+.tile{
+  min-height:85px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel2);
+  color:var(--text);
+  padding:10px;
+}
+
+.tile:hover{
+  background:#d9e8f7;
+}
+
+.emoji{
+  display:block;
+  font-size:30px;
+  margin-bottom:5px;
+}
+
+/* TASKBAR */
+
+.taskbar{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:58px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 9px;
+  background:rgba(20,25,35,.88);
+  backdrop-filter:blur(14px);
+  color:white;
+  z-index:25000;
+}
+
+.start{
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  color:white;
+  font-size:28px;
+}
+
+.start:hover{
+  background:rgba(255,255,255,.15);
+}
+
+.search{
+  width:210px;
+  height:38px;
+  border:0;
+  border-radius:6px;
+  padding:0 12px;
+  outline:0;
+}
+
+.taskapps{
+  display:flex;
+  gap:4px;
+  flex:1;
+}
+
+.taskapp{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:6px;
+  background:transparent;
+  color:white;
+  font-size:22px;
+}
+
+.taskapp:hover{
+  background:rgba(255,255,255,.15);
+}
+
+.clock{
+  min-width:110px;
+  text-align:center;
+  font-size:12px;
+  line-height:16px;
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  right:20px;
+  bottom:75px;
+  background:rgba(20,28,42,.96);
+  color:white;
+  padding:14px 18px;
+  border-radius:9px;
+  display:none;
+  z-index:50000;
+  box-shadow:0 8px 30px #0006;
+}
+
+.toast.show{
+  display:block;
+}
+
+/* CONTEXT MENU */
+
+.context-menu{
+  position:fixed;
+  display:none;
+  z-index:30000;
+  min-width:200px;
+  padding:5px;
+  border:1px solid #ccd3dc;
+  border-radius:7px;
+  background:white;
+  color:#222;
+  box-shadow:0 12px 35px #0005;
+}
+
+.context-menu button{
+  display:block;
+  width:100%;
+  padding:9px;
+  border:0;
+  border-radius:4px;
+  background:white;
+  text-align:left;
+}
+
+.context-menu button:hover{
+  background:#e8edf2;
+}
+
+/* BOOT */
+
+#bootScreen{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:#07111e;
+  color:white;
+}
+
+.boot-logo{
+  font-size:55px;
+  margin-bottom:15px;
+}
+
+.boot-title{
+  font-size:26px;
+  margin-bottom:25px;
+}
+
+.boot-progress{
+  width:330px;
+  height:7px;
+  background:#243344;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.boot-bar{
+  width:0;
+  height:100%;
+  background:#1799ff;
+  transition:width .2s;
+}
+
+.boot-status{
+  margin-top:12px;
+  font-size:13px;
+  opacity:.7;
+}
+
+/* LOCK */
+
+#lockScreen{
+  position:fixed;
+  inset:0;
+  z-index:49000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  background:linear-gradient(135deg,#0759a8,#101b43);
+  color:white;
+}
+
+.lock-time{
+  font-size:72px;
+  font-weight:300;
+}
+
+.lock-date{
+  font-size:20px;
+  margin:4px 0 30px;
+}
+
+.lock-btn{
+  border:0;
+  border-radius:7px;
+  padding:12px 28px;
+  cursor:pointer;
+}
+
+/* POWER */
+
+.power-menu{
+  position:fixed;
+  right:12px;
+  bottom:65px;
+  z-index:40000;
+  display:none;
+  width:210px;
+  padding:8px;
+  background:var(--panel);
+  color:var(--text);
+  border-radius:9px;
+  box-shadow:0 15px 40px #0005;
+}
+
+.power-menu.show{
+  display:block;
+}
+
+.power-menu button{
+  width:100%;
+  border:0;
+  padding:10px;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  border-radius:5px;
+}
+
+.power-menu button:hover{
+  background:rgba(0,100,220,.12);
+}
+
+/* MOBILE */
+
+@media(max-width:800px){
+  .window{
+    left:5px!important;
+    top:5px!important;
+    width:calc(100% - 10px)!important;
+    height:calc(100% - 70px)!important;
+  }
+
+  .logo-mark,
+  .welcome{
+    display:none;
+  }
+
+  .search{
+    display:none;
+  }
+
+  .tiles{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BOOT -->
+<div id="bootScreen">
+  <div class="boot-logo">🪟</div>
+  <div class="boot-title">Win Sim V5</div>
+  <div class="boot-progress">
+    <div class="boot-bar" id="bootBar"></div>
+  </div>
+  <div class="boot-status" id="bootStatus">Starting Win Sim...</div>
+</div>
+
+<!-- LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="lock-time" id="lockTime"></div>
+  <div class="lock-date" id="lockDate"></div>
+  <button class="lock-btn" type="button" onclick="unlockSim()">Sign in</button>
+</div>
+
+<!-- DESKTOP -->
+<div class="desktop" id="desktop">
+
+  <div class="wallpaper"></div>
+
+  <!-- Optional logo file -->
+  <img
+    class="logo-mark"
+    id="logo"
+    src="win-sim-logo.png"
+    alt="Win Sim logo"
+    onerror="this.style.display='none'"
+  >
+
+  <div class="welcome">
+    Welcome to <b>Win Sim V5</b>
+  </div>
+
+  <!-- DESKTOP ICONS -->
+  <div class="icons">
+
+    <div class="icon" ondblclick="openWin('explorer')">
+      <span class="pic">📁</span>
+      <span>File Explorer</span>
+    </div>
+
+    <div class="icon" ondblclick="openWin('browser')">
+      <span class="pic">🌐</span>
+      <span>Browser</span>
+    </div>
+
+    <div class="icon" ondblclick="openWin('notepad')">
+      <span class="pic">📝</span>
+      <span>Notepad</span>
+    </div>
+
+    <div class="icon" ondblclick="openWin('paint')">
+      <span class="pic">🎨</span>
+      <span>Paint</span>
+    </div>
+
+    <div class="icon" ondblclick="openWin('calculator')">
+      <span class="pic">🧮</span>
+      <span>Calculator</span>
+    </div>
+
+    <div class="icon" ondblclick="openWin('settings')">
+      <span class="pic">⚙️</span>
+      <span>Settings</span>
+    </div>
+
+    <div class="icon" ondblclick="showToast('Recycle Bin is empty')">
+      <span class="pic">🗑️</span>
+      <span>Recycle Bin</span>
+    </div>
+
+  </div>
+
+
+  <!-- ================= FILE EXPLORER ================= -->
+
+  <div class="window" id="explorer">
+
+    <div class="titlebar">
+      <div class="title">📁 File Explorer</div>
+
+      <div class="controls">
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('explorer');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('explorer');return false;"
+        >✕</button>
+      </div>
+    </div>
+
+    <div class="content explorer">
+
+      <div class="explorer-nav">
+
+        <button type="button" onclick="showExplorerHome()">🏠 Home</button>
+        <button type="button" onclick="showToast('Documents folder')">📄 Documents</button>
+        <button type="button" onclick="showToast('Pictures folder')">🖼️ Pictures</button>
+        <button type="button" onclick="showToast('Downloads folder')">⬇️ Downloads</button>
+        <button type="button" onclick="showToast('This PC')">💻 This PC</button>
+        <button type="button" onclick="showToast('Recycle Bin is empty')">🗑️ Recycle Bin</button>
+
+      </div>
+
+      <div class="explorer-main">
+
+        <div class="explorer-toolbar">
+
+          <button class="toolbtn" type="button" onclick="createTextFile()">
+            📄 New File
+          </button>
+
+          <button class="toolbtn" type="button" onclick="createFolder()">
+            📁 New Folder
+          </button>
+
+          <button class="toolbtn" type="button" onclick="importFile()">
+            ⬆️ Import
+          </button>
+
+          <button class="toolbtn" type="button" onclick="exportStorage()">
+            ⬇️ Export
+          </button>
+
+          <button class="toolbtn" type="button" onclick="clearVirtualStorage()">
+            🗑️ Clear
+          </button>
+
+        </div>
+
+        <h2>Home</h2>
+
+        <div class="files-grid" id="fileGrid"></div>
+
+        <h3>Storage</h3>
+
+        <div id="storageInfo">
+          Local simulated storage
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= NOTEPAD ================= -->
+
+  <div class="window" id="notepad">
+
+    <div class="titlebar">
+
+      <div class="title">📝 Notepad</div>
+
+      <div class="controls">
+
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('notepad');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('notepad');return false;"
+        >✕</button>
+
+      </div>
+
+    </div>
+
+    <div class="content" style="padding:0">
+
+      <textarea
+        class="note"
+        id="noteText"
+        spellcheck="false"
+        placeholder="Start typing..."
+      ></textarea>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= BROWSER ================= -->
+
+  <div class="window" id="browser">
+
+    <div class="titlebar">
+
+      <div class="title">🌐 Win Sim Browser</div>
+
+      <div class="controls">
+
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('browser');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('browser');return false;"
+        >✕</button>
+
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <div class="browser-toolbar">
+
+        <button type="button" onclick="browserBack()">←</button>
+        <button type="button" onclick="browserForward()">→</button>
+        <button type="button" onclick="browserReload()">⟳</button>
+
+        <input
+          class="browser-address"
+          id="browserAddress"
+          value="https://www.wikipedia.org/"
+          onkeydown="if(event.key==='Enter') navigateBrowser()"
+        >
+
+        <button type="button" onclick="navigateBrowser()">Go</button>
+
+        <button type="button" onclick="openExternalBrowser()">
+          External
+        </button>
+
+      </div>
+
+      <div style="padding:7px;background:var(--panel2);display:flex;gap:6px;flex-wrap:wrap">
+
+        <button class="toolbtn" type="button"
+          onclick="loadBrowser('https://www.wikipedia.org/')">
+          Wikipedia
+        </button>
+
+        <button class="toolbtn" type="button"
+          onclick="loadBrowser('https://www.google.com/')">
+          Google
+        </button>
+
+        <button class="toolbtn" type="button"
+          onclick="loadBrowser('https://www.bing.com/')">
+          Bing
+        </button>
+
+        <button class="toolbtn" type="button"
+          onclick="loadBrowser('https://www.youtube.com/')">
+          YouTube
+        </button>
+
+      </div>
+
+      <iframe
+        class="browser-frame"
+        id="browserFrame"
+        title="Win Sim Browser"
+        src="https://www.wikipedia.org/"
+      ></iframe>
+
+    </div>
+  </div>
+
+
+  <!-- ================= PAINT ================= -->
+
+  <div class="window" id="paint">
+
+    <div class="titlebar">
+
+      <div class="title">🎨 Paint</div>
+
+      <div class="controls">
+
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('paint');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('paint');return false;"
+        >✕</button>
+
+      </div>
+
+    </div>
+
+    <div class="content paint-content">
+
+      <div class="paint-toolbar">
+
+        <button class="paintbtn" id="toolBrush" type="button"
+          onclick="setPaintTool('brush')">
+          🖌️ Brush
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="setPaintTool('pencil')">
+          ✏️ Pencil
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="setPaintTool('eraser')">
+          🧽 Eraser
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="setPaintTool('line')">
+          ╱ Line
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="setPaintTool('rect')">
+          ▭ Rectangle
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="setPaintTool('circle')">
+          ◯ Circle
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="clearPaint()">
+          🗑️ Clear
+        </button>
+
+        <button class="paintbtn" type="button"
+          onclick="savePaint()">
+          💾 Save
+        </button>
+
+        <label>
+          Size
+          <input id="brushSize" type="range" min="1" max="40" value="6">
+        </label>
+
+        <label>
+          Color
+          <input id="paintColor" type="color" value="#111111">
+        </label>
+
+      </div>
+
+      <div class="paint-canvas-wrap">
+
+        <canvas id="paintCanvas"></canvas>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ================= CALCULATOR ================= -->
+
+  <div class="window" id="calculator">
+
+    <div class="titlebar">
+
+      <div class="title">🧮 Calculator</div>
+
+      <div class="controls">
+
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('calculator');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('calculator');return false;"
+        >✕</button>
+
+      </div>
+
+    </div>
+
+    <div class="content">
+
+      <div class="calculator">
+
+        <input
+          id="calcDisplay"
+          class="calc-display"
+          value=""
+          readonly
+        >
+
+        <div class="calc-grid">
+
+          <button type="button" onclick="calcClear()">C</button>
+          <button type="button" onclick="calcBackspace()">⌫</button>
+          <button type="button" onclick="calcAdd('(')">(</button>
+          <button type="button" onclick="calcAdd(')')">)</button>
+
+          <button type="button" onclick="calcAdd('7')">7</button>
+          <button type="button" onclick="calcAdd('8')">8</button>
+          <button type="button" onclick="calcAdd('9')">9</button>
+          <button type="button" onclick="calcAdd('/')">÷</button>
+
+          <button type="button" onclick="calcAdd('4')">4</button>
+          <button type="button" onclick="calcAdd('5')">5</button>
+          <button type="button" onclick="calcAdd('6')">6</button>
+          <button type="button" onclick="calcAdd('*')">×</button>
+
+          <button type="button" onclick="calcAdd('1')">1</button>
+          <button type="button" onclick="calcAdd('2')">2</button>
+          <button type="button" onclick="calcAdd('3')">3</button>
+          <button type="button" onclick="calcAdd('-')">−</button>
+
+          <button type="button" onclick="calcAdd('0')">0</button>
+          <button type="button" onclick="calcAdd('.')">.</button>
+          <button type="button" onclick="calcEquals()">=</button>
+          <button type="button" onclick="calcAdd('+')">+</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= SETTINGS ================= -->
+
+  <div class="window" id="settings">
+
+    <div class="titlebar">
+
+      <div class="title">⚙️ Settings</div>
+
+      <div class="controls">
+
+        <button
+          class="window-control"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();minWin('settings');return false;"
+        >—</button>
+
+        <button
+          class="window-control close"
+          type="button"
+          onclick="event.preventDefault();event.stopPropagation();closeWin('settings');return false;"
+        >✕</button>
+
+      </div>
+
+    </div>
+
+    <div class="content settings">
+
+      <div class="settings-section">
+
+        <h2>System</h2>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Display</b>
+            <span>Screen and appearance settings</span>
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="showToast('Display settings are simulated')">
+            Open
+          </button>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Sound</b>
+            <span>System sound controls</span>
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="showToast('Sound settings are simulated')">
+            Open
+          </button>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Storage</b>
+            <span>Manage simulated local storage</span>
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="openWin('explorer')">
+            Open
+          </button>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Power & battery</b>
+            <span>Sleep, lock, restart and shutdown</span>
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="powerMenu()">
+            Power
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- NETWORK INSIDE SETTINGS -->
+
+      <div class="settings-section">
+
+        <h2>Network & Internet</h2>
+
+        <div class="network-status">
+
+          <b>Wi-Fi / Internet</b>
+
+          <div id="internetStatus">
+            Checking connection...
+          </div>
+
+          <div style="margin-top:10px">
+
+            <button class="toolbtn" type="button"
+              onclick="checkInternet()">
+              Check Internet
+            </button>
+
+          </div>
+
+        </div>
+
+        <br>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+
+            <b>Bluetooth</b>
+
+            <span id="bluetoothStatus">
+              Checking browser support...
+            </span>
+
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="requestBluetooth()">
+            Connect
+          </button>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+
+            <b>Network information</b>
+
+            <span>Connection information available to the browser</span>
+
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="showNetworkInformation()">
+            View
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- PERSONALIZATION -->
+
+      <div class="settings-section">
+
+        <h2>Personalization</h2>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Dark mode</b>
+            <span>Change the Win Sim appearance</span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              id="darkModeToggle"
+              type="checkbox"
+              onchange="toggleDarkMode(this.checked)"
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Animations</b>
+            <span>Window and interface animations</span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              id="animationToggle"
+              type="checkbox"
+              checked
+              onchange="showToast(this.checked?'Animations enabled':'Animations disabled')"
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Notifications</b>
+            <span>Show simulator notifications</span>
+          </div>
+
+          <label class="switch">
+
+            <input
+              id="notificationToggle"
+              type="checkbox"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- APPS -->
+
+      <div class="settings-section">
+
+        <h2>Apps</h2>
+
+        <div class="setting-card">
+          <div class="setting-info">
+            <b>Browser</b>
+            <span>Win Sim Browser</span>
+          </div>
+          <button class="toolbtn" type="button"
+            onclick="openWin('browser')">
+            Open
+          </button>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-info">
+            <b>Paint</b>
+            <span>Drawing application</span>
+          </div>
+          <button class="toolbtn" type="button"
+            onclick="openWin('paint')">
+            Open
+          </button>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-info">
+            <b>Notepad</b>
+            <span>Text editor</span>
+          </div>
+          <button class="toolbtn" type="button"
+            onclick="openWin('notepad')">
+            Open
+          </button>
+        </div>
+
+        <div class="setting-card">
+          <div class="setting-info">
+            <b>Calculator</b>
+            <span>Calculator</span>
+          </div>
+          <button class="toolbtn" type="button"
+            onclick="openWin('calculator')">
+            Open
+          </button>
+        </div>
+
+      </div>
+
+
+      <!-- PRIVACY -->
+
+      <div class="settings-section">
+
+        <h2>Privacy & Security</h2>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+            <b>Browser permissions</b>
+            <span>Permissions are controlled by your browser</span>
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="showToast('Browser permissions are controlled by your browser')">
+            Info
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ABOUT -->
+
+      <div class="settings-section">
+
+        <h2>About</h2>
+
+        <div class="setting-card">
+
+          <div class="setting-info">
+
+            <b>Win Sim V5</b>
+
+            <span>
+              Browser-based Windows simulator
+            </span>
+
+          </div>
+
+          <button class="toolbtn" type="button"
+            onclick="showToast('Win Sim V5')">
+            Version
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= START MENU ================= -->
+
+  <div class="startmenu" id="startmenu">
+
+    <h2>Start</h2>
+
+    <input
+      class="start-search"
+      id="startSearch"
+      placeholder="Search apps and files"
+      oninput="filterTiles(this.value)"
+    >
+
+    <div class="tiles" id="tiles">
+
+      <button
+        class="tile"
+        data-name="file explorer"
+        type="button"
+        onclick="openFromStart('explorer')"
+      >
+        <span class="emoji">📁</span>
+        File Explorer
+      </button>
+
+      <button
+        class="tile"
+        data-name="browser"
+        type="button"
+        onclick="openFromStart('browser')"
+      >
+        <span class="emoji">🌐</span>
+        Browser
+      </button>
+
+      <button
+        class="tile"
+        data-name="notepad"
+        type="button"
+        onclick="openFromStart('notepad')"
+      >
+        <span class="emoji">📝</span>
+        Notepad
+      </button>
+
+      <button
+        class="tile"
+        data-name="paint"
+        type="button"
+        onclick="openFromStart('paint')"
+      >
+        <span class="emoji">🎨</span>
+        Paint
+      </button>
+
+      <button
+        class="tile"
+        data-name="calculator"
+        type="button"
+        onclick="openFromStart('calculator')"
+      >
+        <span class="emoji">🧮</span>
+        Calculator
+      </button>
+
+      <button
+        class="tile"
+        data-name="settings"
+        type="button"
+        onclick="openFromStart('settings')"
+      >
+        <span class="emoji">⚙️</span>
+        Settings
+      </button>
+
+      <button
+        class="tile"
+        data-name="about"
+        type="button"
+        onclick="toggleStart();showToast('Win Sim V5 — Windows Simulator')"
+      >
+        <span class="emoji">ℹ️</span>
+        About
+      </button>
+
+      <button
+        class="tile"
+        data-name="recycle bin"
+        type="button"
+        onclick="toggleStart();showToast('Recycle Bin is empty')"
+      >
+        <span class="emoji">🗑️</span>
+        Recycle Bin
+      </button>
+
+      <button
+        class="tile"
+        data-name="power"
+        type="button"
+        onclick="toggleStart();powerMenu()"
+      >
+        <span class="emoji">⏻</span>
+        Power
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= POWER MENU ================= -->
+
+  <div class="power-menu" id="powerMenu">
+
+    <button type="button" onclick="lockSim();hidePowerMenu()">
+      🔒 Lock
+    </button>
+
+    <button type="button" onclick="restartSim()">
+      🔄 Restart
+    </button>
+
+    <button type="button" onclick="sleepSim()">
+      🌙 Sleep
+    </button>
+
+    <button type="button" onclick="shutdownSim()">
+      ⏻ Shut down
+    </button>
+
+  </div>
+
+
+  <!-- ================= CONTEXT MENU ================= -->
+
+  <div class="context-menu" id="contextMenu">
+
+    <button type="button" onclick="newTextFile()">
+      📄 New text document
+    </button>
+
+    <button type="button" onclick="contextOpenExplorer()">
+      📁 Open File Explorer
+    </button>
+
+    <button type="button" onclick="contextPersonalize()">
+      🎨 Personalize
+    </button>
+
+    <button type="button" onclick="refreshDesktop()">
+      🔄 Refresh
+    </button>
+
+  </div>
+
+
+  <!-- ================= TASKBAR ================= -->
+
+  <div class="taskbar">
+
+    <button
+      class="start"
+      type="button"
+      onclick="toggleStart()"
+      title="Start"
+    >
+      ⊞
+    </button>
+
+    <input
+      class="search"
+      id="taskSearch"
+      placeholder="Search"
+      onclick="toggleStart()"
+      onkeydown="if(event.key==='Enter') searchStart(this.value)"
+    >
+
+    <div class="taskapps">
+
+      <button
+        class="taskapp"
+        type="button"
+        title="File Explorer"
+        onclick="openWin('explorer')"
+      >📁</button>
+
+      <button
+        class="taskapp"
+        type="button"
+        title="Browser"
+        onclick="openWin('browser')"
+      >🌐</button>
+
+      <button
+        class="taskapp"
+        type="button"
+        title="Notepad"
+        onclick="openWin('notepad')"
+      >📝</button>
+
+      <button
+        class="taskapp"
+        type="button"
+        title="Paint"
+        onclick="openWin('paint')"
+      >🎨</button>
+
+      <button
+        class="taskapp"
+        type="button"
+        title="Calculator"
+        onclick="openWin('calculator')"
+      >🧮</button>
+
+      <button
+        class="taskapp"
+        type="button"
+        title="Settings"
+        onclick="openWin('settings')"
+      >⚙️</button>
+
+    </div>
+
+    <button
+      class="taskapp"
+      type="button"
+      title="Lock"
+      onclick="lockSim()"
+    >
+      🔒
+    </button>
+
+    <div class="clock" id="clock"></div>
+
+  </div>
+
+
+  <div class="toast" id="toast"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   WIN SIM V5
+   PATCHED WINDOW CONTROLS
+   ========================================================= */
+
+
+/* =========================
+   BASIC STATE
+   ========================= */
+
+let zCounter = 1000;
+
+const windowIds = [
+  "explorer",
+  "browser",
+  "notepad",
+  "paint",
+  "calculator",
+  "settings"
+];
+
+
+/* =========================
+   BOOT
+   ========================= */
+
+let bootProgress = 0;
+
+const bootMessages = [
+  "Starting Win Sim...",
+  "Loading simulated kernel...",
+  "Starting system services...",
+  "Loading desktop...",
+  "Starting applications...",
+  "Ready."
+];
+
+const bootTimer = setInterval(() => {
+
+  bootProgress += 20;
+
+  const bar = document.getElementById("bootBar");
+  const status = document.getElementById("bootStatus");
+
+  if(bar){
+    bar.style.width = bootProgress + "%";
+  }
+
+  if(status){
+    status.textContent =
+      bootMessages[Math.min(
+        Math.floor(bootProgress / 20),
+        bootMessages.length - 1
+      )];
+  }
+
+  if(bootProgress >= 100){
+
+    clearInterval(bootTimer);
+
+    setTimeout(() => {
+
+      const boot = document.getElementById("bootScreen");
+
+      if(boot){
+        boot.style.display = "none";
+      }
+
+      showToast("Welcome to Win Sim V5");
+
+    },500);
+
+  }
+
+},250);
+
+
+/* =========================
+   WINDOW FUNCTIONS
+   ========================= */
+
+/*
+  PATCH:
+  This function always hides the requested window.
+  It also removes the active state and resets
+  the minimized state.
+*/
+
+function closeWin(id){
+
+  const win = document.getElementById(id);
+
+  if(!win){
+    return;
+  }
+
+  win.style.display = "none";
+  win.classList.remove("active");
+  win.dataset.minimized = "false";
+
+  updateTaskbar();
+
+}
+
+
+/*
+  PATCH:
+  Minimize works independently from close.
+*/
+
+function minWin(id){
+
+  const win = document.getElementById(id);
+
+  if(!win){
+    return;
+  }
+
+  win.style.display = "none";
+  win.dataset.minimized = "true";
+
+}
+
+
+/*
+  Open window.
+*/
+
+function openWin(id){
+
+  const win = document.getElementById(id);
+
+  if(!win){
+    return;
+  }
+
+  win.style.display = "flex";
+  win.classList.add("active");
+  win.dataset.minimized = "false";
+
+  win.style.zIndex = ++zCounter;
+
+  if(id === "settings"){
+    checkInternet();
+    checkBluetoothSupport();
+  }
+
+  if(id === "paint"){
+    resizePaintCanvas();
+  }
+
+  if(id === "explorer"){
+    renderFiles();
+  }
+
+  updateTaskbar();
+
+}
+
+
+/*
+  Bring window forward.
+*/
+
+function focusWindow(id){
+
+  const win = document.getElementById(id);
+
+  if(win){
+    win.style.zIndex = ++zCounter;
+  }
+
+}
+
+
+/*
+  Update taskbar state.
+*/
+
+function updateTaskbar(){
+
+  // Taskbar buttons remain functional.
+  // No destructive DOM changes are needed.
+}
+
+
+/* =========================
+   START MENU
+   ========================= */
+
+function toggleStart(){
+
+  const menu = document.getElementById("startmenu");
+
+  if(!menu){
+    return;
+  }
+
+  menu.classList.toggle("show");
+
+}
+
+
+function openFromStart(id){
+
+  toggleStart();
+  openWin(id);
+
+}
+
+
+function filterTiles(value){
+
+  const query = String(value || "")
+    .trim()
+    .toLowerCase();
+
+  document
+    .querySelectorAll("#tiles .tile")
+    .forEach(tile => {
+
+      const name =
+        tile.dataset.name || "";
+
+      tile.style.display =
+        !query || name.includes(query)
+          ? ""
+          : "none";
+
+    });
+
+}
+
+
+function searchStart(value){
+
+  toggleStart();
+
+  const search =
+    document.getElementById("startSearch");
+
+  if(search){
+    search.value = value;
+    filterTiles(value);
+  }
+
+}
+
+
+/* =========================
+   TOAST
+   ========================= */
+
+let toastTimer;
+
+function showToast(message){
+
+  const toast =
+    document.getElementById("toast");
+
+  if(!toast){
+    return;
+  }
+
+  toast.textContent = message;
+  toast.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    toast.classList.remove("show");
+  },2500);
+
+}
+
+
+/* =========================
+   CLOCK
+   ========================= */
+
+function updateClock(){
+
+  const now = new Date();
+
+  const time =
+    now.toLocaleTimeString([],{
+      hour:"numeric",
+      minute:"2-digit"
+    });
+
+  const date =
+    now.toLocaleDateString([],{
+      month:"numeric",
+      day:"numeric",
+      year:"numeric"
+    });
+
+  const clock =
+    document.getElementById("clock");
+
+  if(clock){
+    clock.innerHTML =
+      time + "<br>" + date;
+  }
+
+  const lockTime =
+    document.getElementById("lockTime");
+
+  const lockDate =
+    document.getElementById("lockDate");
+
+  if(lockTime){
+    lockTime.textContent =
+      now.toLocaleTimeString([],{
+        hour:"numeric",
+        minute:"2-digit"
+      });
+  }
+
+  if(lockDate){
+    lockDate.textContent =
+      now.toLocaleDateString([],{
+        weekday:"long",
+        month:"long",
+        day:"numeric"
+      });
+  }
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+/* =========================
+   LOCK / SLEEP
+   ========================= */
+
+function lockSim(){
+
+  const screen =
+    document.getElementById("lockScreen");
+
+  if(screen){
+    screen.style.display = "flex";
+  }
+
+}
+
+
+function unlockSim(){
+
+  const screen =
+    document.getElementById("lockScreen");
+
+  if(screen){
+    screen.style.display = "none";
+  }
+
+  showToast("Signed in");
+
+}
+
+
+function sleepSim(){
+
+  hidePowerMenu();
+  lockSim();
+
+  showToast("Win Sim is sleeping");
+
+}
+
+
+/* =========================
+   POWER
+   ========================= */
+
+function powerMenu(){
+
+  const menu =
+    document.getElementById("powerMenu");
+
+  if(menu){
+    menu.classList.toggle("show");
+  }
+
+}
+
+
+function hidePowerMenu(){
+
+  const menu =
+    document.getElementById("powerMenu");
+
+  if(menu){
+    menu.classList.remove("show");
+  }
+
+}
+
+
+function restartSim(){
+
+  hidePowerMenu();
+
+  showToast("Restarting Win Sim...");
+
+  setTimeout(() => {
+    location.reload();
+  },1000);
+
+}
+
+
+function shutdownSim(){
+
+  hidePowerMenu();
+
+  window.__shutdown = true;
+
+  document.body.innerHTML = `
+    <div style="
+      position:fixed;
+      inset:0;
+      background:#000;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      font-family:Segoe UI,Arial,sans-serif;
+    ">
+      <div style="font-size:55px">🪟</div>
+      <div style="font-size:22px;margin-top:15px">
+        Win Sim is shutting down
+      </div>
+      <div style="opacity:.6;margin-top:10px">
+        You can close this tab.
+      </div>
+    </div>
+  `;
+
+}
+
+
+/* =========================
+   CONTEXT MENU
+   ========================= */
+
+document.addEventListener("contextmenu",event => {
+
+  if(event.target.closest(".window")){
+    return;
+  }
+
+  event.preventDefault();
+
+  const menu =
+    document.getElementById("contextMenu");
+
+  if(!menu){
+    return;
+  }
+
+  menu.style.left =
+    Math.min(event.clientX,window.innerWidth-220) + "px";
+
+  menu.style.top =
+    Math.min(event.clientY,window.innerHeight-210) + "px";
+
+  menu.style.display = "block";
+
+});
+
+
+document.addEventListener("click",event => {
+
+  const menu =
+    document.getElementById("contextMenu");
+
+  if(menu && !event.target.closest("#contextMenu")){
+    menu.style.display = "none";
+  }
+
+});
+
+
+function hideContext(){
+
+  const menu =
+    document.getElementById("contextMenu");
+
+  if(menu){
+    menu.style.display = "none";
+  }
+
+}
+
+
+function contextOpenExplorer(){
+
+  hideContext();
+  openWin("explorer");
+
+}
+
+
+function contextPersonalize(){
+
+  hideContext();
+  openWin("settings");
+
+}
+
+
+function refreshDesktop(){
+
+  hideContext();
+
+  const desktop =
+    document.getElementById("desktop");
+
+  if(desktop){
+
+    desktop.style.opacity = ".75";
+
+    setTimeout(() => {
+      desktop.style.opacity = "1";
+    },150);
+
+  }
+
+  showToast("Desktop refreshed");
+
+}
+
+
+/* =========================
+   NOTEPAD STORAGE
+   ========================= */
+
+const NOTE_KEY =
+  "winsim_v5_notepad";
+
+function loadNotepad(){
+
+  const note =
+    document.getElementById("noteText");
+
+  if(!note){
+    return;
+  }
+
+  const saved =
+    localStorage.getItem(NOTE_KEY);
+
+  if(saved !== null){
+    note.value = saved;
+  }else{
+
+    note.value =
+`Welcome to Win Sim Notepad!
+
+This is a local browser simulation.
+
+Your notes are saved automatically.`;
+
+  }
+
+}
+
+
+document.addEventListener("DOMContentLoaded",() => {
+
+  loadNotepad();
+
+  const note =
+    document.getElementById("noteText");
+
+  if(note){
+
+    note.addEventListener("input",() => {
+
+      try{
+        localStorage.setItem(
+          NOTE_KEY,
+          note.value
+        );
+      }catch(error){
+        showToast("Could not save Notepad data");
+      }
+
+    });
+
+  }
+
+});
+
+
+/* =========================
+   VIRTUAL FILE SYSTEM
+   ========================= */
+
+const FILE_KEY =
+  "winsim_v5_files";
+
+function getFiles(){
+
+  try{
+
+    return JSON.parse(
+      localStorage.getItem(FILE_KEY) || "[]"
+    );
+
+  }catch(error){
+
+    return [];
+
+  }
+
+}
+
+
+function saveFiles(files){
+
+  localStorage.setItem(
+    FILE_KEY,
+    JSON.stringify(files)
+  );
+
+}
+
+
+function renderFiles(){
+
+  const grid =
+    document.getElementById("fileGrid");
+
+  if(!grid){
+    return;
+  }
+
+  const files = getFiles();
+
+  grid.innerHTML = "";
+
+  const defaults = [
+    {
+      name:"Documents",
+      type:"folder"
+    },
+    {
+      name:"Pictures",
+      type:"folder"
+    },
+    {
+      name:"Music",
+      type:"folder"
+    },
+    {
+      name:"Downloads",
+      type:"folder"
+    }
+  ];
+
+  [...defaults,...files].forEach(file => {
+
+    const item =
+      document.createElement("div");
+
+    item.className = "file-item";
+
+    item.innerHTML = `
+      <span class="big">
+        ${file.type === "folder" ? "📁" : "📄"}
+      </span>
+      <span>${escapeHTML(file.name)}</span>
+    `;
+
+    item.ondblclick = () => {
+
+      if(file.type === "file"){
+
+        openWin("notepad");
+
+        const note =
+          document.getElementById("noteText");
+
+        if(note && file.content){
+          note.value = file.content;
+        }
+
+      }else{
+
+        showToast(
+          "Opened " + file.name
+        );
+
+      }
+
+    };
+
+    grid.appendChild(item);
+
+  });
+
+  updateStorageInfo();
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function createTextFile(){
+
+  const name =
+    prompt("File name:","New Text Document.txt");
+
+  if(!name){
+    return;
+  }
+
+  const files =
+    getFiles();
+
+  files.push({
+    name:name,
+    type:"file",
+    content:""
+  });
+
+  saveFiles(files);
+  renderFiles();
+
+  showToast("Created " + name);
+
+}
+
+
+function createFolder(){
+
+  const name =
+    prompt("Folder name:","New Folder");
+
+  if(!name){
+    return;
+  }
+
+  const files =
+    getFiles();
+
+  files.push({
+    name:name,
+    type:"folder"
+  });
+
+  saveFiles(files);
+  renderFiles();
+
+  showToast("Created folder " + name);
+
+}
+
+
+function newTextFile(){
+
+  hideContext();
+
+  openWin("explorer");
+
+  setTimeout(() => {
+    createTextFile();
+  },100);
+
+}
+
+
+function showExplorerHome(){
+
+  renderFiles();
+  showToast("Home");
+
+}
+
+
+function updateStorageInfo(){
+
+  const info =
+    document.getElementById("storageInfo");
+
+  if(!info){
+    return;
+  }
+
+  let bytes = 0;
+
+  try{
+
+    bytes =
+      new Blob([
+        localStorage.getItem(FILE_KEY) || ""
+      ]).size;
+
+  }catch(error){}
+
+  const kb =
+    (bytes / 1024).toFixed(1);
+
+  info.textContent =
+    `${kb} KB used in simulated local storage`;
+
+}
+
+
+function clearVirtualStorage(){
+
+  if(!confirm(
+    "Clear the simulated Win Sim file storage?"
+  )){
+    return;
+  }
+
+  localStorage.removeItem(FILE_KEY);
+
+  renderFiles();
+
+  showToast("Simulated storage cleared");
+
+}
+
+
+function exportStorage(){
+
+  const data =
+    JSON.stringify(getFiles(),null,2);
+
+  const blob =
+    new Blob(
+      [data],
+      {type:"application/json"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+  a.download = "WinSim-V5-Storage.json";
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  showToast("Storage exported");
+
+}
+
+
+function importFile(){
+
+  const input =
+    document.createElement("input");
+
+  input.type = "file";
+
+  input.onchange = () => {
+
+    const file =
+      input.files[0];
+
+    if(!file){
+      return;
+    }
+
+    const reader =
+      new FileReader();
+
+    reader.onload = () => {
+
+      const files =
+        getFiles();
+
+      files.push({
+        name:file.name,
+        type:"file",
+        content:String(reader.result)
+      });
+
+      try{
+
+        saveFiles(files);
+        renderFiles();
+
+        showToast(
+          "Imported " + file.name
+        );
+
+      }catch(error){
+
+        showToast(
+          "The file is too large for simulated storage"
+        );
+
+      }
+
+    };
+
+    reader.readAsText(file);
+
+  };
+
+  input.click();
+
+}
+
+
+/* =========================
+   BROWSER
+   ========================= */
+
+function loadBrowser(url){
+
+  const frame =
+    document.getElementById("browserFrame");
+
+  const address =
+    document.getElementById("browserAddress");
+
+  if(frame){
+    frame.src = url;
+  }
+
+  if(address){
+    address.value = url;
+  }
+
+}
+
+
+function navigateBrowser(){
+
+  let url =
+    document.getElementById("browserAddress").value.trim();
+
+  if(!url){
+    return;
+  }
+
+  if(!/^https?:\/\//i.test(url)){
+    url = "https://" + url;
+  }
+
+  loadBrowser(url);
+
+}
+
+
+function browserBack(){
+
+  const frame =
+    document.getElementById("browserFrame");
+
+  try{
+    frame.contentWindow.history.back();
+  }catch(error){
+    showToast("Back navigation unavailable");
+  }
+
+}
+
+
+function browserForward(){
+
+  const frame =
+    document.getElementById("browserFrame");
+
+  try{
+    frame.contentWindow.history.forward();
+  }catch(error){
+    showToast("Forward navigation unavailable");
+  }
+
+}
+
+
+function browserReload(){
+
+  const frame =
+    document.getElementById("browserFrame");
+
+  if(frame){
+    frame.src = frame.src;
+  }
+
+}
+
+
+function openExternalBrowser(){
+
+  const address =
+    document.getElementById("browserAddress").value.trim();
+
+  let url = address;
+
+  if(!/^https?:\/\//i.test(url)){
+    url = "https://" + url;
+  }
+
+  window.open(
+    url,
+    "_blank",
+    "noopener"
+  );
+
+}
+
+
+/* =========================
+   PAINT
+   ========================= */
+
+let paintTool = "brush";
+let painting = false;
+let startX = 0;
+let startY = 0;
+let snapshot = null;
+
+const paintCanvas =
+  document.getElementById("paintCanvas");
+
+const paintCtx =
+  paintCanvas.getContext("2d");
+
+
+function resizePaintCanvas(){
+
+  const rect =
+    paintCanvas.getBoundingClientRect();
+
+  const old =
+    document.createElement("canvas");
+
+  old.width =
+    paintCanvas.width || 800;
+
+  old.height =
+    paintCanvas.height || 500;
+
+  if(paintCanvas.width && paintCanvas.height){
+
+    old.getContext("2d")
+      .drawImage(
+        paintCanvas,
+        0,
+        0
+      );
+
+  }
+
+  paintCanvas.width =
+    Math.max(600,Math.floor(rect.width));
+
+  paintCanvas.height =
+    Math.max(400,Math.floor(rect.height));
+
+  paintCtx.fillStyle = "white";
+  paintCtx.fillRect(
+    0,
+    0,
+    paintCanvas.width,
+    paintCanvas.height
+  );
+
+}
+
+
+function setPaintTool(tool){
+
+  paintTool = tool;
+
+  document
+    .querySelectorAll(".paintbtn")
+    .forEach(button => {
+      button.classList.remove("active");
+    });
+
+  showToast(
+    "Paint tool: " + tool
+  );
+
+}
+
+
+function paintPosition(event){
+
+  const rect =
+    paintCanvas.getBoundingClientRect();
+
+  const scaleX =
+    paintCanvas.width / rect.width;
+
+  const scaleY =
+    paintCanvas.height / rect.height;
+
+  return {
+    x:(event.clientX - rect.left) * scaleX,
+    y:(event.clientY - rect.top) * scaleY
+  };
+
+}
+
+
+paintCanvas.addEventListener("pointerdown",event => {
+
+  event.stopPropagation();
+
+  painting = true;
+
+  const p =
+    paintPosition(event);
+
+  startX = p.x;
+  startY = p.y;
+
+  if(paintTool === "brush" ||
+     paintTool === "pencil" ||
+     paintTool === "eraser"){
+
+    drawPoint(p.x,p.y);
+
+  }else{
+
+    snapshot =
+      paintCtx.getImageData(
+        0,
+        0,
+        paintCanvas.width,
+        paintCanvas.height
+      );
+
+  }
+
+});
+
+
+paintCanvas.addEventListener("pointermove",event => {
+
+  if(!painting){
+    return;
+  }
+
+  event.stopPropagation();
+
+  const p =
+    paintPosition(event);
+
+  if(
+    paintTool === "brush" ||
+    paintTool === "pencil" ||
+    paintTool === "eraser"
+  ){
+
+    drawLine(
+      startX,
+      startY,
+      p.x,
+      p.y
+    );
+
+    startX = p.x;
+    startY = p.y;
+
+  }else{
+
+    if(snapshot){
+
+      paintCtx.putImageData(
+        snapshot,
+        0,
+        0
+      );
+
+    }
+
+    drawShape(
+      startX,
+      startY,
+      p.x,
+      p.y
+    );
+
+  }
+
+});
+
+
+window.addEventListener("pointerup",() => {
+
+  if(painting){
+    painting = false;
+  }
+
+});
+
+
+function drawPoint(x,y){
+
+  const color =
+    document.getElementById("paintColor").value;
+
+  const size =
+    Number(
+      document.getElementById("brushSize").value
+    );
+
+  paintCtx.fillStyle =
+    paintTool === "eraser"
+      ? "white"
+      : color;
+
+  paintCtx.beginPath();
+
+  paintCtx.arc(
+    x,
+    y,
+    size / 2,
+    0,
+    Math.PI * 2
+  );
+
+  paintCtx.fill();
+
+}
+
+
+function drawLine(x1,y1,x2,y2){
+
+  const color =
+    document.getElementById("paintColor").value;
+
+  const size =
+    Number(
+      document.getElementById("brushSize").value
+    );
+
+  paintCtx.strokeStyle =
+    paintTool === "eraser"
+      ? "white"
+      : color;
+
+  paintCtx.lineWidth =
+    paintTool === "pencil"
+      ? Math.max(1,size/2)
+      : size;
+
+  paintCtx.lineCap = "round";
+
+  paintCtx.beginPath();
+
+  paintCtx.moveTo(x1,y1);
+  paintCtx.lineTo(x2,y2);
+
+  paintCtx.stroke();
+
+}
+
+
+function drawShape(x1,y1,x2,y2){
+
+  const color =
+    document.getElementById("paintColor").value;
+
+  const size =
+    Number(
+      document.getElementById("brushSize").value
+    );
+
+  paintCtx.strokeStyle = color;
+  paintCtx.lineWidth = size;
+
+  const width =
+    x2 - x1;
+
+  const height =
+    y2 - y1;
+
+  if(paintTool === "line"){
+
+    paintCtx.beginPath();
+    paintCtx.moveTo(x1,y1);
+    paintCtx.lineTo(x2,y2);
+    paintCtx.stroke();
+
+  }
+
+  if(paintTool === "rect"){
+
+    paintCtx.strokeRect(
+      x1,
+      y1,
+      width,
+      height
+    );
+
+  }
+
+  if(paintTool === "circle"){
+
+    const radius =
+      Math.sqrt(
+        width * width +
+        height * height
+      );
+
+    paintCtx.beginPath();
+
+    paintCtx.arc(
+      x1,
+      y1,
+      radius,
+      0,
+      Math.PI * 2
+    );
+
+    paintCtx.stroke();
+
+  }
+
+}
+
+
+function clearPaint(){
+
+  paintCtx.fillStyle = "white";
+
+  paintCtx.fillRect(
+    0,
+    0,
+    paintCanvas.width,
+    paintCanvas.height
+  );
+
+  showToast("Canvas cleared");
+
+}
+
+
+function savePaint(){
+
+  const link =
+    document.createElement("a");
+
+  link.download =
+    "WinSim-Paint.png";
+
+  link.href =
+    paintCanvas.toDataURL("image/png");
+
+  link.click();
+
+  showToast("Paint image saved");
+
+}
+
+
+/* =========================
+   CALCULATOR
+   ========================= */
+
+function calcAdd(value){
+
+  const display =
+    document.getElementById("calcDisplay");
+
+  display.value += value;
+
+}
+
+
+function calcClear(){
+
+  document.getElementById(
+    "calcDisplay"
+  ).value = "";
+
+}
+
+
+function calcBackspace(){
+
+  const display =
+    document.getElementById("calcDisplay");
+
+  display.value =
+    display.value.slice(0,-1);
+
+}
+
+
+function calcEquals(){
+
+  const display =
+    document.getElementById("calcDisplay");
+
+  const expression =
+    display.value;
+
+  /*
+    Only allow normal calculator characters.
+    This prevents arbitrary JavaScript from
+    being evaluated.
+  */
+
+  if(!/^[0-9+\-*/().\s]+$/.test(expression)){
+
+    display.value = "Error";
+    return;
+
+  }
+
+  try{
+
+    const result =
+      Function(
+        '"use strict";return (' +
+        expression +
+        ')'
+      )();
+
+    if(
+      typeof result !== "number" ||
+      !Number.isFinite(result)
+    ){
+
+      display.value = "Error";
+
+    }else{
+
+      display.value = String(result);
+
+    }
+
+  }catch(error){
+
+    display.value = "Error";
+
+  }
+
+}
+
+
+/* =========================
+   NETWORK
+   ========================= */
+
+function checkInternet(){
+
+  const status =
+    document.getElementById("internetStatus");
+
+  if(!status){
+    return;
+  }
+
+  if(navigator.onLine){
+
+    status.innerHTML =
+      "🟢 <b>Online</b><br>" +
+      "The browser reports an active internet connection.";
+
+  }else{
+
+    status.innerHTML =
+      "🔴 <b>Offline</b><br>" +
+      "The browser reports no internet connection.";
+
+  }
+
+}
+
+
+window.addEventListener(
+  "online",
+  checkInternet
+);
+
+window.addEventListener(
+  "offline",
+  checkInternet
+);
+
+
+function checkBluetoothSupport(){
+
+  const status =
+    document.getElementById("bluetoothStatus");
+
+  if(!status){
+    return;
+  }
+
+  if("bluetooth" in navigator){
+
+    status.textContent =
+      "Web Bluetooth is available in this browser.";
+
+  }else{
+
+    status.textContent =
+      "Web Bluetooth is not available in this browser.";
+
+  }
+
+}
+
+
+async function requestBluetooth(){
+
+  if(!("bluetooth" in navigator)){
+
+    showToast(
+      "Web Bluetooth is not supported by this browser"
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const device =
+      await navigator.bluetooth.requestDevice({
+        acceptAllDevices:true
+      });
+
+    showToast(
+      "Bluetooth device selected: " +
+      (device.name || "Unnamed device")
+    );
+
+  }catch(error){
+
+    if(error.name === "NotFoundError"){
+
+      showToast(
+        "Bluetooth selection cancelled"
+      );
+
+    }else{
+
+      showToast(
+        "Bluetooth request could not be completed"
+      );
+
+    }
+
+  }
+
+}
+
+
+function showNetworkInformation(){
+
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+
+  let message =
+    "Online: " +
+    (navigator.onLine ? "Yes" : "No");
+
+  if(connection){
+
+    message +=
+      "\nConnection type: " +
+      (connection.type || "unknown");
+
+    message +=
+      "\nEffective type: " +
+      (connection.effectiveType || "unknown");
+
+    if(connection.downlink){
+      message +=
+        "\nDownlink: " +
+        connection.downlink +
+        " Mbps";
+    }
+
+  }
+
+  alert(message);
+
+}
+
+
+/* =========================
+   DARK MODE
+   ========================= */
+
+function toggleDarkMode(enabled){
+
+  document.body.classList.toggle(
+    "dark",
+    enabled
+  );
+
+  localStorage.setItem(
+    "winsim_v5_dark",
+    enabled ? "1" : "0"
+  );
+
+}
+
+
+function loadDarkMode(){
+
+  const enabled =
+    localStorage.getItem(
+      "winsim_v5_dark"
+    ) === "1";
+
+  document.body.classList.toggle(
+    "dark",
+    enabled
+  );
+
+  const toggle =
+    document.getElementById("darkModeToggle");
+
+  if(toggle){
+    toggle.checked = enabled;
+  }
+
+}
+
+
+/* =========================
+   KEYBOARD SHORTCUTS
+   ========================= */
+
+document.addEventListener("keydown",event => {
+
+  /*
+    Escape:
+    close menus first.
+  */
+
+  if(event.key === "Escape"){
+
+    hideContext();
+    hidePowerMenu();
+
+    const start =
+      document.getElementById("startmenu");
+
+    if(start){
+      start.classList.remove("show");
+    }
+
+  }
+
+
+  /*
+    Alt + F4:
+    close the highest visible window.
+  */
+
+  if(
+    event.altKey &&
+    event.key === "F4"
+  ){
+
+    event.preventDefault();
+
+    let highest = null;
+    let highestZ = -1;
+
+    windowIds.forEach(id => {
+
+      const win =
+        document.getElementById(id);
+
+      if(
+        win &&
+        win.style.display !== "none"
+      ){
+
+        const z =
+          Number(
+            win.style.zIndex || 0
+          );
+
+        if(z > highestZ){
+
+          highestZ = z;
+          highest = id;
+
+        }
+
+      }
+
+    });
+
+    if(highest){
+      closeWin(highest);
+    }
+
+  }
+
+
+  /*
+    Ctrl + S:
+    save Notepad.
+  */
+
+  if(
+    event.ctrlKey &&
+    event.key.toLowerCase() === "s"
+  ){
+
+    const note =
+      document.getElementById("noteText");
+
+    if(note){
+
+      event.preventDefault();
+
+      localStorage.setItem(
+        NOTE_KEY,
+        note.value
+      );
+
+      showToast("Notepad saved");
+
+    }
+
+  }
+
+
+  /*
+    Ctrl + L:
+    Browser address bar.
+  */
+
+  if(
+    event.ctrlKey &&
+    event.key.toLowerCase() === "l"
+  ){
+
+    const browser =
+      document.getElementById("browser");
+
+    if(
+      browser &&
+      browser.style.display !== "none"
+    ){
+
+      event.preventDefault();
+
+      const address =
+        document.getElementById(
+          "browserAddress"
+        );
+
+      if(address){
+        address.focus();
+        address.select();
+      }
+
+    }
+
+  }
+
+});
+
+
+/* =========================
+   DRAG WINDOWS
+   ========================= */
+
+let dragging = false;
+let dragWindow = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+
+
+/*
+  IMPORTANT PATCH:
+  The drag handler only starts when the
+  actual titlebar background is clicked.
+  Clicking a control NEVER starts dragging.
+*/
+
+document.querySelectorAll(".window").forEach(win => {
+
+  const titlebar =
+    win.querySelector(".titlebar");
+
+  if(!titlebar){
+    return;
+  }
+
+  titlebar.addEventListener("pointerdown",event => {
+
+    /*
+      DO NOT drag if clicking:
+      - a button
+      - input
+      - select
+      - textarea
+      - window control
+    */
+
+    if(
+      event.target.closest(
+        "button,input,select,textarea,.controls"
+      )
+    ){
+      return;
+    }
+
+    dragging = true;
+    dragWindow = win;
+
+    focusWindow(win.id);
+
+    const rect =
+      win.getBoundingClientRect();
+
+    dragOffsetX =
+      event.clientX - rect.left;
+
+    dragOffsetY =
+      event.clientY - rect.top;
+
+    titlebar.setPointerCapture?.(
+      event.pointerId
+    );
+
+  });
+
+});
+
+
+document.addEventListener("pointermove",event => {
+
+  if(!dragging || !dragWindow){
+    return;
+  }
+
+  let x =
+    event.clientX - dragOffsetX;
+
+  let y =
+    event.clientY - dragOffsetY;
+
+  const maxX =
+    window.innerWidth -
+    dragWindow.offsetWidth;
+
+  const maxY =
+    window.innerHeight -
+    dragWindow.offsetHeight -
+    60;
+
+  x =
+    Math.max(0,Math.min(x,maxX));
+
+  y =
+    Math.max(0,Math.min(y,maxY));
+
+  dragWindow.style.left =
+    x + "px";
+
+  dragWindow.style.top =
+    y + "px";
+
+});
+
+
+document.addEventListener("pointerup",() => {
+
+  dragging = false;
+  dragWindow = null;
+
+});
+
+
+/* =========================
+   WINDOW FOCUS
+   ========================= */
+
+document.addEventListener("mousedown",event => {
+
+  const win =
+    event.target.closest(".window");
+
+  if(win){
+
+    focusWindow(win.id);
+
+  }
+
+});
+
+
+/* =========================
+   INITIALIZE
+   ========================= */
+
+window.addEventListener("load",() => {
+
+  loadDarkMode();
+
+  loadNotepad();
+
+  renderFiles();
+
+  checkInternet();
+
+  checkBluetoothSupport();
+
+  /*
+    Give Paint a usable initial size.
+  */
+
+  setTimeout(() => {
+
+    if(
+      paintCanvas.width === 0 ||
+      paintCanvas.height === 0
+    ){
+
+      paintCanvas.width = 800;
+      paintCanvas.height = 500;
+
+      paintCtx.fillStyle = "white";
+
+      paintCtx.fillRect(
+        0,
+        0,
+        paintCanvas.width,
+        paintCanvas.height
+      );
+
+    }
+
+  },500);
+
+});
+
+
+/* =========================
+   CLOSE-BUTTON SAFETY PATCH
+   ========================= */
+
+/*
+  If any future V5 button uses the old
+  closeWin() function, it will still work.
+
+  This is intentionally kept as a separate
+  compatibility layer.
+*/
+
+window.closeWindow =
+  closeWin;
+
+window.openWindow =
+  openWin;
+
+window.minimizeWindow =
+  minWin;
+
+
+/*
+  Make sure browser clicks do not accidentally
+  reach the desktop.
+*/
+
+document.querySelectorAll(
+  ".window-control"
+).forEach(button => {
+
+  button.addEventListener(
+    "pointerdown",
+    event => {
+      event.stopPropagation();
+    }
+  );
+
+  button.addEventListener(
+    "click",
+    event => {
+      event.stopPropagation();
+    }
+  );
+
+});
+
+</script>
+
+</body>
+</html>
