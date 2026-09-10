@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Developer Studio V5</title>
+<style>
+:root{
+ --bg:#0b1020;--panel:#111827;--panel2:#0f172a;--editor:#080d17;
+ --border:#263247;--text:#e5e7eb;--muted:#94a3b8;--accent:#4f8cff;
+ --green:#22c55e;--red:#ef4444;--yellow:#facc15;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{background:#1b2638;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:7px 11px;cursor:pointer}
+button:hover{background:#273650}
+button.primary{background:#176b3a}button.primary:hover{background:#218b4c}
+button.aiBtn{background:#49358c}button.aiBtn:hover{background:#6049ad}
+.topbar{height:54px;display:flex;align-items:center;gap:7px;padding:0 11px;background:#0e1525;border-bottom:1px solid var(--border)}
+.logo{font-size:17px;font-weight:750;margin-right:8px;white-space:nowrap}.logo span{color:var(--accent)}
+.spacer{flex:1}
+.workspace{height:calc(100vh - 54px);display:grid;grid-template-columns:235px 1fr 300px;grid-template-rows:1fr 245px}
+.sidebar{grid-row:1/3;background:var(--panel);border-right:1px solid var(--border);padding:10px;overflow:auto}
+.rightbar{grid-column:3;grid-row:1/3;background:var(--panel);border-left:1px solid var(--border);overflow:auto}
+.sectionTitle{color:var(--muted);font-size:11px;text-transform:uppercase;margin:12px 5px 7px;font-weight:700}
+.item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;cursor:pointer}
+.item:hover,.item.active{background:#1b2638}.itemIcon{width:22px;text-align:center}
+.editorSection{grid-column:2;grid-row:1;min-width:0;min-height:0;display:flex;flex-direction:column}
+.tabs{height:38px;display:flex;background:var(--panel2);border-bottom:1px solid var(--border);overflow:auto}
+.tab{padding:10px 14px;border-right:1px solid var(--border);white-space:nowrap}.tab.active{background:var(--editor)}
+.dirty{color:var(--yellow)}
+.editorArea{flex:1;min-height:0;display:grid;grid-template-columns:50px 1fr;background:var(--editor)}
+.lineNumbers{padding:12px 8px;text-align:right;color:#53627a;font-family:monospace;line-height:1.55;user-select:none;overflow:hidden}
+#editor{width:100%;height:100%;resize:none;border:0;outline:0;background:var(--editor);color:#e6edf7;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;line-height:1.55;tab-size:4;white-space:pre}
+.bottomPanel{grid-column:2;grid-row:2;background:#0d1422;border-top:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
+.panelTabs{height:38px;display:flex;border-bottom:1px solid var(--border)}.panelTabs button{border:0;border-radius:0;background:transparent}
+.panelTabs button.active{background:#182338}
+.panelContent{flex:1;min-height:0;overflow:auto}
+#output{padding:12px;font-family:ui-monospace,monospace;white-space:pre-wrap}
+#preview{width:100%;height:100%;border:0;background:white}
+.statusbar{height:27px;display:flex;align-items:center;gap:12px;padding:0 10px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+.pill{background:#182338;padding:3px 8px;border-radius:999px}.green{color:var(--green)}.red{color:var(--red)}
+.rightHead{padding:12px;border-bottom:1px solid var(--border);font-weight:700}
+.aiBox,.lesson{padding:12px}.aiBox textarea{width:100%;height:90px;background:#0b1220;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:9px;resize:vertical}
+.aiActions{display:flex;gap:6px;margin-top:7px}.aiResponse{margin-top:10px;background:#0b1220;border:1px solid var(--border);border-radius:8px;padding:10px;white-space:pre-wrap;line-height:1.5;min-height:80px}
+.lessonCard{background:#0b1220;border:1px solid var(--border);border-radius:9px;padding:11px;margin-bottom:9px}
+.lessonCard h3{margin:0 0 6px;font-size:14px}.lessonCard p{margin:5px 0;color:#cbd5e1;font-size:13px;line-height:1.45}
+.video{width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#000;margin-top:8px}
+.modalBackground{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#0009;z-index:100}
+.modal{width:min(620px,92vw);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;box-shadow:0 20px 60px #0009}
+.modal h2{margin-top:0}.formRow{display:flex;gap:12px;align-items:center;margin:12px 0}.formRow label{width:130px;color:var(--muted)}.formRow input,.formRow select{flex:1;background:#0b1220;color:var(--text);border:1px solid var(--border);padding:8px;border-radius:7px}
+.modalButtons{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.warning{background:#241e0a;border:1px solid #66551c;border-radius:8px;padding:11px;color:#fde68a;line-height:1.45}
+.search{width:100%;background:#0b1220;color:var(--text);border:1px solid var(--border);padding:8px;border-radius:7px;margin-bottom:6px}
+.hidden{display:none!important}
+.lessonTop{display:flex;justify-content:space-between;gap:8px;align-items:center}
+@media(max-width:1050px){.workspace{grid-template-columns:190px 1fr}.rightbar{display:none}}
+@media(max-width:700px){.sidebar{display:none}.workspace{grid-template-columns:1fr}.editorSection{grid-column:1}.bottomPanel{grid-column:1}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+ <div class="logo">Developer <span>Studio</span> V5</div>
+ <button id="newButton">New</button>
+ <button id="openButton">Open</button>
+ <button id="saveButton">Save</button>
+ <button class="primary" id="runButton">▶ Run</button>
+ <button id="previewButton">Preview</button>
+ <button class="aiBtn" id="aiTopButton">✨ AI</button>
+ <div class="spacer"></div>
+ <button id="settingsButton">⚙ Settings</button>
+</div>
+
+<div class="workspace">
+ <aside class="sidebar">
+  <div class="sectionTitle">Languages</div>
+  <input class="search" id="languageSearch" placeholder="Search languages...">
+  <div id="languages"></div>
+  <div class="sectionTitle">Files</div>
+  <div id="files"></div>
+ </aside>
+
+ <section class="editorSection">
+  <div class="tabs" id="tabs"></div>
+  <div class="editorArea">
+   <div class="lineNumbers" id="lineNumbers">1</div>
+   <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+  </div>
+ </section>
+
+ <section class="rightbar">
+  <div class="rightHead">✨ Groq AI</div>
+  <div class="aiBox">
+   <textarea id="aiPrompt" placeholder="Ask AI to explain code, find a bug, or help you learn..."></textarea>
+   <div class="aiActions">
+    <button class="aiBtn" id="askAI">Ask AI</button>
+    <button id="explainAI">Explain Code</button>
+   </div>
+   <div class="aiResponse" id="aiResponse">Connect your backend's /api/ai endpoint in Settings to use Groq securely.</div>
+  </div>
+  <div class="sectionTitle">Mini Lesson</div>
+  <div class="lesson" id="lesson"></div>
+ </section>
+
+ <section class="bottomPanel">
+  <div class="panelTabs">
+   <button data-panel="terminal">Terminal</button>
+   <button data-panel="output" class="active">Output</button>
+   <button data-panel="preview">Preview</button>
+   <button data-panel="problems">Problems</button>
+  </div>
+  <div class="panelContent">
+   <div id="output"></div>
+   <iframe id="preview" sandbox="allow-scripts allow-forms allow-modals" style="display:none"></iframe>
+  </div>
+  <div class="statusbar">
+   <span id="status">Ready</span>
+   <span class="pill" id="languageStatus">HTML5</span>
+   <span class="pill" id="backendStatus">Backend: checking...</span>
+   <span class="spacer"></span>
+   <span id="cursorStatus">Ln 1, Col 1</span>
+   <span>⌘/Ctrl + Enter = Run</span>
+  </div>
+ </section>
+</div>
+
+<div class="modalBackground" id="settingsModal">
+ <div class="modal">
+  <h2>Developer Studio Settings</h2>
+  <div class="formRow"><label>Backend URL</label><input id="backendUrl" placeholder="http://localhost:3000"></div>
+  <div class="formRow"><label>Theme</label><select id="themeSelect"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+  <div class="formRow"><label>Font size</label><input id="fontSize" type="number" min="11" max="24"></div>
+  <div class="warning">
+   Groq should be called through your backend. Do not put a Groq API key directly into a public GitHub Pages file.
+   Your backend should expose a protected <b>POST /api/ai</b> endpoint.
+  </div>
+  <div class="modalButtons">
+   <button id="testBackend">Test Backend</button><button id="closeSettings">Close</button><button id="saveSettings">Save Settings</button>
+  </div>
+ </div>
+</div>
+
+<div class="modalBackground" id="newModal">
+ <div class="modal">
+  <h2>New File</h2>
+  <div class="formRow"><label>Filename</label><input id="newFilename" value="main.py"></div>
+  <div class="formRow"><label>Language</label><select id="newLanguage"></select></div>
+  <div class="modalButtons"><button id="cancelNew">Cancel</button><button id="createNew">Create</button></div>
+ </div>
+</div>
+
+<div class="modalBackground" id="lessonModal">
+ <div class="modal">
+  <h2 id="lessonTitle">Lesson</h2>
+  <div id="lessonFull"></div>
+  <div class="modalButtons"><button id="closeLesson">Close</button></div>
+ </div>
+</div>
+
+<input type="file" id="fileInput" hidden>
+
+<script>
+/* Developer Studio V5
+   Important: there are NO literal closing </script> tags inside this JavaScript.
+*/
+
+var logos = {
+ python:"https://commons.wikimedia.org/wiki/Special:Redirect/file/Python-logo-notext.svg",
+ javascript:"https://commons.wikimedia.org/wiki/Special:Redirect/file/JavaScript_logo.svg",
+ html:"https://commons.wikimedia.org/wiki/Special:Redirect/file/HTML5_logo.svg",
+ css:"https://commons.wikimedia.org/wiki/Special:Redirect/file/CSS3_logo.svg"
+};
+
+var languages = {
+ python:{label:"Python 3",extension:"py",filename:"main.py"},
+ javascript:{label:"JavaScript / Node.js",extension:"js",filename:"main.js"},
+ html:{label:"HTML5",extension:"html",filename:"index.html"},
+ css:{label:"CSS3",extension:"css",filename:"style.css"},
+ c:{label:"C / GCC",extension:"c",filename:"main.c"},
+ cpp:{label:"C++ / G++",extension:"cpp",filename:"main.cpp"},
+ bash:{label:"Bash",extension:"sh",filename:"main.sh"},
+ r:{label:"R",extension:"R",filename:"main.R"},
+ php:{label:"PHP",extension:"php",filename:"index.php"}
+};
+
+var starterCode = {
+ python:'print("Hello from Python!")\n\nname = "Developer"\nprint("Hello,", name)\n',
+ javascript:'console.log("Hello from Node.js!");\n\nconst x = 6 * 7;\nconsole.log("6 × 7 =", x);\n',
+ html:'<!DOCTYPE html>\n<html>\n<head>\n    <title>My Web Page</title>\n</head>\n<body>\n    <h1>Hello!</h1>\n    <p>Edit this page in Developer Studio.</p>\n</body>\n</html>\n',
+ css:'body {\n    font-family: system-ui;\n    padding: 40px;\n}\n\nh1 {\n    color: royalblue;\n}\n',
+ c:'#include <stdio.h>\n\nint main(void) {\n    printf("Hello from C!\\n");\n    return 0;\n}\n',
+ cpp:'#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello from C++!" << endl;\n    return 0;\n}\n',
+ bash:'#!/usr/bin/env bash\n\necho "Hello from Bash!"\n',
+ r:'cat("Hello from R!\\n")\n\nx <- 6 * 7\ncat("6 * 7 =", x, "\\n")\n',
+ php:'<?php\n\necho "Hello from PHP!\\n";\n$x = 6 * 7;\necho "6 * 7 = $x\\n";\n?>\n'
+};
+
+var lessons = {
+ python:{
+  title:"Python 3",
+  intro:"Python is a beginner-friendly language used for apps, automation, data science, AI, and much more.",
+  steps:["Use print() to display information.","Store information in variables.","Use if statements for decisions.","Use loops to repeat work.","Create functions to organize code."],
+  example:'name = "Alex"\nprint("Hello", name)',
+  video:"https://www.youtube-nocookie.com/embed/rfscVS0vtbw"
+ },
+ javascript:{
+  title:"JavaScript / Node.js",
+  intro:"JavaScript powers interactive web pages. Node.js lets JavaScript run outside the browser.",
+  steps:["Use console.log() for output.","Use const and let for variables.","Use functions to reuse code.","Use arrays and objects to organize data.","Use the DOM for browser interaction."],
+  example:'const score = 10;\nconsole.log(score);',
+  video:"https://www.youtube-nocookie.com/embed/PkZNo7MFNFg"
+ },
+ html:{
+  title:"HTML5",
+  intro:"HTML creates the structure and content of a web page.",
+  steps:["Start with <!DOCTYPE html>.","Use headings such as h1.","Use paragraphs with p.","Add links with a.","Add images with img."],
+  example:'<h1>My Website</h1>\n<p>Hello world!</p>',
+  video:"https://www.youtube-nocookie.com/embed/qz0aGYrrlhU"
+ },
+ css:{
+  title:"CSS3",
+  intro:"CSS controls the appearance and layout of HTML.",
+  steps:["Select an HTML element.","Set properties such as color.","Use padding and margin for spacing.","Use flexbox or grid for layout.","Use media queries for responsive pages."],
+  example:'h1 {\n  color: blue;\n  font-size: 32px;\n}',
+  video:"https://www.youtube-nocookie.com/embed/1PnVor36_40"
+ },
+ c:{
+  title:"C / GCC",
+  intro:"C is a compiled language widely used for systems programming and performance-focused software.",
+  steps:["Include libraries with #include.","Write main() as the program entry point.","Use variables with types.","Use functions to organize code.","Compile with GCC."],
+  example:'#include <stdio.h>\nint main(void) {\n  printf("Hello!");\n  return 0;\n}',
+  video:"https://www.youtube-nocookie.com/embed/KJgsSFOSQv0"
+ },
+ cpp:{
+  title:"C++ / G++",
+  intro:"C++ builds on C and adds powerful features such as classes, templates, and the standard library.",
+  steps:["Include libraries with #include.","Start execution in main().","Use cout for output.","Create functions and classes.","Compile with G++."],
+  example:'#include <iostream>\nint main() {\n  std::cout << "Hello!";\n}',
+  video:"https://www.youtube-nocookie.com/embed/vLnPwxZdW4Y"
+ },
+ bash:{
+  title:"Bash",
+  intro:"Bash is a shell language used to automate commands and manage files on Unix-like systems.",
+  steps:["Use echo for output.","Store values in variables.","Use if for decisions.","Use for and while for repetition.","Combine commands into scripts."],
+  example:'#!/bin/bash\necho "Hello!"\nname="Alex"\necho "$name"',
+  video:"https://www.youtube-nocookie.com/embed/tK9Oc6AEnR4"
+ },
+ r:{
+  title:"R",
+  intro:"R is especially popular for statistics, data analysis, and visualization.",
+  steps:["Create variables with <-.","Use vectors for groups of values.","Use functions for reusable work.","Analyze data with packages.","Create charts from data."],
+  example:'x <- c(2, 4, 6, 8)\nmean(x)',
+  video:"https://www.youtube-nocookie.com/embed/_V8eKsto3Ug"
+ },
+ php:{
+  title:"PHP",
+  intro:"PHP is a server-side language commonly used for dynamic websites and web applications.",
+  steps:["Start PHP code with the PHP opening tag.","Use $ variables.","Use echo for output.","Use if statements and loops.","Connect PHP to databases on a server."],
+  example:'<?php\n$name = "Alex";\necho "Hello " . $name;\n?>',
+  video:"https://www.youtube-nocookie.com/embed/OK_JCtrrv-c"
+ }
+};
+
+var files = {};
+var activeFile = "index.html";
+
+function createFile(filename, language, content) {
+ files[filename] = {filename:filename,language:language,content:content,dirty:false};
+}
+Object.keys(languages).forEach(function(key){var v=languages[key];createFile(v.filename,key,starterCode[key]);});
+
+function renderLanguages(filter) {
+ var container=document.getElementById("languages");container.innerHTML="";
+ Object.keys(languages).forEach(function(key){
+  var v=languages[key];
+  if(filter && v.label.toLowerCase().indexOf(filter.toLowerCase())===-1)return;
+  var item=document.createElement("div");item.className="item";
+  var icon=document.createElement("span");icon.className="itemIcon";
+  if(logos[key]){var img=document.createElement("img");img.src=logos[key];img.alt="";img.style.width="20px";img.style.height="20px";icon.appendChild(img)}
+  else icon.textContent=v.extension.toUpperCase();
+  item.appendChild(icon);
+  var text=document.createElement("span");text.textContent=v.label;item.appendChild(text);
+  item.onclick=function(){openFile(v.filename);showLesson(key)};container.appendChild(item);
+ });
+}
+
+function renderFiles(){
+ var c=document.getElementById("files");c.innerHTML="";
+ Object.keys(files).forEach(function(name){
+  var f=files[name],item=document.createElement("div");item.className="item"+(name===activeFile?" active":"");
+  item.innerHTML="";
+  var i=document.createElement("span");i.className="itemIcon";i.textContent="📄";item.appendChild(i);
+  var t=document.createElement("span");t.textContent=name+(f.dirty?" •":"");if(f.dirty)t.className="dirty";item.appendChild(t);
+  item.onclick=function(){openFile(name)};c.appendChild(item);
+ });
+}
+
+function renderTabs(){
+ var c=document.getElementById("tabs");c.innerHTML="";
+ if(!files[activeFile])return;
+ var tab=document.createElement("div");tab.className="tab active";tab.textContent=activeFile;
+ if(files[activeFile].dirty){var d=document.createElement("span");d.className="dirty";d.textContent=" •";tab.appendChild(d)}
+ c.appendChild(tab);
+}
+
+function openFile(filename){
+ if(!files[filename])return;
+ activeFile=filename;
+ document.getElementById("editor").value=files[filename].content;
+ document.getElementById("languageStatus").textContent=languages[files[filename].language].label;
+ updateLineNumbers();renderFiles();renderTabs();updateCursor();
+ showLesson(files[filename].language);
+ document.getElementById("status").textContent="Editing "+filename;
+}
+
+function updateLineNumbers(){
+ var n=document.getElementById("editor").value.split("\n").length,arr=[];
+ for(var i=1;i<=n;i++)arr.push(i);
+ document.getElementById("lineNumbers").textContent=arr.join("\n");
+}
+
+function updateCursor(){
+ var e=document.getElementById("editor"),before=e.value.substring(0,e.selectionStart);
+ var line=before.split("\n").length,col=before.length-before.lastIndexOf("\n");
+ document.getElementById("cursorStatus").textContent="Ln "+line+", Col "+col;
+}
+
+document.getElementById("editor").addEventListener("input",function(){
+ if(!files[activeFile])return;
+ files[activeFile].content=this.value;files[activeFile].dirty=true;
+ updateLineNumbers();renderFiles();renderTabs();updateCursor();
+});
+document.getElementById("editor").addEventListener("click",updateCursor);
+document.getElementById("editor").addEventListener("keyup",updateCursor);
+document.getElementById("editor").addEventListener("scroll",function(){document.getElementById("lineNumbers").scrollTop=this.scrollTop});
+
+document.getElementById("editor").addEventListener("keydown",function(e){
+ if(e.key==="Tab"){e.preventDefault();var s=this.selectionStart,en=this.selectionEnd;this.value=this.value.substring(0,s)+"    "+this.value.substring(en);this.selectionStart=this.selectionEnd=s+4;files[activeFile].content=this.value;files[activeFile].dirty=true;updateLineNumbers();renderFiles();renderTabs();}
+ if((e.metaKey||e.ctrlKey)&&e.key==="Enter"){e.preventDefault();runCurrentFile();}
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="s"){e.preventDefault();saveCurrentFile();}
+});
+
+function backendURL(){return(localStorage.getItem("developerStudioBackend")||"http://localhost:3000").replace(/\/+$/,"");}
+
+async function testBackend(){
+ try{
+  var r=await fetch(backendURL()+"/api/health"),d=await r.json();
+  if(d.ok){document.getElementById("backendStatus").textContent="Backend: online";return true}
+  throw new Error("Health check failed");
+ }catch(e){document.getElementById("backendStatus").textContent="Backend: offline";return false}
+}
+
+async function runCurrentFile(){
+ var f=files[activeFile];if(!f)return;
+ if(f.language==="html"||f.language==="css"){previewProject();showPanel("preview");return}
+ showPanel("output");var out=document.getElementById("output");
+ out.className="";out.textContent="Running "+f.filename+"...\n";document.getElementById("status").textContent="Running...";
+ try{
+  var project=Object.keys(files).map(function(k){return{name:files[k].filename,content:files[k].content}});
+  var r=await fetch(backendURL()+"/api/execute",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({language:f.language,code:f.content,stdin:"",files:project})});
+  var d=await r.json();if(!r.ok)throw new Error(d.error||"Backend request failed");
+  var result="$ "+(d.command||"")+"\n\n"+(d.stdout||"");
+  if(d.stderr)result+="\n[stderr]\n"+d.stderr;
+  result+="\n\nExit code: "+d.exitCode;
+  if(d.durationMs!==undefined)result+="\nDuration: "+d.durationMs+" ms";
+  if(d.timedOut)result+="\n\nExecution timed out.";
+  out.textContent=result;out.className=d.success?"green":"red";document.getElementById("status").textContent=d.success?"Finished successfully":"Finished with errors";
+ }catch(e){out.textContent="Backend error:\n\n"+e.message+"\n\nStart the backend and check Settings.";out.className="red";document.getElementById("status").textContent="Backend unavailable";}
+}
+
+function previewProject(){
+ var html=files["index.html"]?files["index.html"].content:"";
+ var css=files["style.css"]?files["style.css"].content:"";
+ var js=files["main.js"]?files["main.js"].content:"";
+ var text=html;
+ if(text.indexOf("</head>")!==-1)text=text.replace("</head>","<style>"+css+"</style></head>");
+ else text="<style>"+css+"</style>"+text;
+ if(js&&text.indexOf("</body>")!==-1)text=text.replace("</body>","<script>"+js+"<\/script></body>");
+ document.getElementById("preview").srcdoc=text;
+}
+
+function showPanel(panel){
+ var out=document.getElementById("output"),p=document.getElementById("preview");
+ if(panel==="preview"){out.style.display="none";p.style.display="block";previewProject()}
+ else{out.style.display="block";p.style.display="none"}
+ document.querySelectorAll(".panelTabs button").forEach(function(b){b.classList.toggle("active",b.dataset.panel===panel)});
+}
+
+document.querySelectorAll(".panelTabs button").forEach(function(b){b.onclick=function(){showPanel(b.dataset.panel)}});
+
+function saveCurrentFile(){
+ var f=files[activeFile];if(!f)return;
+ var blob=new Blob([f.content],{type:"text/plain"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download=f.filename;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(function(){URL.revokeObjectURL(url)},1000);f.dirty=false;renderFiles();renderTabs();document.getElementById("status").textContent="Saved "+f.filename;
+}
+
+async function askGroq(prompt){
+ var box=document.getElementById("aiResponse");box.textContent="Thinking...";
+ try{
+  var code=files[activeFile]?files[activeFile].content:"";
+  var r=await fetch(backendURL()+"/api/ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt,code:code,language:files[activeFile]?files[activeFile].language:""})});
+  var d=await r.json();
+  if(!r.ok)throw new Error(d.error||"AI request failed");
+  box.textContent=d.answer||d.response||d.message||JSON.stringify(d,null,2);
+ }catch(e){box.textContent="AI error:\n"+e.message+"\n\nYour backend needs a protected /api/ai route connected to Groq."}
+}
+
+document.getElementById("askAI").onclick=function(){var p=document.getElementById("aiPrompt").value.trim();if(p)askGroq(p)};
+document.getElementById("explainAI").onclick=function(){askGroq("Explain this code like a beginner lesson. Tell me what the important lines do, why they work, and give me one small practice challenge.")};
+document.getElementById("aiTopButton").onclick=function(){document.getElementById("aiPrompt").focus()};
+
+function showLesson(key){
+ var l=lessons[key];if(!l)return;
+ var c=document.getElementById("lesson");
+ c.innerHTML="";
+ var card=document.createElement("div");card.className="lessonCard";
+ var h=document.createElement("h3");h.textContent=l.title;card.appendChild(h);
+ var p=document.createElement("p");p.textContent=l.intro;card.appendChild(p);
+ var list=document.createElement("p");list.innerHTML="<b>Learn:</b><br>"+l.steps.map(function(x){return"• "+x}).join("<br>");card.appendChild(list);
+ var b=document.createElement("button");b.textContent="Open Full Lesson";b.onclick=function(){openLesson(key)};card.appendChild(b);
+ c.appendChild(card);
+}
+
+function openLesson(key){
+ var l=lessons[key],full=document.getElementById("lessonFull");full.innerHTML="";
+ var p=document.createElement("p");p.textContent=l.intro;full.appendChild(p);
+ var list=document.createElement("div");list.innerHTML="<b>Mini course:</b><br>"+l.steps.map(function(x,i){return(i+1)+". "+x}).join("<br>");full.appendChild(list);
+ var h=document.createElement("h3");h.textContent="Example";full.appendChild(h);
+ var pre=document.createElement("pre");pre.style.background="#0b1220";pre.style.padding="12px";pre.style.borderRadius="8px";pre.textContent=l.example;full.appendChild(pre);
+ var vh=document.createElement("h3");vh.textContent="Video lesson";full.appendChild(vh);
+ var iframe=document.createElement("iframe");iframe.className="video";iframe.src=l.video;iframe.title=l.title+" video lesson";iframe.allowFullscreen=true;full.appendChild(iframe);
+ document.getElementById("lessonTitle").textContent=l.title+" Mini Lesson";
+ document.getElementById("lessonModal").style.display="flex";
+}
+
+document.getElementById("closeLesson").onclick=function(){document.getElementById("lessonModal").style.display="none"};
+
+document.getElementById("newButton").onclick=function(){document.getElementById("newModal").style.display="flex"};
+document.getElementById("cancelNew").onclick=function(){document.getElementById("newModal").style.display="none"};
+Object.keys(languages).forEach(function(key){var o=document.createElement("option");o.value=key;o.textContent=languages[key].label;document.getElementById("newLanguage").appendChild(o)});
+
+document.getElementById("createNew").onclick=function(){
+ var name=document.getElementById("newFilename").value.trim(),lang=document.getElementById("newLanguage").value;
+ if(!name){alert("Enter a filename.");return}
+ createFile(name,lang,starterCode[lang]||"");document.getElementById("newModal").style.display="none";openFile(name);
+};
+
+document.getElementById("saveButton").onclick=saveCurrentFile;
+document.getElementById("runButton").onclick=runCurrentFile;
+document.getElementById("previewButton").onclick=function(){showPanel("preview")};
+document.getElementById("openButton").onclick=function(){document.getElementById("fileInput").click()};
+
+document.getElementById("fileInput").addEventListener("change",function(e){
+ var f=e.target.files[0];if(!f)return;
+ var reader=new FileReader();
+ reader.onload=function(){
+  var ext=f.name.split(".").pop().toLowerCase(),lang="python";
+  Object.keys(languages).forEach(function(k){if(languages[k].extension.toLowerCase()===ext)lang=k});
+  createFile(f.name,lang,String(reader.result));openFile(f.name);
+ };
+ reader.readAsText(f);e.target.value="";
+});
+
+document.getElementById("settingsButton").onclick=function(){
+ document.getElementById("backendUrl").value=backendURL();
+ document.getElementById("themeSelect").value=localStorage.getItem("developerStudioTheme")||"dark";
+ document.getElementById("fontSize").value=localStorage.getItem("developerStudioFontSize")||"14";
+ document.getElementById("settingsModal").style.display="flex";
+};
+document.getElementById("closeSettings").onclick=function(){document.getElementById("settingsModal").style.display="none"};
+document.getElementById("testBackend").onclick=testBackend;
+document.getElementById("saveSettings").onclick=function(){
+ localStorage.setItem("developerStudioBackend",document.getElementById("backendUrl").value.trim());
+ localStorage.setItem("developerStudioTheme",document.getElementById("themeSelect").value);
+ localStorage.setItem("developerStudioFontSize",document.getElementById("fontSize").value);
+ applySettings();document.getElementById("settingsModal").style.display="none";testBackend();
+};
+
+function applySettings(){
+ var size=localStorage.getItem("developerStudioFontSize")||"14";
+ document.getElementById("editor").style.fontSize=size+"px";
+ var theme=localStorage.getItem("developerStudioTheme")||"dark",root=document.documentElement;
+ if(theme==="light"){
+  root.style.setProperty("--bg","#f4f6f8");root.style.setProperty("--panel","#fff");root.style.setProperty("--panel2","#eef1f5");root.style.setProperty("--editor","#f8fafc");root.style.setProperty("--border","#cbd5e1");root.style.setProperty("--text","#111827");
+ }else{
+  root.style.setProperty("--bg","#0b1020");root.style.setProperty("--panel","#111827");root.style.setProperty("--panel2","#0f172a");root.style.setProperty("--editor","#080d17");root.style.setProperty("--border","#263247");root.style.setProperty("--text","#e5e7eb");
+ }
+}
+
+document.getElementById("languageSearch").addEventListener("input",function(){renderLanguages(this.value)});
+
+document.querySelectorAll(".modalBackground").forEach(function(m){m.addEventListener("click",function(e){if(e.target===m)m.style.display="none"})});
+
+document.addEventListener("keydown",function(e){
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="o"){e.preventDefault();document.getElementById("fileInput").click()}
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="n"){e.preventDefault();document.getElementById("newModal").style.display="flex"}
+});
+
+renderLanguages("");renderFiles();renderTabs();applySettings();openFile(activeFile);testBackend();
+</script>
+</body>
+</html>
