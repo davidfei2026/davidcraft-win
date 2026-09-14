@@ -707,7 +707,7 @@ body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
         </div>
 
         <div class="vscodeSidebarSection">
-            <button class="vscodeSidebarHeader" data-sidebar-toggle="languageBody">
+            <button type="button" class="vscodeSidebarHeader" data-sidebar-toggle="languageBody">
                 <span class="vscodeChevron" id="languageChevron">▼</span>
                 <span>LANGUAGES</span>
             </button>
@@ -718,7 +718,7 @@ body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
         </div>
 
         <div class="vscodeSidebarSection">
-            <button class="vscodeSidebarHeader" data-sidebar-toggle="workspaceBody">
+            <button type="button" class="vscodeSidebarHeader" data-sidebar-toggle="workspaceBody">
                 <span class="vscodeChevron" id="workspaceChevron">▼</span>
                 <span>WORKSPACE</span>
             </button>
@@ -730,7 +730,7 @@ body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
         </div>
 
         <div class="vscodeSidebarSection">
-            <button class="vscodeSidebarHeader" data-sidebar-toggle="extensionsBody">
+            <button type="button" class="vscodeSidebarHeader" data-sidebar-toggle="extensionsBody">
                 <span class="vscodeChevron" id="extensionsChevron">▼</span>
                 <span>EXTENSIONS</span>
             </button>
@@ -882,6 +882,37 @@ body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
 </div>
 
 <!-- SETTINGS -->
+
+<!-- V5 Command Palette -->
+<div class="v5Modal" id="commandPaletteModal">
+    <div class="v5Palette">
+        <div class="v5PaletteTop">Command Palette <span class="v5Badge" style="margin-left:auto">⌘K</span></div>
+        <input id="paletteSearch" class="v5PaletteSearch" placeholder="Search commands..." autocomplete="off">
+        <div id="paletteResults" class="v5PaletteResults"></div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+            <button id="closePalette">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- V5 Project Tools -->
+<div class="v5Modal" id="projectModal">
+    <div class="v5Panel">
+        <div class="v5PaletteTop">Project Tools</div>
+        <div class="v5ToolGrid">
+            <button data-v5-action="saveWorkspace">Save Workspace</button>
+            <button data-v5-action="restoreWorkspace">Restore Workspace</button>
+            <button data-v5-action="exportProject">Export Project</button>
+            <button data-v5-action="openPalette">Command Palette</button>
+            <button data-v5-action="formatHtml">Format HTML</button>
+            <button data-v5-action="duplicateFile">Duplicate Current File</button>
+        </div>
+        <div class="v5Hint">Workspace data is stored locally in this browser. Export creates a JSON project file.</div>
+        <div style="padding:0 16px 16px;display:flex;justify-content:flex-end">
+            <button id="closeProject">Close</button>
+        </div>
+    </div>
+</div>
 
 <div class="modalBackground" id="settingsModal">
 
@@ -3044,9 +3075,10 @@ function applyVSCodeStyle(enabled){
     if(typeof renderVSCodeExtensions === "function") renderVSCodeExtensions(document.getElementById("vscodeExtensionSearch")?.value || "");
 }
 
-document.getElementById("classicEnableVSCode").onclick = function(){
-    applyVSCodeStyle(true);
-};
+const classicEnableVSCode = document.getElementById("classicEnableVSCode");
+if(classicEnableVSCode){
+    classicEnableVSCode.onclick = function(){ applyVSCodeStyle(true); };
+}
 
 document.getElementById("vsCodeModeButton").onclick = function(){
     applyVSCodeStyle(!document.body.classList.contains("vscodeStyle"));
