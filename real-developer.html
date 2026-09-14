@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Developer Studio V4</title>
+<title>Developer Studio V5</title>
 
 <style>
 :root{
@@ -338,6 +339,74 @@ button.run:hover{background:#218b4c}
     line-height:1.5;
 }
 
+/* VS CODE STYLE MODE */
+body.vscodeStyle{--bg:#181818;--panel:#181818;--panel2:#1e1e1e;--editor:#1e1e1e;--border:#2b2b2b;--text:#cccccc;--muted:#858585;--accent:#3794ff;background:#1e1e1e}
+body.vscodeStyle .topbar{height:56px;background:#181818;border-bottom:1px solid #2b2b2b}
+body.vscodeStyle .logoText{color:#cccccc}
+body.vscodeStyle .logoText span{color:#3794ff}
+body.vscodeStyle button{background:#252526;border-color:#3a3a3a;color:#cccccc;border-radius:3px}
+body.vscodeStyle button:hover{background:#333333}
+body.vscodeStyle button.run{background:#0e639c;border-color:#0e639c;color:white}
+body.vscodeStyle .sidebar{background:#181818;border-right:1px solid #2b2b2b}
+body.vscodeStyle .item:hover,body.vscodeStyle .item.active{background:#2a2d2e}
+body.vscodeStyle .tabs{height:36px;background:#181818}
+body.vscodeStyle .tab{background:#181818;color:#858585;border-right:1px solid #2b2b2b;padding:9px 13px}
+body.vscodeStyle .tab.active{background:#1e1e1e;color:#fff;border-top:1px solid #3794ff}
+body.vscodeStyle .editorArea,body.vscodeStyle #editor,body.vscodeStyle .lineNumbers{background:#1e1e1e}
+body.vscodeStyle #editor{color:#d4d4d4;caret-color:#fff}
+body.vscodeStyle .lineNumbers{color:#6a737d}
+body.vscodeStyle .bottomPanel{background:#181818;border-top:1px solid #2b2b2b}
+body.vscodeStyle .panelTabs{background:#181818}
+body.vscodeStyle .panelTabs button.active{background:#1e1e1e;color:#fff;border-bottom:2px solid #3794ff}
+body.vscodeStyle #terminalPanel,body.vscodeStyle #output{background:#1e1e1e}
+body.vscodeStyle #terminalOutput,body.vscodeStyle #terminalInput{color:#d4d4d4}
+body.vscodeStyle .terminalPrompt{color:#4ec9b0}
+body.vscodeStyle .statusbar{background:#007acc;color:#fff;border-top:0}
+body.vscodeStyle .pill{background:rgba(255,255,255,.14);color:#fff}
+body.vscodeStyle .moreMenu{background:#252526;border-color:#454545}
+body.vscodeStyle .moreMenu button:hover{background:#2a2d2e}
+body.vscodeStyle .modal,body.vscodeStyle .sourceBox,body.vscodeStyle .advancedBox,body.vscodeStyle .builderBox,body.vscodeStyle .paletteBox{background:#252526;border-color:#454545}
+body.vscodeStyle .advancedSidebar,body.vscodeStyle .advancedMain{background:#1e1e1e}
+body.vscodeStyle .commandCard,body.vscodeStyle .advancedStat{background:#252526;border-color:#3a3a3a}
+.vscodeModeBadge{display:none;align-items:center;gap:5px;padding:3px 8px;border-radius:3px;background:#007acc;color:#fff;font-size:10px;font-weight:600}
+body.vscodeStyle .vscodeModeBadge{display:inline-flex}
+
+
+/* VS Code-only sidebar features */
+.classicSidebarNotice{display:flex;flex-direction:column;gap:7px;padding:14px 8px;color:var(--muted);font-size:11px;line-height:1.4}
+.classicSidebarNotice b{color:var(--text);font-size:12px}
+.classicSidebarNotice span{font-size:10px}
+.classicSidebarNotice button{margin-top:4px;padding:7px 9px;font-size:11px}
+.vscodeSidebarSection{display:none}
+body.vscodeStyle .classicSidebarNotice{display:none}
+body.vscodeStyle .vscodeSidebarSection{display:block}
+
+/* VS Code sidebar workspace + extensions */
+.vscodeSidebarSection{margin-bottom:10px}
+.vscodeSidebarHeader{display:flex;align-items:center;gap:6px;width:100%;padding:6px 4px;background:transparent;border:0;color:var(--muted);font-size:11px;text-transform:uppercase;font-weight:700;letter-spacing:.03em;cursor:pointer;text-align:left}
+.vscodeSidebarHeader:hover{background:transparent;color:var(--text)}
+.vscodeChevron{width:12px;display:inline-block;font-size:10px}
+.vscodeSidebarBody{padding:0 0 2px 0}
+.vscodeSidebarBody.collapsed{display:none}
+.vscodeLanguageSearch{width:100%;box-sizing:border-box;margin:2px 0 6px;padding:7px 8px;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:3px;font-size:12px}
+.vscodeLanguageSelect{display:flex;align-items:center;gap:8px;padding:6px 7px;margin:1px 0;border-radius:3px;cursor:pointer;color:var(--text);font-size:12px}
+.vscodeLanguageSelect:hover{background:#2a2d2e}
+.vscodeLanguageSelect.active{background:#37373d;color:#fff}
+.vscodeLanguageSelect img{width:17px;height:17px;object-fit:contain}
+.vscodeWorkspaceFile{display:flex;align-items:center;gap:7px;padding:5px 7px;border-radius:3px;cursor:pointer;font-size:12px}
+.vscodeWorkspaceFile:hover,.vscodeWorkspaceFile.active{background:#2a2d2e}
+.vscodeWorkspaceFile .fileIcon{width:15px;text-align:center;opacity:.9}
+.vscodeFolder{display:flex;align-items:center;gap:7px;padding:5px 7px;color:var(--text);font-size:11px;font-weight:600}
+.vscodeExtensionCard{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;padding:8px 6px;border-radius:3px}
+.vscodeExtensionCard:hover{background:#252526}
+.vscodeExtensionIcon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;background:#333842;border:1px solid #4a4f58;border-radius:3px;font-size:14px}
+.vscodeExtensionInfo b{display:block;font-size:11px;color:var(--text)}
+.vscodeExtensionInfo span{display:block;font-size:10px;color:var(--muted);margin-top:2px;line-height:1.3}
+.vscodeExtensionCard button{padding:4px 7px;font-size:10px}
+.vscodeSidebarHint{font-size:10px;color:var(--muted);padding:5px 7px 7px;line-height:1.35}
+body.vscodeStyle .vscodeLanguageSelect.active{background:#094771}
+body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
+
 @media(max-width:800px){
     .workspace{
         grid-template-columns:170px 1fr;
@@ -575,6 +644,26 @@ button.run:hover{background:#218b4c}
     .htmlChoices{grid-template-columns:1fr}
 }
 
+
+
+/* =========================================================
+   V5 UI
+========================================================= */
+.v5Modal{position:fixed;inset:0;background:rgba(0,0,0,.68);display:none;align-items:flex-start;justify-content:center;padding-top:70px;z-index:500}
+.v5Modal.open{display:flex}
+.v5Palette,.v5Panel{width:min(760px,94vw);background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 25px 90px #000b;overflow:hidden}
+.v5PaletteTop{display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border);font-weight:700}
+.v5PaletteSearch{width:100%;padding:14px;border:0;border-bottom:1px solid var(--border);outline:0;background:var(--editor);color:var(--text);font-size:15px}
+.v5PaletteResults{max-height:60vh;overflow:auto;padding:8px}
+.v5PaletteItem{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:8px;cursor:pointer}
+.v5PaletteItem:hover,.v5PaletteItem.active{background:#1b2638}
+.v5PaletteItem code{color:#9bd2ff}
+.v5PaletteItem span{color:var(--muted);font-size:12px;margin-left:auto}
+.v5ToolGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:16px}
+.v5ToolGrid button{padding:12px;text-align:left}
+.v5Hint{padding:0 16px 16px;color:var(--muted);font-size:12px}
+.v5Badge{font-size:10px;color:#9bd2ff;padding:3px 6px;border:1px solid #365176;border-radius:999px}
+@media(max-width:700px){.v5ToolGrid{grid-template-columns:1fr}.v5Modal{padding-top:45px}}
 </style>
 </head>
 
@@ -582,8 +671,10 @@ button.run:hover{background:#218b4c}
 
 <div class="topbar">
     <div class="logoText">
-        Developer <span>Studio</span> V4
+        Developer <span>Studio</span> V5
     </div>
+
+    <div class="vscodeModeBadge" id="vscodeModeBadge">VS Code Style</div>
 
     <button id="newButton">New</button>
     <button id="openButton">Open</button>
@@ -595,9 +686,11 @@ button.run:hover{background:#218b4c}
     <div class="spacer"></div>
 
     <button id="settingsButton">⚙ Settings</button>
+    <button id="commandPaletteButton">⌘ Command</button>
     <button id="moreButton" class="moreButton" aria-label="More options" title="More options">⋮</button>
     <div id="moreMenu" class="moreMenu">
         <button id="goAdvancedMode">Go to Advanced Mode</button>
+        <button id="vsCodeModeButton">VS Code Style Mode</button>
         <button id="viewSourceButton">HTML Code</button>
         <button id="goWinSim">Go to Win Sim</button>
     </div>
@@ -607,11 +700,47 @@ button.run:hover{background:#218b4c}
 
     <aside class="sidebar">
 
-        <div class="sectionTitle">Languages</div>
-        <div id="languages"></div>
+        <div class="classicSidebarNotice" id="classicSidebarNotice">
+            <div class="classicSidebarIcon">VS</div>
+            <b>VS Code Style features</b>
+            <span>Languages, Workspace, and Extensions are available only in VS Code Style Mode.</span>
+            <button id="classicEnableVSCode">Enable VS Code Style</button>
+        </div>
 
-        <div class="sectionTitle">Files</div>
-        <div id="files"></div>
+        <div class="vscodeSidebarSection">
+            <button class="vscodeSidebarHeader" data-sidebar-toggle="languageBody">
+                <span class="vscodeChevron" id="languageChevron">▼</span>
+                <span>LANGUAGES</span>
+            </button>
+            <div class="vscodeSidebarBody" id="languageBody">
+                <input id="vscodeLanguageSearch" class="vscodeLanguageSearch" placeholder="Search languages..." autocomplete="off">
+                <div id="languages"></div>
+            </div>
+        </div>
+
+        <div class="vscodeSidebarSection">
+            <button class="vscodeSidebarHeader" data-sidebar-toggle="workspaceBody">
+                <span class="vscodeChevron" id="workspaceChevron">▼</span>
+                <span>WORKSPACE</span>
+            </button>
+            <div class="vscodeSidebarBody" id="workspaceBody">
+                <div class="vscodeFolder">▾ <span>DEVELOPER STUDIO</span></div>
+                <div id="files"></div>
+                <div class="vscodeSidebarHint">Your open project files appear here. Select a file to edit it.</div>
+            </div>
+        </div>
+
+        <div class="vscodeSidebarSection">
+            <button class="vscodeSidebarHeader" data-sidebar-toggle="extensionsBody">
+                <span class="vscodeChevron" id="extensionsChevron">▼</span>
+                <span>EXTENSIONS</span>
+            </button>
+            <div class="vscodeSidebarBody" id="extensionsBody">
+                <input id="vscodeExtensionSearch" class="vscodeLanguageSearch" placeholder="Search extensions..." autocomplete="off">
+                <div id="vscodeExtensions"></div>
+                <div class="vscodeSidebarHint">Extensions in this browser IDE are local UI tools and can be enabled without installing software on your Mac.</div>
+            </div>
+        </div>
 
     </aside>
 
@@ -688,7 +817,7 @@ button.run:hover{background:#218b4c}
 <div class="sourceModal" id="sourceModal">
     <div class="sourceBox">
         <div class="sourceHeader">
-            <h2>Developer Studio V4 — HTML Code</h2>
+            <h2>Developer Studio V5 — HTML Code</h2>
             <div class="spacer"></div>
             <button id="copySourceButton">Copy</button>
             <button id="closeSourceButton">Close</button>
@@ -701,7 +830,7 @@ button.run:hover{background:#218b4c}
 <div class="advancedModal" id="advancedModal">
     <div class="advancedBox">
         <div class="advancedHeader">
-            <h2>Developer Studio V4 — Advanced Mode</h2>
+            <h2>Developer Studio V5 — Advanced Mode</h2>
             <div class="spacer"></div>
             <button id="closeAdvancedButton">Close</button>
         </div>
@@ -1044,66 +1173,48 @@ Object.entries(languages).forEach(function(entry){
    LANGUAGE LIST
 ========================================================= */
 
-function renderLanguages(){
+function renderLanguages(filterText){
 
-    const container =
-        document.getElementById("languages");
-
+    const container = document.getElementById("languages");
+    if(!container) return;
+    const filter = String(filterText || "").trim().toLowerCase();
     container.innerHTML = "";
 
     Object.entries(languages).forEach(function(entry){
-
         const key = entry[0];
         const value = entry[1];
-
-        const item =
-            document.createElement("div");
-
-        item.className = "item";
-
-        if(logos[key]){
-
-            const image =
-                document.createElement("img");
-
-            image.src = logos[key];
-            image.alt = value.label;
-
-            const text =
-                document.createElement("span");
-
-            text.textContent = value.label;
-
-            item.appendChild(image);
-            item.appendChild(text);
-
-        }else{
-
-            const icon =
-                document.createElement("span");
-
-            icon.className = "languageIcon";
-            icon.textContent =
-                value.extension.toUpperCase();
-
-            const text =
-                document.createElement("span");
-
-            text.textContent = value.label;
-
-            item.appendChild(icon);
-            item.appendChild(text);
-
+        const label = String(value.label || key);
+        if(filter && !(key.toLowerCase().includes(filter) || label.toLowerCase().includes(filter) || String(value.extension || "").toLowerCase().includes(filter))){
+            return;
         }
 
+        const item = document.createElement("div");
+        item.className = "vscodeLanguageSelect" + (files[value.filename] && files[value.filename].filename === activeFile ? " active" : "");
+        item.dataset.languageKey = key;
+
+        if(logos[key]){
+            const image = document.createElement("img");
+            image.src = logos[key];
+            image.alt = label;
+            item.appendChild(image);
+        }else{
+            const icon = document.createElement("span");
+            icon.className = "languageIcon";
+            icon.textContent = String(value.extension || key).replace(".", "").toUpperCase();
+            item.appendChild(icon);
+        }
+
+        const text = document.createElement("span");
+        text.textContent = label;
+        item.appendChild(text);
+
+        item.title = "Open " + label + " file";
         item.onclick = function(){
             openFile(value.filename);
+            renderLanguages(document.getElementById("vscodeLanguageSearch")?.value || "");
         };
-
         container.appendChild(item);
-
     });
-
 }
 
 
@@ -1123,15 +1234,14 @@ function renderFiles(){
         const item =
             document.createElement("div");
 
-        item.className =
-            "item" +
-            (file.filename === activeFile
-                ? " active"
-                : "");
+        item.className = document.body.classList.contains("vscodeStyle")
+            ? ("vscodeWorkspaceFile" + (file.filename === activeFile ? " active" : ""))
+            : ("item" + (file.filename === activeFile ? " active" : ""));
 
         const icon =
             document.createElement("span");
 
+        icon.className = document.body.classList.contains("vscodeStyle") ? "fileIcon" : "";
         icon.textContent = "📄";
 
         const text =
@@ -1162,6 +1272,74 @@ function renderFiles(){
 
     });
 
+}
+
+
+/* =========================================================
+   VS CODE SIDEBAR: EXTENSIONS + COLLAPSIBLE SECTIONS
+========================================================= */
+const VSCODE_EXTENSIONS = [
+    ["HTML Preview", "preview", "Live preview tools for HTML projects."],
+    ["JavaScript Tools", "JS", "Run and preview JavaScript projects."],
+    ["Python Runner", "PY", "Send Python files to the configured backend."],
+    ["C/C++ Tools", "C++", "Build and run C and C++ source files."],
+    ["Git Tools", "G", "Git project commands and source control helpers."],
+    ["Markdown Tools", "MD", "Convenient Markdown editing helpers."],
+    ["Theme Pack", "T", "Extra browser IDE theme controls."],
+    ["Project Exporter", "EX", "Export and restore Developer Studio workspaces."]
+];
+const enabledExtensions = JSON.parse(localStorage.getItem("developerStudioV5Extensions") || "[]");
+
+function renderVSCodeExtensions(filterText){
+    const box = document.getElementById("vscodeExtensions");
+    if(!box) return;
+    const filter = String(filterText || "").trim().toLowerCase();
+    box.innerHTML = "";
+    VSCODE_EXTENSIONS.forEach(function(ext){
+        if(filter && !(ext[0].toLowerCase().includes(filter) || ext[2].toLowerCase().includes(filter))) return;
+        const row = document.createElement("div");
+        row.className = "vscodeExtensionCard";
+        const icon = document.createElement("div");
+        icon.className = "vscodeExtensionIcon";
+        icon.textContent = ext[1];
+        const info = document.createElement("div");
+        info.className = "vscodeExtensionInfo";
+        const name = document.createElement("b");
+        name.textContent = ext[0];
+        const desc = document.createElement("span");
+        desc.textContent = ext[2];
+        info.appendChild(name); info.appendChild(desc);
+        const btn = document.createElement("button");
+        const isOn = enabledExtensions.includes(ext[0]);
+        btn.textContent = isOn ? "Disable" : "Enable";
+        btn.onclick = function(){
+            const i = enabledExtensions.indexOf(ext[0]);
+            if(i === -1) enabledExtensions.push(ext[0]);
+            else enabledExtensions.splice(i, 1);
+            localStorage.setItem("developerStudioV5Extensions", JSON.stringify(enabledExtensions));
+            renderVSCodeExtensions(document.getElementById("vscodeExtensionSearch")?.value || "");
+            document.getElementById("status").textContent = ext[0] + (i === -1 ? " enabled" : " disabled");
+        };
+        row.appendChild(icon); row.appendChild(info); row.appendChild(btn);
+        box.appendChild(row);
+    });
+}
+
+function setupVSCodeSidebar(){
+    document.querySelectorAll("[data-sidebar-toggle]").forEach(function(header){
+        header.onclick = function(){
+            const target = document.getElementById(header.dataset.sidebarToggle);
+            const chev = header.querySelector(".vscodeChevron");
+            if(!target) return;
+            const collapsed = target.classList.toggle("collapsed");
+            if(chev) chev.textContent = collapsed ? "▶" : "▼";
+        };
+    });
+    const langSearch = document.getElementById("vscodeLanguageSearch");
+    const extSearch = document.getElementById("vscodeExtensionSearch");
+    if(langSearch) langSearch.addEventListener("input", function(){ renderLanguages(this.value); });
+    if(extSearch) extSearch.addEventListener("input", function(){ renderVSCodeExtensions(this.value); });
+    renderVSCodeExtensions();
 }
 
 
@@ -1816,7 +1994,7 @@ async function runTerminalCommand(command){
     /* Local terminal commands */
     if(lower === "help"){
         appendTerminal(
-            "Developer Studio V4 Terminal\n\n" +
+            "Developer Studio V5 Terminal\n\n" +
             "Commands:\n" +
             "  help       Show this help\n" +
             "  clear      Clear the terminal\n" +
@@ -2845,6 +3023,28 @@ document.addEventListener("click",function(event){
 });
 
 document.getElementById("goAdvancedMode").onclick = openAdvancedMode;
+
+/* VS Code style mode */
+function applyVSCodeStyle(enabled){
+    document.body.classList.toggle("vscodeStyle", !!enabled);
+    localStorage.setItem("developerStudioVSCodeStyle", enabled ? "1" : "0");
+    var button = document.getElementById("vsCodeModeButton");
+    var badge = document.getElementById("vscodeModeBadge");
+    if(button) button.textContent = enabled ? "Use Classic Style" : "VS Code Style Mode";
+    if(badge) badge.style.display = enabled ? "inline-flex" : "none";
+    if(typeof renderLanguages === "function") renderLanguages(document.getElementById("vscodeLanguageSearch")?.value || "");
+    if(typeof renderFiles === "function") renderFiles();
+    if(typeof renderVSCodeExtensions === "function") renderVSCodeExtensions(document.getElementById("vscodeExtensionSearch")?.value || "");
+}
+
+document.getElementById("classicEnableVSCode").onclick = function(){
+    applyVSCodeStyle(true);
+};
+
+document.getElementById("vsCodeModeButton").onclick = function(){
+    applyVSCodeStyle(!document.body.classList.contains("vscodeStyle"));
+    document.getElementById("moreMenu").classList.remove("open");
+};
 document.getElementById("advancedContinueButton").onclick = function(){
     const builder = document.getElementById("htmlBuilder");
     if(builder.classList.contains("open")){
@@ -2911,10 +3111,12 @@ document.addEventListener("keydown",function(event){
    START
 ========================================================= */
 
+setupVSCodeSidebar();
 renderLanguages();
 renderFiles();
 renderTabs();
 applySettings();
+applyVSCodeStyle(localStorage.getItem("developerStudioVSCodeStyle") === "1");
 openFile(activeFile);
 showPanel("terminal");
 
@@ -2930,9 +3132,146 @@ setTimeout(function(){
     document.getElementById("terminalInput").focus();
 },100);
 
+
+
+/* =========================================================
+   V5 COMMAND PALETTE + WORKSPACE
+========================================================= */
+const V5_ACTIONS = [
+  ["New file","new","Create a new file"],
+  ["Open file","open","Open a file from your computer"],
+  ["Save file","save","Download the current file"],
+  ["Run current file","run","Execute the current file"],
+  ["Preview project","preview","Open the live preview"],
+  ["Terminal","terminal","Focus the terminal"],
+  ["Advanced Mode","advanced","Open the advanced workspace"],
+  ["HTML5 Builder","html5","Create a simple HTML5 page"],
+  ["Projects","project","Open V5 project tools"],
+  ["Settings","settings","Open Developer Studio settings"],
+  ["Clear terminal","clear","Clear terminal output"],
+  ["Show files","files","List project files"],
+  ["Show languages","languages","List available languages"],
+  ["HTML code","source","Show the code of this file"]
+];
+
+function openCommandPalette(){
+  const modal=document.getElementById("commandPaletteModal");
+  modal.classList.add("open");
+  renderPalette("");
+  setTimeout(function(){document.getElementById("paletteSearch").focus();},0);
+}
+function closeCommandPalette(){document.getElementById("commandPaletteModal").classList.remove("open")}
+function runV5Action(key){
+  closeCommandPalette();
+  if(key==="new") document.getElementById("newButton").click();
+  else if(key==="open") document.getElementById("openButton").click();
+  else if(key==="save") saveCurrentFile();
+  else if(key==="run") runCurrentFile();
+  else if(key==="preview") showPanel("preview");
+  else if(key==="terminal") showPanel("terminal");
+  else if(key==="advanced") openAdvancedMode();
+  else if(key==="html5"){openAdvancedMode();setTimeout(openHtmlBuilder,0)}
+  else if(key==="project") openProjectTools();
+  else if(key==="settings") document.getElementById("settingsButton").click();
+  else if(key==="clear") document.getElementById("terminalOutput").textContent="Developer Studio V5 Terminal\nTerminal cleared.\n\n";
+  else if(key==="files") appendTerminal(Object.keys(files).join("\n")+"\n\n");
+  else if(key==="languages") appendTerminal(ADVANCED_LANGUAGES.map(function(x){return x[0]+" ("+x[1]+")";}).join("\n")+"\n\n");
+  else if(key==="source") openHtmlSource();
+}
+function renderPalette(filter){
+  const q=String(filter||"").toLowerCase().trim();
+  const box=document.getElementById("paletteResults");
+  box.innerHTML="";
+  V5_ACTIONS.filter(function(item){return !q || item[0].toLowerCase().includes(q) || item[1].toLowerCase().includes(q) || item[2].toLowerCase().includes(q);}).forEach(function(item){
+    const row=document.createElement("div");
+    row.className="v5PaletteItem";
+    const code=document.createElement("code");code.textContent=item[0];
+    const desc=document.createElement("div");desc.textContent=item[2];
+    const key=document.createElement("span");key.textContent=item[1];
+    row.appendChild(code);row.appendChild(desc);row.appendChild(key);
+    row.onclick=function(){runV5Action(item[1])};
+    box.appendChild(row);
+  });
+}
+
+document.getElementById("commandPaletteButton").onclick=openCommandPalette;
+document.getElementById("closePalette").onclick=closeCommandPalette;
+document.getElementById("paletteSearch").addEventListener("input",function(){renderPalette(this.value)});
+document.getElementById("commandPaletteModal").addEventListener("click",function(e){if(e.target===this)closeCommandPalette()});
+
+document.addEventListener("keydown",function(event){
+  if((event.metaKey||event.ctrlKey)&&event.key.toLowerCase()==="k"){
+    event.preventDefault();
+    openCommandPalette();
+  }
+});
+
+function openProjectTools(){document.getElementById("projectModal").classList.add("open")}
+function closeProjectTools(){document.getElementById("projectModal").classList.remove("open")}
+document.getElementById("closeProject").onclick=closeProjectTools;
+document.getElementById("projectModal").addEventListener("click",function(e){if(e.target===this)closeProjectTools()});
+
+function saveWorkspace(){
+  localStorage.setItem("developerStudioV5Workspace",JSON.stringify({files:files,activeFile:activeFile,backend:backendURL()}));
+  document.getElementById("status").textContent="Workspace saved locally";
+  appendTerminal("Workspace saved to browser storage.\n\n");
+}
+function restoreWorkspace(){
+  try{
+    const raw=localStorage.getItem("developerStudioV5Workspace");
+    if(!raw){appendTerminal("No saved V5 workspace found.\n\n");return}
+    const state=JSON.parse(raw);
+    if(state.files)files=state.files;
+    if(state.activeFile && files[state.activeFile])activeFile=state.activeFile;
+    renderLanguages();renderFiles();renderTabs();openFile(activeFile);
+    document.getElementById("status").textContent="Workspace restored";
+    appendTerminal("Workspace restored from browser storage.\n\n");
+  }catch(error){appendTerminal("Could not restore workspace.\n\n")}
+}
+function exportProject(){
+  const payload={name:"Developer Studio V5 Project",version:5,files:Object.values(files),activeFile:activeFile,exportedAt:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="developer-studio-v5-project.json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},1000);
+  document.getElementById("status").textContent="Project exported";
+}
+function duplicateFile(){
+  const file=files[activeFile]; if(!file)return;
+  let base=file.filename.replace(/(\.[^.]+)$/,""),ext=(file.filename.match(/\.[^.]+$/)||[""])[0],name=base+"-copy"+ext,n=2;
+  while(files[name]){name=base+"-copy-"+n+ext;n++}
+  createFile(name,file.language,file.content);openFile(name);appendTerminal("Duplicated " + file.filename + " as " + name + ".\n\n");
+}
+function formatHtml(){
+  const file=files[activeFile];
+  if(!file || file.language!=="html"){appendTerminal("Format HTML requires an HTML file.\n\n");return}
+  let text=file.content.replace(/>\s+</g,">\n<");
+  let depth=0,out=[];
+  text.split("\n").forEach(function(line){
+    const t=line.trim();
+    if(!t)return;
+    if(/^<\/(div|section|main|body|head|html|form|ul|ol|li|table|tr|script|style)/i.test(t))depth=Math.max(0,depth-1);
+    out.push("    ".repeat(depth)+t);
+    if(/^<(div|section|main|body|head|html|form|ul|ol|li|table|tr|script|style)(\s|>)/i.test(t) && !/<\/(div|section|main|body|head|html|form|ul|ol|li|table|tr|script|style)>$/i.test(t)) depth++;
+  });
+  file.content=out.join("\n")+"\n";file.dirty=true;document.getElementById("editor").value=file.content;updateLineNumbers();renderFiles();renderTabs();document.getElementById("status").textContent="HTML formatted";
+}
+
+document.querySelectorAll("[data-v5-action]").forEach(function(btn){btn.onclick=function(){const a=this.dataset.v5Action;if(a==="saveWorkspace")saveWorkspace();else if(a==="restoreWorkspace")restoreWorkspace();else if(a==="exportProject")exportProject();else if(a==="openPalette")openCommandPalette();else if(a==="formatHtml")formatHtml();else if(a==="duplicateFile")duplicateFile();}});
+
+document.getElementById("projectModal").addEventListener("keydown",function(){});
+
+/* Replace the visible V4 labels in dynamic advanced areas */
+(function(){
+  const nodes=document.querySelectorAll("body *");
+  nodes.forEach(function(n){
+    if(n.children.length===0 && n.textContent.includes("Developer Studio V4")) n.textContent=n.textContent.replace(/Developer Studio V4/g,"Developer Studio V5");
+  });
+})();
+
+/* V5 autosave */
+setInterval(function(){
+  try{localStorage.setItem("developerStudioV5Autosave",JSON.stringify({files:files,activeFile:activeFile}));}catch(error){}
+},15000);
 </script>
 
 </body>
 </html>
-
-Compare with AITOPIA
