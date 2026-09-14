@@ -1,0 +1,1563 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winamp XP V1</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    background:
+        linear-gradient(#3d5d8b 0%,#7895bd 48%,#36557e 100%);
+    font-family:Tahoma,Arial,sans-serif;
+    overflow:hidden;
+}
+
+button,
+input{
+    font-family:Tahoma,Arial,sans-serif;
+}
+
+#desktop{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:35px;
+    overflow:auto;
+}
+
+#app{
+    width:850px;
+    max-width:96vw;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+/* XP WINDOW */
+
+.window{
+    border:1px solid #153b70;
+    border-radius:7px 7px 3px 3px;
+    overflow:hidden;
+    box-shadow:
+        0 4px 14px rgba(0,0,0,.45),
+        inset 1px 1px rgba(255,255,255,.65);
+    background:#c7c7c7;
+}
+
+.titlebar{
+    height:28px;
+    display:flex;
+    align-items:center;
+    padding:0 6px;
+    color:white;
+    font-weight:bold;
+    font-size:12px;
+    background:
+        linear-gradient(
+            #78a9e8 0%,
+            #3b7ed1 10%,
+            #0b57b3 55%,
+            #174f99 100%
+        );
+}
+
+.title-icon{
+    width:18px;
+    height:18px;
+    margin-right:5px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:13px;
+}
+
+.title{
+    flex:1;
+    text-shadow:1px 1px #174477;
+}
+
+.window-buttons{
+    display:flex;
+    gap:2px;
+}
+
+.winbtn{
+    width:21px;
+    height:20px;
+    padding:0;
+    color:#fff;
+    border:1px solid #174477;
+    border-radius:3px;
+    background:linear-gradient(#72a8e8,#2363b3);
+    font-size:12px;
+    font-weight:bold;
+}
+
+.winbtn:hover{
+    background:linear-gradient(#91bdf0,#3479c9);
+}
+
+.winbtn.close:hover{
+    background:linear-gradient(#ff8c80,#c92318);
+}
+
+/* MAIN */
+
+.main{
+    display:grid;
+    grid-template-columns:250px 1fr;
+    gap:5px;
+    padding:5px;
+    background:#d4d0c8;
+}
+
+/* PLAYER */
+
+.player{
+    min-height:330px;
+    background:#111;
+    border:2px solid #555;
+    color:#eee;
+    padding:8px;
+    box-shadow:inset 0 0 0 1px #000;
+}
+
+.display{
+    height:80px;
+    border:2px solid #303030;
+    background:
+        radial-gradient(circle at 30% 20%,#2d2d2d,#080808 70%);
+    padding:8px;
+    font-family:"Courier New",monospace;
+    color:#63ff63;
+    overflow:hidden;
+}
+
+.track-name{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:#78ff78;
+    font-size:12px;
+}
+
+.time{
+    font-size:24px;
+    margin-top:4px;
+    color:#baffba;
+    text-shadow:0 0 5px #39ff39;
+}
+
+.status{
+    font-size:10px;
+    color:#6bff6b;
+}
+
+.visualizer{
+    height:65px;
+    margin-top:7px;
+    border:2px solid #333;
+    background:#050505;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap:3px;
+    padding:5px;
+}
+
+.bar{
+    width:6px;
+    height:10px;
+    background:#48d348;
+    box-shadow:0 0 4px #36ff36;
+    transition:height .12s linear;
+}
+
+.progress{
+    width:100%;
+    height:11px;
+    margin-top:7px;
+    appearance:none;
+    background:#202020;
+}
+
+.progress::-webkit-slider-thumb{
+    appearance:none;
+    width:12px;
+    height:12px;
+    background:#b7b7b7;
+    border:1px solid #000;
+}
+
+.progress::-moz-range-thumb{
+    width:12px;
+    height:12px;
+    background:#b7b7b7;
+    border:1px solid #000;
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:3px;
+    margin-top:8px;
+}
+
+.control{
+    height:30px;
+    color:#eee;
+    border:1px solid #555;
+    border-radius:2px;
+    background:linear-gradient(#444,#1b1b1b);
+    font-weight:bold;
+}
+
+.control:hover{
+    background:linear-gradient(#5e5e5e,#252525);
+}
+
+.control:active{
+    background:#111;
+}
+
+.small-controls{
+    display:flex;
+    gap:4px;
+    margin-top:5px;
+}
+
+.small-controls button{
+    flex:1;
+    height:23px;
+    color:#ddd;
+    background:#292929;
+    border:1px solid #555;
+    font-size:10px;
+}
+
+.small-controls button.active{
+    color:#111;
+    background:#74d674;
+}
+
+.volume-area{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:9px;
+    font-size:10px;
+}
+
+.volume{
+    flex:1;
+}
+
+.volume::-webkit-slider-runnable-track{
+    height:5px;
+    background:#555;
+}
+
+.volume::-webkit-slider-thumb{
+    appearance:none;
+    width:11px;
+    height:11px;
+    margin-top:-3px;
+    background:#aaa;
+    border:1px solid #111;
+}
+
+/* ART */
+
+.art{
+    height:85px;
+    margin-top:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        linear-gradient(135deg,#202020,#050505);
+    border:2px solid #444;
+    color:#777;
+    font-size:11px;
+    text-align:center;
+}
+
+.art-disc{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:
+        repeating-radial-gradient(
+            circle,
+            #181818 0px,
+            #181818 2px,
+            #303030 3px,
+            #111 4px
+        );
+    border:2px solid #555;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.art-center{
+    width:13px;
+    height:13px;
+    border-radius:50%;
+    background:#777;
+    border:2px solid #222;
+}
+
+/* PLAYLIST */
+
+.playlist-window{
+    min-height:330px;
+}
+
+.playlist-content{
+    background:#d4d0c8;
+    padding:6px;
+}
+
+.toolbar{
+    display:flex;
+    gap:4px;
+    flex-wrap:wrap;
+    margin-bottom:6px;
+}
+
+.toolbar button{
+    padding:4px 9px;
+    border:1px solid #808080;
+    border-radius:2px;
+    background:linear-gradient(#fff,#ddd);
+    font-size:11px;
+}
+
+.toolbar button:hover{
+    background:linear-gradient(#fff,#c7ddf6);
+}
+
+.playlist{
+    height:285px;
+    overflow:auto;
+    background:#080808;
+    border:2px inset #aaa;
+    color:#ddd;
+    font-family:"Courier New",monospace;
+    font-size:12px;
+}
+
+.empty{
+    color:#777;
+    padding:20px;
+    text-align:center;
+}
+
+.song{
+    display:grid;
+    grid-template-columns:35px 1fr 65px;
+    padding:5px 7px;
+    border-bottom:1px solid #222;
+}
+
+.song:hover{
+    background:#163a64;
+}
+
+.song.active{
+    background:#1f5c9b;
+    color:white;
+}
+
+.song-number{
+    color:#888;
+}
+
+.song-name{
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+
+.song-duration{
+    text-align:right;
+    color:#999;
+}
+
+/* STATUS */
+
+.statusbar{
+    height:23px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:0 7px;
+    background:#d4d0c8;
+    border-top:1px solid #fff;
+    color:#333;
+    font-size:10px;
+}
+
+.statusbar .grow{
+    flex:1;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+    #desktop{
+        padding-top:10px;
+        align-items:flex-start;
+    }
+
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .player{
+        min-height:auto;
+    }
+
+    .playlist-window{
+        min-height:300px;
+    }
+}
+
+/* MENU */
+
+.context-menu{
+    position:fixed;
+    display:none;
+    z-index:100;
+    min-width:170px;
+    background:#eee;
+    border:1px solid #555;
+    box-shadow:3px 3px 7px rgba(0,0,0,.4);
+}
+
+.context-menu button{
+    display:block;
+    width:100%;
+    text-align:left;
+    border:0;
+    padding:7px 10px;
+    background:#eee;
+    color:#111;
+}
+
+.context-menu button:hover{
+    background:#316ac5;
+    color:white;
+}
+
+/* MODAL */
+
+.modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.55);
+    z-index:200;
+}
+
+.modal-box{
+    width:350px;
+    max-width:90vw;
+    background:#d4d0c8;
+    border:1px solid #174477;
+    box-shadow:0 8px 30px #000;
+}
+
+.modal-body{
+    padding:14px;
+}
+
+.modal-body input{
+    width:100%;
+    padding:6px;
+    margin-top:7px;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:5px;
+    padding:8px;
+    border-top:1px solid #aaa;
+}
+</style>
+</head>
+
+<body>
+
+<div id="desktop">
+
+<div id="app">
+
+<!-- PLAYER WINDOW -->
+
+<div class="window">
+
+    <div class="titlebar">
+        <div class="title-icon">🎵</div>
+        <div class="title">Winamp XP V1</div>
+
+        <div class="window-buttons">
+            <button class="winbtn">_</button>
+            <button class="winbtn">□</button>
+            <button class="winbtn close" onclick="closeApp()">×</button>
+        </div>
+    </div>
+
+    <div class="main">
+
+        <div class="player">
+
+            <div class="display">
+                <div class="track-name" id="trackName">WINAMP XP — READY</div>
+                <div class="time" id="time">00:00</div>
+                <div class="status" id="status">STOPPED</div>
+            </div>
+
+            <div class="visualizer" id="visualizer"></div>
+
+            <input
+                class="progress"
+                id="progress"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+            >
+
+            <div class="controls">
+                <button class="control" onclick="previousTrack()">◀</button>
+                <button class="control" onclick="playPause()">▶</button>
+                <button class="control" onclick="stopTrack()">■</button>
+                <button class="control" onclick="nextTrack()">▶▶</button>
+                <button class="control" onclick="openFiles()">📁</button>
+            </div>
+
+            <div class="small-controls">
+                <button id="shuffleButton" onclick="toggleShuffle()">SHUFFLE</button>
+                <button id="repeatButton" onclick="toggleRepeat()">REPEAT</button>
+            </div>
+
+            <div class="volume-area">
+                <span>VOL</span>
+                <input
+                    class="volume"
+                    id="volume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.8"
+                >
+            </div>
+
+            <div class="art">
+                <div class="art-disc">
+                    <div class="art-center"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PLAYLIST WINDOW -->
+
+        <div class="window playlist-window">
+
+            <div class="titlebar">
+                <div class="title-icon">📋</div>
+                <div class="title">Playlist Editor</div>
+
+                <div class="window-buttons">
+                    <button class="winbtn">_</button>
+                    <button class="winbtn">□</button>
+                </div>
+            </div>
+
+            <div class="playlist-content">
+
+                <div class="toolbar">
+                    <button onclick="openFiles()">Add</button>
+                    <button onclick="removeSelected()">Remove</button>
+                    <button onclick="clearPlaylist()">Clear</button>
+                    <button onclick="newPlaylist()">New Playlist</button>
+                    <button onclick="renamePlaylist()">Rename</button>
+                </div>
+
+                <div
+                    class="playlist"
+                    id="playlist"
+                    ondragover="event.preventDefault()"
+                    ondrop="handleDrop(event)"
+                >
+                    <div class="empty">
+                        Drop music files here<br>
+                        or click Add
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="statusbar">
+        <span id="songCount">0 tracks</span>
+        <span>Winamp XP</span>
+        <span class="grow"></span>
+        <span id="playlistName">Default Playlist</span>
+    </div>
+
+</div>
+
+</div>
+</div>
+
+<input
+    type="file"
+    id="fileInput"
+    accept="audio/*,video/*"
+    multiple
+    hidden
+>
+
+<div class="modal" id="modal">
+    <div class="modal-box">
+
+        <div class="titlebar">
+            <div class="title">Winamp XP</div>
+        </div>
+
+        <div class="modal-body" id="modalBody"></div>
+
+        <div class="modal-actions">
+            <button onclick="closeModal()">Cancel</button>
+            <button onclick="confirmModal()">OK</button>
+        </div>
+
+    </div>
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+/* ==========================================
+   WINAMP XP V1
+   ========================================== */
+
+const audio = document.getElementById("audio");
+const fileInput = document.getElementById("fileInput");
+const playlistEl = document.getElementById("playlist");
+const progress = document.getElementById("progress");
+const volume = document.getElementById("volume");
+
+let tracks = [];
+let currentIndex = -1;
+let selectedIndex = -1;
+
+let shuffle = false;
+let repeat = false;
+
+let playlistTitle = "Default Playlist";
+
+let db;
+
+/* ==========================================
+   INDEXED DB
+   ========================================== */
+
+const DB_NAME = "WinampXP_DB";
+const DB_VERSION = 1;
+
+function initDB(){
+
+    return new Promise((resolve,reject)=>{
+
+        const request =
+            indexedDB.open(DB_NAME,DB_VERSION);
+
+        request.onupgradeneeded = e => {
+
+            const database = e.target.result;
+
+            if(!database.objectStoreNames.contains("tracks")){
+                database.createObjectStore(
+                    "tracks",
+                    {keyPath:"id",autoIncrement:true}
+                );
+            }
+
+        };
+
+        request.onsuccess = e => {
+            db = e.target.result;
+            resolve();
+        };
+
+        request.onerror = () => reject(request.error);
+
+    });
+
+}
+
+function saveTrack(track){
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            db.transaction("tracks","readwrite");
+
+        const store =
+            tx.objectStore("tracks");
+
+        const request =
+            store.add(track);
+
+        request.onsuccess = () => {
+
+            track.id = request.result;
+
+            resolve(track);
+        };
+
+        request.onerror = () => reject(request.error);
+
+    });
+
+}
+
+function getTracks(){
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            db.transaction("tracks","readonly");
+
+        const store =
+            tx.objectStore("tracks");
+
+        const request =
+            store.getAll();
+
+        request.onsuccess = () =>
+            resolve(request.result);
+
+        request.onerror = () =>
+            reject(request.error);
+
+    });
+
+}
+
+function deleteTrackFromDB(id){
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            db.transaction("tracks","readwrite");
+
+        tx.objectStore("tracks").delete(id);
+
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+function clearDB(){
+
+    return new Promise((resolve,reject)=>{
+
+        const tx =
+            db.transaction("tracks","readwrite");
+
+        tx.objectStore("tracks").clear();
+
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+
+    });
+
+}
+
+/* ==========================================
+   LOAD
+   ========================================== */
+
+async function loadLibrary(){
+
+    try{
+
+        await initDB();
+
+        const saved = await getTracks();
+
+        tracks = saved.map(t => {
+
+            return {
+                ...t,
+                url:URL.createObjectURL(t.blob)
+            };
+
+        });
+
+        renderPlaylist();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "Your browser could not open the local media library."
+        );
+
+    }
+
+}
+
+/* ==========================================
+   FILE IMPORT
+   ========================================== */
+
+function openFiles(){
+    fileInput.click();
+}
+
+fileInput.addEventListener("change",async e=>{
+
+    await addFiles([...e.target.files]);
+
+    fileInput.value="";
+
+});
+
+async function addFiles(files){
+
+    if(!files.length)return;
+
+    for(const file of files){
+
+        if(!file.type.startsWith("audio/") &&
+           !file.type.startsWith("video/")){
+            continue;
+        }
+
+        try{
+
+            const track = await saveTrack({
+
+                name:file.name,
+
+                type:file.type,
+
+                size:file.size,
+
+                blob:file,
+
+                favorite:false,
+
+                added:Date.now()
+
+            });
+
+            track.url =
+                URL.createObjectURL(file);
+
+            tracks.push(track);
+
+        }catch(error){
+
+            console.error(error);
+
+            alert(
+                "Could not save " +
+                file.name +
+                ". Your browser may be out of storage space."
+            );
+
+        }
+
+    }
+
+    renderPlaylist();
+
+    if(currentIndex === -1 && tracks.length){
+        loadTrack(0);
+    }
+
+}
+
+/* ==========================================
+   DRAG & DROP
+   ========================================== */
+
+function handleDrop(event){
+
+    event.preventDefault();
+
+    const files =
+        [...event.dataTransfer.files];
+
+    addFiles(files);
+
+}
+
+/* ==========================================
+   PLAYLIST
+   ========================================== */
+
+function renderPlaylist(){
+
+    playlistEl.innerHTML="";
+
+    if(!tracks.length){
+
+        playlistEl.innerHTML =
+            `<div class="empty">
+                Drop music files here<br>
+                or click Add
+            </div>`;
+
+    }else{
+
+        tracks.forEach((track,index)=>{
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "song" +
+                (index===currentIndex ? " active":"");
+
+            row.innerHTML = `
+                <div class="song-number">
+                    ${String(index+1).padStart(2,"0")}
+                </div>
+
+                <div class="song-name">
+                    ${escapeHTML(track.name)}
+                </div>
+
+                <div class="song-duration">
+                    ${track.duration || "--:--"}
+                </div>
+            `;
+
+            row.onclick = () => {
+
+                selectedIndex=index;
+
+                loadTrack(index);
+
+            };
+
+            row.ondblclick = () =>
+                loadTrack(index);
+
+            playlistEl.appendChild(row);
+
+        });
+
+    }
+
+    document.getElementById("songCount").textContent =
+        tracks.length +
+        (tracks.length===1 ? " track":" tracks");
+
+    document.getElementById("playlistName").textContent =
+        playlistTitle;
+
+}
+
+function escapeHTML(text){
+
+    return String(text)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+/* ==========================================
+   LOAD TRACK
+   ========================================== */
+
+function loadTrack(index){
+
+    if(index < 0 || index >= tracks.length)return;
+
+    currentIndex=index;
+    selectedIndex=index;
+
+    const track=tracks[index];
+
+    audio.src=track.url;
+
+    document.getElementById("trackName")
+        .textContent=track.name;
+
+    document.getElementById("status")
+        .textContent="READY";
+
+    progress.value=0;
+
+    renderPlaylist();
+
+}
+
+/* ==========================================
+   PLAY
+   ========================================== */
+
+function playPause(){
+
+    if(!tracks.length){
+
+        openFiles();
+
+        return;
+    }
+
+    if(currentIndex===-1){
+
+        loadTrack(0);
+
+    }
+
+    if(audio.paused){
+
+        audio.play()
+            .then(()=>{
+
+                document.getElementById("status")
+                    .textContent="PLAYING";
+
+            })
+            .catch(()=>{
+
+                document.getElementById("status")
+                    .textContent="READY";
+
+            });
+
+    }else{
+
+        audio.pause();
+
+        document.getElementById("status")
+            .textContent="PAUSED";
+
+    }
+
+}
+
+function stopTrack(){
+
+    audio.pause();
+
+    audio.currentTime=0;
+
+    document.getElementById("status")
+        .textContent="STOPPED";
+
+}
+
+function previousTrack(){
+
+    if(!tracks.length)return;
+
+    let next=currentIndex-1;
+
+    if(next<0)next=tracks.length-1;
+
+    loadTrack(next);
+
+    audio.play().catch(()=>{});
+
+}
+
+function nextTrack(){
+
+    if(!tracks.length)return;
+
+    let next;
+
+    if(shuffle){
+
+        next =
+            Math.floor(
+                Math.random()*tracks.length
+            );
+
+    }else{
+
+        next=currentIndex+1;
+
+        if(next>=tracks.length){
+
+            if(repeat){
+                next=0;
+            }else{
+
+                stopTrack();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    loadTrack(next);
+
+    audio.play().catch(()=>{});
+
+}
+
+/* ==========================================
+   AUDIO EVENTS
+   ========================================== */
+
+audio.addEventListener("timeupdate",()=>{
+
+    if(!audio.duration)return;
+
+    progress.value =
+        (audio.currentTime/audio.duration)*100;
+
+    document.getElementById("time")
+        .textContent =
+        formatTime(audio.currentTime);
+
+});
+
+audio.addEventListener("loadedmetadata",()=>{
+
+    if(currentIndex<0)return;
+
+    tracks[currentIndex].duration =
+        formatTime(audio.duration);
+
+    renderPlaylist();
+
+});
+
+audio.addEventListener("ended",()=>{
+
+    if(repeat){
+
+        audio.currentTime=0;
+
+        audio.play().catch(()=>{});
+
+    }else{
+
+        nextTrack();
+
+    }
+
+});
+
+progress.addEventListener("input",()=>{
+
+    if(!audio.duration)return;
+
+    audio.currentTime =
+        (progress.value/100)*audio.duration;
+
+});
+
+volume.addEventListener("input",()=>{
+
+    audio.volume=Number(volume.value);
+
+    localStorage.setItem(
+        "winamp-volume",
+        volume.value
+    );
+
+});
+
+/* ==========================================
+   MODES
+   ========================================== */
+
+function toggleShuffle(){
+
+    shuffle=!shuffle;
+
+    document
+        .getElementById("shuffleButton")
+        .classList.toggle("active",shuffle);
+
+}
+
+function toggleRepeat(){
+
+    repeat=!repeat;
+
+    document
+        .getElementById("repeatButton")
+        .classList.toggle("active",repeat);
+
+}
+
+/* ==========================================
+   REMOVE
+   ========================================== */
+
+async function removeSelected(){
+
+    if(selectedIndex<0 ||
+       selectedIndex>=tracks.length){
+
+        return;
+
+    }
+
+    const track =
+        tracks[selectedIndex];
+
+    if(currentIndex===selectedIndex){
+
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+
+        currentIndex=-1;
+
+    }else if(currentIndex>selectedIndex){
+
+        currentIndex--;
+
+    }
+
+    URL.revokeObjectURL(track.url);
+
+    await deleteTrackFromDB(track.id);
+
+    tracks.splice(selectedIndex,1);
+
+    selectedIndex=-1;
+
+    renderPlaylist();
+
+}
+
+async function clearPlaylist(){
+
+    if(!tracks.length)return;
+
+    if(!confirm(
+        "Remove all tracks from this library?"
+    ))return;
+
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+
+    tracks.forEach(t=>{
+        if(t.url)URL.revokeObjectURL(t.url);
+    });
+
+    await clearDB();
+
+    tracks=[];
+
+    currentIndex=-1;
+    selectedIndex=-1;
+
+    renderPlaylist();
+
+}
+
+/* ==========================================
+   PLAYLIST NAME
+   ========================================== */
+
+function newPlaylist(){
+
+    showModal(
+        "New Playlist",
+        "Enter a name for the playlist:",
+        value=>{
+
+            if(value.trim()){
+
+                playlistTitle=value.trim();
+
+                renderPlaylist();
+
+            }
+
+        }
+    );
+
+}
+
+function renamePlaylist(){
+
+    showModal(
+        "Rename Playlist",
+        "Enter a new playlist name:",
+        value=>{
+
+            if(value.trim()){
+
+                playlistTitle=value.trim();
+
+                renderPlaylist();
+
+            }
+
+        }
+    );
+
+}
+
+/* ==========================================
+   MODAL
+   ========================================== */
+
+let modalCallback=null;
+
+function showModal(title,text,callback){
+
+    modalCallback=callback;
+
+    document.querySelector("#modal .title")
+        .textContent=title;
+
+    document.getElementById("modalBody")
+        .innerHTML=`
+            <div>${text}</div>
+            <input id="modalInput"
+                   autocomplete="off">
+        `;
+
+    document.getElementById("modal")
+        .style.display="flex";
+
+    setTimeout(()=>{
+
+        document
+            .getElementById("modalInput")
+            .focus();
+
+    },50);
+
+}
+
+function confirmModal(){
+
+    const value =
+        document.getElementById("modalInput").value;
+
+    closeModal();
+
+    if(modalCallback){
+
+        const callback=modalCallback;
+
+        modalCallback=null;
+
+        callback(value);
+
+    }
+
+}
+
+function closeModal(){
+
+    document.getElementById("modal")
+        .style.display="none";
+
+    modalCallback=null;
+
+}
+
+/* ==========================================
+   VISUALIZER
+   ========================================== */
+
+const visualizer =
+    document.getElementById("visualizer");
+
+for(let i=0;i<28;i++){
+
+    const bar=document.createElement("div");
+
+    bar.className="bar";
+
+    visualizer.appendChild(bar);
+
+}
+
+const bars =
+    [...document.querySelectorAll(".bar")];
+
+setInterval(()=>{
+
+    const playing =
+        !audio.paused &&
+        !audio.ended;
+
+    bars.forEach(bar=>{
+
+        if(playing){
+
+            bar.style.height =
+                (8+Math.random()*48)+"px";
+
+        }else{
+
+            bar.style.height =
+                "5px";
+
+        }
+
+    });
+
+},120);
+
+/* ==========================================
+   KEYBOARD
+   ========================================== */
+
+document.addEventListener("keydown",e=>{
+
+    if(
+        e.target.tagName==="INPUT" &&
+        e.target.id!=="progress"
+    ){
+        return;
+    }
+
+    switch(e.code){
+
+        case "Space":
+            e.preventDefault();
+            playPause();
+            break;
+
+        case "ArrowRight":
+            nextTrack();
+            break;
+
+        case "ArrowLeft":
+            previousTrack();
+            break;
+
+        case "Escape":
+            stopTrack();
+            break;
+
+    }
+
+});
+
+/* ==========================================
+   HELPERS
+   ========================================== */
+
+function formatTime(seconds){
+
+    if(!Number.isFinite(seconds)){
+        return "00:00";
+    }
+
+    seconds=Math.floor(seconds);
+
+    const minutes =
+        Math.floor(seconds/60);
+
+    const secs =
+        seconds%60;
+
+    return String(minutes).padStart(2,"0")
+        +":"
+        +String(secs).padStart(2,"0");
+
+}
+
+/* ==========================================
+   CLOSE
+   ========================================== */
+
+function closeApp(){
+
+    document.getElementById("app")
+        .innerHTML=`
+            <div class="window">
+
+                <div class="titlebar">
+                    Winamp XP
+                </div>
+
+                <div style="
+                    padding:30px;
+                    text-align:center;
+                    background:#d4d0c8;
+                ">
+                    Winamp XP is closed.
+                    <br><br>
+                    <button onclick="location.reload()">
+                        Reopen Winamp XP
+                    </button>
+                </div>
+
+            </div>
+        `;
+
+}
+
+/* ==========================================
+   STARTUP
+   ========================================== */
+
+const savedVolume =
+    localStorage.getItem("winamp-volume");
+
+if(savedVolume!==null){
+
+    volume.value=savedVolume;
+    audio.volume=Number(savedVolume);
+
+}else{
+
+    audio.volume=.8;
+
+}
+
+loadLibrary();
+
+</script>
+
+</body>
+</html>
+```
