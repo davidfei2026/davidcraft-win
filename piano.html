@@ -1,0 +1,1498 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Piano Studio Simulator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    --blue:#1677d2;
+    --blue2:#0b4f9c;
+    --dark:#111827;
+    --panel:#1b2433;
+    --panel2:#253247;
+    --text:#f5f7fb;
+    --muted:#aeb9ca;
+    --border:#3b4a61;
+    --green:#35c96f;
+    --red:#ef5350;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0b1020;
+    color:var(--text);
+    overflow-x:hidden;
+}
+
+button,
+select,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.topbar{
+    height:58px;
+    background:linear-gradient(#238be2,#0757a8);
+    border-bottom:2px solid #063d78;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:7px 10px;
+    box-shadow:0 2px 8px #0008;
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+    margin-right:auto;
+    white-space:nowrap;
+}
+
+.topbtn{
+    border:1px solid #79b9f4;
+    border-radius:5px;
+    background:linear-gradient(#f8fbff,#d9e8f7);
+    color:#10243a;
+    padding:7px 12px;
+    font-weight:bold;
+}
+
+.topbtn:hover{
+    background:white;
+}
+
+.topbtn.sound-on{
+    background:#bdf5ce;
+    border-color:#5bc87a;
+}
+
+.tabs{
+    display:flex;
+    gap:5px;
+    background:#101827;
+    border-bottom:1px solid var(--border);
+    padding:7px;
+    overflow-x:auto;
+}
+
+.tab{
+    border:1px solid #41516b;
+    background:#202d40;
+    color:white;
+    border-radius:6px;
+    padding:9px 15px;
+    white-space:nowrap;
+}
+
+.tab:hover,
+.tab.active{
+    background:var(--blue);
+    border-color:#69b2fa;
+}
+
+.page{
+    display:none;
+    padding:18px;
+    max-width:1250px;
+    margin:auto;
+}
+
+.page.active{
+    display:block;
+}
+
+.card{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:16px;
+    margin-bottom:15px;
+    box-shadow:0 5px 15px #0005;
+}
+
+.card h2,
+.card h3{
+    margin-top:0;
+}
+
+.status{
+    padding:10px;
+    background:#101827;
+    border:1px solid var(--border);
+    border-radius:6px;
+    color:#d8e4f4;
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+}
+
+.controls label{
+    color:var(--muted);
+}
+
+select,
+input[type="range"]{
+    accent-color:var(--blue);
+}
+
+select{
+    background:#101827;
+    color:white;
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:7px;
+}
+
+.action{
+    border:1px solid #507091;
+    background:#26364d;
+    color:white;
+    border-radius:6px;
+    padding:9px 14px;
+}
+
+.action:hover{
+    background:#31506f;
+}
+
+.action.primary{
+    background:var(--blue);
+    border-color:#65b3f6;
+}
+
+.action.danger{
+    background:#8e2b2b;
+    border-color:#d85d5d;
+}
+
+/* Piano */
+
+.piano-wrap{
+    background:#080c14;
+    border:2px solid #39475d;
+    border-radius:8px;
+    padding:20px 12px 25px;
+    overflow-x:auto;
+}
+
+.piano{
+    position:relative;
+    height:300px;
+    min-width:760px;
+    margin:auto;
+    width:max-content;
+    user-select:none;
+}
+
+.white-key{
+    position:relative;
+    display:inline-flex;
+    width:82px;
+    height:280px;
+    background:linear-gradient(to right,#fff,#e7e7e7);
+    border:1px solid #777;
+    border-radius:0 0 7px 7px;
+    color:#222;
+    align-items:flex-end;
+    justify-content:center;
+    padding-bottom:12px;
+    font-weight:bold;
+    box-shadow:0 5px 5px #0008;
+    z-index:1;
+}
+
+.white-key:hover{
+    background:#dcecff;
+}
+
+.white-key.active{
+    background:#9bcaff;
+    transform:translateY(3px);
+}
+
+.black-key{
+    position:absolute;
+    top:0;
+    width:50px;
+    height:175px;
+    background:linear-gradient(90deg,#111,#444,#111);
+    border:2px solid #080808;
+    border-radius:0 0 6px 6px;
+    color:white;
+    z-index:5;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    padding-bottom:10px;
+    box-shadow:0 7px 8px #000c;
+}
+
+.black-key:hover{
+    background:#333;
+}
+
+.black-key.active{
+    background:#126dcc;
+    transform:translateY(3px);
+}
+
+.key-row{
+    white-space:nowrap;
+}
+
+.key-label{
+    font-size:12px;
+    opacity:.75;
+}
+
+.note-display{
+    font-size:30px;
+    font-weight:bold;
+    text-align:center;
+    margin:10px;
+    color:#65b3ff;
+}
+
+/* Score sheets */
+
+.score-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:12px;
+}
+
+.song-card{
+    background:#101827;
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:14px;
+}
+
+.song-card h3{
+    margin:0 0 7px;
+}
+
+.staff{
+    position:relative;
+    height:120px;
+    margin:15px 0;
+    background:#fff;
+    border-radius:5px;
+    overflow:hidden;
+}
+
+.staff-lines{
+    position:absolute;
+    left:20px;
+    right:20px;
+    top:30px;
+    height:55px;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #111 0px,
+            #111 1px,
+            transparent 1px,
+            transparent 13px
+        );
+}
+
+.treble{
+    position:absolute;
+    left:27px;
+    top:25px;
+    font-family:serif;
+    font-size:58px;
+    color:#111;
+    z-index:2;
+}
+
+.notes{
+    position:absolute;
+    left:105px;
+    right:15px;
+    top:0;
+    height:110px;
+    display:flex;
+    gap:22px;
+    align-items:center;
+}
+
+.music-note{
+    width:15px;
+    height:15px;
+    background:#111;
+    border-radius:50%;
+    position:relative;
+}
+
+.music-note::after{
+    content:"";
+    position:absolute;
+    width:2px;
+    height:38px;
+    background:#111;
+    right:0;
+    bottom:8px;
+}
+
+/* Lessons */
+
+.lesson{
+    background:#101827;
+    border:1px solid var(--border);
+    border-radius:8px;
+    margin:10px 0;
+    padding:14px;
+}
+
+.lesson-number{
+    display:inline-block;
+    width:32px;
+    height:32px;
+    line-height:32px;
+    text-align:center;
+    background:var(--blue);
+    border-radius:50%;
+    margin-right:8px;
+    font-weight:bold;
+}
+
+.lesson button{
+    margin-top:8px;
+}
+
+.practice-box{
+    background:#0b1422;
+    border:1px solid #395170;
+    padding:15px;
+    border-radius:8px;
+    text-align:center;
+}
+
+.target-note{
+    font-size:42px;
+    font-weight:bold;
+    margin:10px;
+    color:#72bcff;
+}
+
+.practice-score{
+    font-size:20px;
+}
+
+/* Responsive */
+
+@media(max-width:700px){
+    .logo{
+        font-size:16px;
+    }
+
+    .topbar{
+        height:auto;
+        min-height:58px;
+        flex-wrap:wrap;
+    }
+
+    .logo{
+        width:100%;
+    }
+
+    .white-key{
+        width:58px;
+        height:240px;
+    }
+
+    .black-key{
+        width:36px;
+        height:145px;
+    }
+
+    .piano{
+        height:260px;
+        min-width:540px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+    <div class="logo">🎹 Piano Studio</div>
+
+    <button class="topbtn" id="soundButton">
+        🔊 Enable Sound
+    </button>
+
+    <button class="topbtn" id="recordButton">
+        ⏺ Record
+    </button>
+
+    <button class="topbtn" id="clearButton">
+        🗑 Clear
+    </button>
+</header>
+
+<nav class="tabs">
+    <button class="tab active" data-page="pianoPage">🎹 Piano</button>
+    <button class="tab" data-page="scorePage">🎼 Score Sheets</button>
+    <button class="tab" data-page="demoPage">🎵 Demo Music</button>
+    <button class="tab" data-page="lessonPage">📚 Lessons</button>
+</nav>
+
+<!-- PIANO -->
+
+<section class="page active" id="pianoPage">
+
+    <div class="card">
+        <h2>Virtual Piano</h2>
+
+        <div class="status" id="status">
+            Click <b>Enable Sound</b> before playing if you don't hear anything.
+        </div>
+
+        <div class="note-display" id="noteDisplay">
+            —
+        </div>
+
+        <div class="controls">
+
+            <label>
+                Octave:
+                <select id="octave">
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                </select>
+            </label>
+
+            <label>
+                Volume:
+                <input
+                    id="volume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    value=".65"
+                    step=".01"
+                >
+            </label>
+
+            <label>
+                <input id="sustain" type="checkbox">
+                Sustain
+            </label>
+
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Keyboard Controls</h3>
+        <p>
+            You can click the piano keys or use your computer keyboard:
+        </p>
+        <p>
+            <b>A W S E D F T G Y H U J K</b>
+        </p>
+    </div>
+
+    <div class="piano-wrap">
+        <div class="piano" id="piano"></div>
+    </div>
+
+    <div class="card">
+        <h3>Recording</h3>
+        <div id="recordingStatus">
+            Nothing recorded yet.
+        </div>
+    </div>
+
+</section>
+
+<!-- SCORE SHEETS -->
+
+<section class="page" id="scorePage">
+
+    <div class="card">
+        <h2>🎼 Score Sheets</h2>
+        <p>
+            Simple beginner arrangements for piano practice.
+        </p>
+    </div>
+
+    <div class="score-list" id="scoreList"></div>
+
+</section>
+
+<!-- DEMO MUSIC -->
+
+<section class="page" id="demoPage">
+
+    <div class="card">
+        <h2>🎵 Demo Music</h2>
+        <p>
+            Listen to simple beginner melodies and then try playing them yourself.
+        </p>
+    </div>
+
+    <div class="score-list" id="demoList"></div>
+
+</section>
+
+<!-- LESSONS -->
+
+<section class="page" id="lessonPage">
+
+    <div class="card">
+        <h2>📚 Piano Lessons</h2>
+        <p>
+            Work through these beginner lessons at your own pace.
+        </p>
+    </div>
+
+    <div class="lesson">
+        <span class="lesson-number">1</span>
+        <b>Five-Finger Warm-Up</b>
+        <p>
+            Practice C-D-E-F-G with your right hand. Try to keep your fingers relaxed.
+        </p>
+        <button class="action primary" onclick="startWarmup()">
+            Start Warm-Up
+        </button>
+    </div>
+
+    <div class="lesson">
+        <span class="lesson-number">2</span>
+        <b>Learn the Note Names</b>
+        <p>
+            The white keys repeat through the musical alphabet:
+            C, D, E, F, G, A, B.
+        </p>
+        <button class="action" onclick="showNoteLesson()">
+            Practice Notes
+        </button>
+    </div>
+
+    <div class="lesson">
+        <span class="lesson-number">3</span>
+        <b>Rhythm Practice</b>
+        <p>
+            Count evenly while playing. Start slowly, then gradually increase your speed.
+        </p>
+        <button class="action" onclick="rhythmPractice()">
+            Start Rhythm
+        </button>
+    </div>
+
+    <div class="lesson">
+        <span class="lesson-number">4</span>
+        <b>Play a Melody</b>
+        <p>
+            Choose a demo song and try to reproduce the notes on the piano.
+        </p>
+        <button class="action" onclick="switchPage('demoPage')">
+            Open Demo Music
+        </button>
+    </div>
+
+    <div class="lesson">
+        <span class="lesson-number">5</span>
+        <b>Note Challenge</b>
+
+        <div class="practice-box">
+
+            <div>
+                Press the note:
+            </div>
+
+            <div class="target-note" id="targetNote">
+                C
+            </div>
+
+            <div class="practice-score" id="practiceScore">
+                Score: 0
+            </div>
+
+            <button class="action primary" onclick="newPracticeNote()">
+                New Note
+            </button>
+
+        </div>
+    </div>
+
+</section>
+
+<script>
+
+/* =========================
+   AUDIO ENGINE
+========================= */
+
+let audioContext = null;
+let soundEnabled = false;
+
+const soundButton = document.getElementById("soundButton");
+const statusBox = document.getElementById("status");
+const volumeSlider = document.getElementById("volume");
+const sustainBox = document.getElementById("sustain");
+
+function getAudioContext(){
+
+    if(!audioContext){
+
+        const AudioCtx =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if(!AudioCtx){
+            alert("Your browser does not support Web Audio.");
+            return null;
+        }
+
+        audioContext = new AudioCtx();
+    }
+
+    return audioContext;
+}
+
+async function enableSound(testTone = true){
+
+    const ctx = getAudioContext();
+
+    if(!ctx){
+        return false;
+    }
+
+    try{
+
+        if(ctx.state === "suspended"){
+            await ctx.resume();
+        }
+
+        soundEnabled = true;
+
+        soundButton.textContent = "🔊 Sound On";
+        soundButton.classList.add("sound-on");
+
+        statusBox.innerHTML =
+            "✅ Sound is enabled. Click the piano keys to play.";
+
+        if(testTone){
+
+            const now = ctx.currentTime;
+
+            const oscillator = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(440, now);
+
+            gain.gain.setValueAtTime(.0001, now);
+            gain.gain.exponentialRampToValueAtTime(
+                .12,
+                now + .02
+            );
+            gain.gain.exponentialRampToValueAtTime(
+                .0001,
+                now + .35
+            );
+
+            oscillator.connect(gain);
+            gain.connect(ctx.destination);
+
+            oscillator.start(now);
+            oscillator.stop(now + .4);
+        }
+
+        return true;
+
+    }catch(error){
+
+        console.error(error);
+
+        statusBox.textContent =
+            "Sound could not start. Try clicking Enable Sound again.";
+
+        return false;
+    }
+}
+
+soundButton.addEventListener("click", function(){
+    enableSound(true);
+});
+
+
+/* =========================
+   NOTES
+========================= */
+
+const whiteNotes = [
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "A",
+    "B",
+    "C"
+];
+
+const keyboardMap = {
+    "a":"C",
+    "s":"D",
+    "d":"E",
+    "f":"F",
+    "g":"G",
+    "h":"A",
+    "j":"B",
+    "k":"C",
+    "w":"C#",
+    "e":"D#",
+    "t":"F#",
+    "y":"G#",
+    "u":"A#"
+};
+
+const semitone = {
+    "C":0,
+    "C#":1,
+    "D":2,
+    "D#":3,
+    "E":4,
+    "F":5,
+    "F#":6,
+    "G":7,
+    "G#":8,
+    "A":9,
+    "A#":10,
+    "B":11
+};
+
+const piano = document.getElementById("piano");
+
+function frequency(note, octave){
+
+    const midi =
+        12 * (Number(octave) + 1) +
+        semitone[note];
+
+    return 440 * Math.pow(
+        2,
+        (midi - 69) / 12
+    );
+}
+
+
+/* =========================
+   BUILD PIANO
+========================= */
+
+function buildPiano(){
+
+    piano.innerHTML = "";
+
+    const octave =
+        Number(document.getElementById("octave").value);
+
+    whiteNotes.forEach((note,index)=>{
+
+        const key = document.createElement("button");
+
+        key.className = "white-key";
+
+        key.dataset.note = note;
+
+        key.dataset.octave =
+            index === 7 ? octave + 1 : octave;
+
+        key.innerHTML =
+            note +
+            '<span class="key-label">' +
+            getComputerKey(note) +
+            '</span>';
+
+        key.addEventListener("pointerdown",function(e){
+
+            e.preventDefault();
+
+            playNote(
+                note,
+                Number(key.dataset.octave),
+                key
+            );
+        });
+
+        piano.appendChild(key);
+    });
+
+    const blackPositions = [
+        {note:"C#", left:58},
+        {note:"D#", left:140},
+        {note:"F#", left:304},
+        {note:"G#", left:386},
+        {note:"A#", left:468}
+    ];
+
+    blackPositions.forEach(item=>{
+
+        const key = document.createElement("button");
+
+        key.className = "black-key";
+
+        key.dataset.note = item.note;
+        key.dataset.octave = octave;
+
+        key.style.left =
+            item.left + "px";
+
+        key.textContent =
+            getComputerKey(item.note);
+
+        key.addEventListener("pointerdown",function(e){
+
+            e.preventDefault();
+
+            playNote(
+                item.note,
+                octave,
+                key
+            );
+        });
+
+        piano.appendChild(key);
+    });
+}
+
+function getComputerKey(note){
+
+    for(const key in keyboardMap){
+
+        if(keyboardMap[key] === note){
+            return key.toUpperCase();
+        }
+    }
+
+    return "";
+}
+
+buildPiano();
+
+document.getElementById("octave")
+    .addEventListener("change",buildPiano);
+
+
+/* =========================
+   PLAY NOTE
+========================= */
+
+async function playNote(note, octave, element){
+
+    if(!soundEnabled){
+
+        const ok =
+            await enableSound(false);
+
+        if(!ok){
+            return;
+        }
+    }
+
+    const ctx = getAudioContext();
+
+    if(!ctx){
+        return;
+    }
+
+    if(ctx.state === "suspended"){
+        await ctx.resume();
+    }
+
+    const now = ctx.currentTime;
+
+    const oscillator =
+        ctx.createOscillator();
+
+    const gain =
+        ctx.createGain();
+
+    oscillator.type = "triangle";
+
+    oscillator.frequency.setValueAtTime(
+        frequency(note,octave),
+        now
+    );
+
+    const volume =
+        Number(volumeSlider.value);
+
+    gain.gain.setValueAtTime(
+        .0001,
+        now
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        Math.max(.02, .28 * volume),
+        now + .025
+    );
+
+    const duration =
+        sustainBox.checked ? 1.4 : .65;
+
+    gain.gain.exponentialRampToValueAtTime(
+        .0001,
+        now + duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(now);
+    oscillator.stop(now + duration + .05);
+
+    element.classList.add("active");
+
+    setTimeout(()=>{
+        element.classList.remove("active");
+    },120);
+
+    document.getElementById("noteDisplay").textContent =
+        note + octave;
+
+    practiceNoteCheck(note);
+
+    if(recording){
+        recordedNotes.push({
+            note:note,
+            octave:octave,
+            time:Date.now()
+        });
+    }
+}
+
+
+/* =========================
+   COMPUTER KEYBOARD
+========================= */
+
+const pressedKeys = new Set();
+
+document.addEventListener("keydown",function(e){
+
+    if(e.repeat){
+        return;
+    }
+
+    const key =
+        e.key.toLowerCase();
+
+    if(!keyboardMap[key]){
+        return;
+    }
+
+    if(pressedKeys.has(key)){
+        return;
+    }
+
+    pressedKeys.add(key);
+
+    const note =
+        keyboardMap[key];
+
+    const octave =
+        Number(
+            document.getElementById("octave").value
+        );
+
+    const element =
+        [...document.querySelectorAll(
+            ".white-key,.black-key"
+        )].find(
+            el => el.dataset.note === note
+        );
+
+    if(element){
+        playNote(note,octave,element);
+    }
+});
+
+document.addEventListener("keyup",function(e){
+
+    pressedKeys.delete(
+        e.key.toLowerCase()
+    );
+});
+
+
+/* =========================
+   RECORDING
+========================= */
+
+let recording = false;
+let recordedNotes = [];
+
+const recordButton =
+    document.getElementById("recordButton");
+
+const recordingStatus =
+    document.getElementById("recordingStatus");
+
+recordButton.addEventListener("click",function(){
+
+    recording = !recording;
+
+    if(recording){
+
+        recordedNotes = [];
+
+        recordButton.textContent =
+            "⏹ Stop Recording";
+
+        recordingStatus.textContent =
+            "🔴 Recording...";
+
+    }else{
+
+        recordButton.textContent =
+            "⏺ Record";
+
+        recordingStatus.textContent =
+            recordedNotes.length
+                ? "Recorded " +
+                  recordedNotes.length +
+                  " notes."
+                : "No notes were recorded.";
+    }
+});
+
+document.getElementById("clearButton")
+    .addEventListener("click",function(){
+
+        recordedNotes = [];
+
+        recording = false;
+
+        recordButton.textContent =
+            "⏺ Record";
+
+        recordingStatus.textContent =
+            "Recording cleared.";
+    });
+
+
+/* =========================
+   TABS
+========================= */
+
+document.querySelectorAll(".tab")
+.forEach(tab=>{
+
+    tab.addEventListener("click",function(){
+
+        switchPage(
+            tab.dataset.page
+        );
+    });
+});
+
+function switchPage(pageId){
+
+    document.querySelectorAll(".page")
+    .forEach(page=>{
+        page.classList.remove("active");
+    });
+
+    document.getElementById(pageId)
+        .classList.add("active");
+
+    document.querySelectorAll(".tab")
+    .forEach(tab=>{
+
+        tab.classList.toggle(
+            "active",
+            tab.dataset.page === pageId
+        );
+    });
+}
+
+
+/* =========================
+   SONGS
+========================= */
+
+const songs = {
+
+    "Twinkle Twinkle Little Star":{
+        notes:[
+            ["C",4],
+            ["C",4],
+            ["G",4],
+            ["G",4],
+            ["A",4],
+            ["A",4],
+            ["G",4],
+            ["F",4],
+            ["F",4],
+            ["E",4],
+            ["E",4],
+            ["D",4],
+            ["D",4],
+            ["C",4]
+        ]
+    },
+
+    "Mary Had a Little Lamb":{
+        notes:[
+            ["E",4],
+            ["D",4],
+            ["C",4],
+            ["D",4],
+            ["E",4],
+            ["E",4],
+            ["E",4],
+            ["D",4],
+            ["D",4],
+            ["D",4],
+            ["E",4],
+            ["G",4],
+            ["G",4]
+        ]
+    },
+
+    "Ode to Joy":{
+        notes:[
+            ["E",4],
+            ["E",4],
+            ["F",4],
+            ["G",4],
+            ["G",4],
+            ["F",4],
+            ["E",4],
+            ["D",4],
+            ["C",4],
+            ["C",4],
+            ["D",4],
+            ["E",4],
+            ["E",4],
+            ["D",4],
+            ["D",4]
+        ]
+    }
+};
+
+
+/* =========================
+   SCORE SHEETS
+========================= */
+
+function createScoreCards(){
+
+    const container =
+        document.getElementById("scoreList");
+
+    container.innerHTML = "";
+
+    Object.keys(songs).forEach(name=>{
+
+        const card =
+            document.createElement("div");
+
+        card.className = "song-card";
+
+        card.innerHTML = `
+            <h3>${name}</h3>
+
+            <div class="staff">
+                <div class="staff-lines"></div>
+                <div class="treble">𝄞</div>
+
+                <div class="notes">
+                    ${songs[name].notes
+                        .slice(0,8)
+                        .map(()=>'<div class="music-note"></div>')
+                        .join("")
+                    }
+                </div>
+            </div>
+
+            <p>
+                Notes:
+                ${songs[name].notes
+                    .map(n=>n[0])
+                    .join(" ")
+                }
+            </p>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+createScoreCards();
+
+
+/* =========================
+   DEMOS
+========================= */
+
+function createDemoCards(){
+
+    const container =
+        document.getElementById("demoList");
+
+    container.innerHTML = "";
+
+    Object.keys(songs).forEach(name=>{
+
+        const card =
+            document.createElement("div");
+
+        card.className = "song-card";
+
+        card.innerHTML = `
+            <h3>🎵 ${name}</h3>
+
+            <p>
+                Beginner demonstration.
+            </p>
+
+            <button class="action primary">
+                ▶ Play Demo
+            </button>
+
+            <button class="action">
+                ⏹ Stop
+            </button>
+        `;
+
+        const buttons =
+            card.querySelectorAll("button");
+
+        buttons[0].addEventListener(
+            "click",
+            ()=>{
+                playSong(name);
+            }
+        );
+
+        buttons[1].addEventListener(
+            "click",
+            ()=>{
+                stopDemo();
+            }
+        );
+
+        container.appendChild(card);
+    });
+}
+
+createDemoCards();
+
+let demoTimer = null;
+let demoPlaying = false;
+
+function playSong(name){
+
+    enableSound(false);
+
+    stopDemo();
+
+    const notes =
+        songs[name].notes;
+
+    let index = 0;
+
+    demoPlaying = true;
+
+    function next(){
+
+        if(!demoPlaying){
+            return;
+        }
+
+        if(index >= notes.length){
+
+            demoPlaying = false;
+
+            return;
+        }
+
+        const note =
+            notes[index][0];
+
+        const octave =
+            notes[index][1];
+
+        const element =
+            [...document.querySelectorAll(
+                ".white-key,.black-key"
+            )].find(
+                el =>
+                el.dataset.note === note &&
+                Number(el.dataset.octave) === octave
+            );
+
+        if(element){
+            playNote(
+                note,
+                octave,
+                element
+            );
+        }
+
+        index++;
+
+        demoTimer =
+            setTimeout(next,430);
+    }
+
+    next();
+}
+
+function stopDemo(){
+
+    demoPlaying = false;
+
+    if(demoTimer){
+        clearTimeout(demoTimer);
+        demoTimer = null;
+    }
+}
+
+
+/* =========================
+   LESSONS
+========================= */
+
+function startWarmup(){
+
+    switchPage("pianoPage");
+
+    document.getElementById("status").textContent =
+        "Warm-up: play C, D, E, F, G slowly.";
+
+    const warmup =
+        songs["Ode to Joy"].notes.slice(0,5);
+
+    warmup.forEach((n,i)=>{
+
+        setTimeout(()=>{
+
+            document.getElementById("noteDisplay")
+                .textContent =
+                "Try " + n[0];
+
+        },i * 900);
+    });
+}
+
+function showNoteLesson(){
+
+    switchPage("pianoPage");
+
+    document.getElementById("status").textContent =
+        "Note lesson: find C, D, E, F, G, A, and B on the piano.";
+}
+
+function rhythmPractice(){
+
+    switchPage("pianoPage");
+
+    document.getElementById("status").textContent =
+        "Rhythm practice: play any note four times, evenly spaced.";
+
+    let count = 0;
+
+    const interval =
+        setInterval(()=>{
+
+            count++;
+
+            document.getElementById("noteDisplay")
+                .textContent =
+                "Beat " + count;
+
+            if(count >= 4){
+                clearInterval(interval);
+
+                document.getElementById("status")
+                    .textContent =
+                    "Rhythm practice complete!";
+            }
+
+        },700);
+}
+
+
+/* =========================
+   NOTE CHALLENGE
+========================= */
+
+const practiceNotes =
+    ["C","D","E","F","G","A","B"];
+
+let targetPracticeNote = "C";
+let practiceScore = 0;
+
+function newPracticeNote(){
+
+    targetPracticeNote =
+        practiceNotes[
+            Math.floor(
+                Math.random() *
+                practiceNotes.length
+            )
+        ];
+
+    document.getElementById("targetNote")
+        .textContent =
+        targetPracticeNote;
+
+    document.getElementById("practiceScore")
+        .textContent =
+        "Score: " + practiceScore;
+}
+
+function practiceNoteCheck(note){
+
+    if(
+        document.getElementById("lessonPage")
+            .classList.contains("active")
+    ){
+
+        if(note === targetPracticeNote){
+
+            practiceScore++;
+
+            document.getElementById("practiceScore")
+                .textContent =
+                "✅ Correct! Score: " +
+                practiceScore;
+
+            setTimeout(newPracticeNote,600);
+
+        }
+    }
+}
+
+</script>
+
+</body>
+</html>
+```
