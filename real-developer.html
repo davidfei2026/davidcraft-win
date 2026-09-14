@@ -373,13 +373,11 @@ body.vscodeStyle .vscodeModeBadge{display:inline-flex}
 
 
 /* VS Code-only sidebar features */
-.classicSidebarNotice{display:flex;flex-direction:column;gap:7px;padding:14px 8px;color:var(--muted);font-size:11px;line-height:1.4}
-.classicSidebarNotice b{color:var(--text);font-size:12px}
-.classicSidebarNotice span{font-size:10px}
-.classicSidebarNotice button{margin-top:4px;padding:7px 9px;font-size:11px}
+.classicSidebar{display:block}
 .vscodeSidebarSection{display:none}
-body.vscodeStyle .classicSidebarNotice{display:none}
+body.vscodeStyle .classicSidebar{display:none}
 body.vscodeStyle .vscodeSidebarSection{display:block}
+.classicSidebar #classicLanguages .item,.classicSidebar #classicFiles .item{margin-bottom:2px}
 
 /* VS Code sidebar workspace + extensions */
 .vscodeSidebarSection{margin-bottom:10px}
@@ -700,11 +698,12 @@ body.vscodeStyle .vscodeWorkspaceFile.active{background:#37373d}
 
     <aside class="sidebar">
 
-        <div class="classicSidebarNotice" id="classicSidebarNotice">
-            <div class="classicSidebarIcon">VS</div>
-            <b>VS Code Style features</b>
-            <span>Languages, Workspace, and Extensions are available only in VS Code Style Mode.</span>
-            <button id="classicEnableVSCode">Enable VS Code Style</button>
+        <div class="classicSidebar" id="classicSidebar">
+            <div class="sectionTitle">Languages</div>
+            <div id="classicLanguages"></div>
+
+            <div class="sectionTitle">Files</div>
+            <div id="classicFiles"></div>
         </div>
 
         <div class="vscodeSidebarSection">
@@ -1175,7 +1174,9 @@ Object.entries(languages).forEach(function(entry){
 
 function renderLanguages(filterText){
 
-    const container = document.getElementById("languages");
+    const container = document.body.classList.contains("vscodeStyle")
+        ? document.getElementById("languages")
+        : document.getElementById("classicLanguages");
     if(!container) return;
     const filter = String(filterText || "").trim().toLowerCase();
     container.innerHTML = "";
@@ -1189,7 +1190,10 @@ function renderLanguages(filterText){
         }
 
         const item = document.createElement("div");
-        item.className = "vscodeLanguageSelect" + (files[value.filename] && files[value.filename].filename === activeFile ? " active" : "");
+        const isVSCode = document.body.classList.contains("vscodeStyle");
+        item.className = isVSCode
+            ? ("vscodeLanguageSelect" + (files[value.filename] && files[value.filename].filename === activeFile ? " active" : ""))
+            : ("item" + (files[value.filename] && files[value.filename].filename === activeFile ? " active" : ""));
         item.dataset.languageKey = key;
 
         if(logos[key]){
@@ -1224,9 +1228,12 @@ function renderLanguages(filterText){
 
 function renderFiles(){
 
-    const container =
-        document.getElementById("files");
+    const isVSCode = document.body.classList.contains("vscodeStyle");
+    const container = isVSCode
+        ? document.getElementById("files")
+        : document.getElementById("classicFiles");
 
+    if(!container) return;
     container.innerHTML = "";
 
     Object.values(files).forEach(function(file){
@@ -1234,14 +1241,14 @@ function renderFiles(){
         const item =
             document.createElement("div");
 
-        item.className = document.body.classList.contains("vscodeStyle")
+        item.className = isVSCode
             ? ("vscodeWorkspaceFile" + (file.filename === activeFile ? " active" : ""))
             : ("item" + (file.filename === activeFile ? " active" : ""));
 
         const icon =
             document.createElement("span");
 
-        icon.className = document.body.classList.contains("vscodeStyle") ? "fileIcon" : "";
+        icon.className = isVSCode ? "fileIcon" : "";
         icon.textContent = "📄";
 
         const text =
